@@ -1328,7 +1328,8 @@ function renderList(containerId, items, field, rowClass){
     const isChaser = i === 3;
     const pill = !isChaser && (t==='gators'||t==='sharks')
       ? `<span class="team-pill ${t}">${t==='gators'?'Gators':'Sharks'}</span>`
-      : (!isChaser && isMktg) ? `<span class="team-pill marketing">Marketing</span>` : '';
+      : (!isChaser && isMktg) ? `<span class="team-pill marketing">Marketing</span>`
+      : `<span></span>`;
     const row=document.createElement('div');
     row.className=`list-row ${cls}${isChaser?' list-row-chaser':''}`;
     row.innerHTML=`<span class="medal">${isChaser ? '' : (MEDALS[i]||'')}</span><span class="p-name">${p.name||'—'}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
