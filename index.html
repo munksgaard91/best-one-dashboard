@@ -30,10 +30,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
    ════════════════════════════════════════ */
 .creatures{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict;}
 .creature{position:absolute;pointer-events:none;user-select:none;display:flex;align-items:center;justify-content:center;width:130px;height:130px;will-change:transform;transform:translateZ(0);}
-.creature .halo{position:absolute;inset:-55px;border-radius:50%;opacity:0.45;}
 .creature .ico{font-size:96px;opacity:0.22;line-height:1;position:relative;z-index:1;}
-.creature.shark .halo{background:radial-gradient(circle,rgba(180,140,50,0.55),transparent 70%);}
-.creature.gator .halo{background:radial-gradient(circle,rgba(90,140,95,0.55),transparent 70%);}
 .c1{top:20%;left:-150px;animation:p1 58s linear infinite;}
 .c2{top:5%;right:-150px;animation:p2 70s linear infinite 10s;}
 .c3{bottom:-150px;left:25%;animation:p3 82s linear infinite 25s;}
@@ -252,7 +249,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
 .cel-inner{
   position:relative;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:0px;
+  gap:0;
   opacity:0;transform:scale(0.88) translateY(24px);
   transition:opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
   text-align:center;
@@ -482,7 +479,9 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
   0%,100%{ opacity:1; }
   50%    { opacity:0.5; }
 }
-   Breakpoints: 768px (tablet), 480px (telefon)
+/* ════════════════════════════════════════
+   RESPONSIVT LAYOUT
+   Breakpoints: 768px (tablet)
    ════════════════════════════════════════ */
 @media(max-width:768px){
   #app{padding:24px 24px 20px;gap:14px;}
@@ -587,7 +586,6 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
   display:inline-flex;align-items:center;gap:6px;
 }
 .emp-group-header .dept-icon{ font-size:12px; }
-.emp-group-header .header-inner{ display:flex;align-items:center; }
 .drag-handle{color:var(--text-dim);opacity:0.3;cursor:grab;font-size:14px;text-align:center;padding:0 4px;user-select:none;}
 .drag-handle:hover{opacity:0.7;}
 tr.drag-dragging{opacity:0.4;}
@@ -604,16 +602,16 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
 
 <!-- ═══════════════════════════════════════
      BAGGRUNDS-CREATURES
-     5 hajer (🦈 Sharks/guld) + 5 krokodiller (🐊 Gators/grøn)
-     Sejler diagonalt henover skærmen i loops via CSS keyframes p1-p10.
+     5 hajer (🦈 Sharks/guld) + 2 krokodiller (🐊 Gators/grøn)
+     Sejler diagonalt henover skærmen i loops via CSS keyframes p1-p5.
      z-index:0 = altid bag alt indhold.
      ═══════════════════════════════════════ -->
 <div class="creatures">
-  <div class="creature shark c1"><div class="halo"></div><div class="ico">🦈</div></div>
-  <div class="creature shark c2"><div class="halo"></div><div class="ico">🦈</div></div>
-  <div class="creature shark c3"><div class="halo"></div><div class="ico">🦈</div></div>
-  <div class="creature gator c4"><div class="halo"></div><div class="ico">🐊</div></div>
-  <div class="creature gator c5"><div class="halo"></div><div class="ico">🐊</div></div>
+  <div class="creature shark c1"><div class="ico">🦈</div></div>
+  <div class="creature shark c2"><div class="ico">🦈</div></div>
+  <div class="creature shark c3"><div class="ico">🦈</div></div>
+  <div class="creature gator c4"><div class="ico">🐊</div></div>
+  <div class="creature gator c5"><div class="ico">🐊</div></div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -741,10 +739,11 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
 
 <!-- ═══════════════════════════════════════
      INFO-SPLASH OVERLAY
-     Vises automatisk hvert 30. minut (INFO_INTERVAL).
+     Vises automatisk på faste tidspunkter (INFO_SCHEDULE).
      Indhold bygges af buildInfoSlides() fra live data + manuelle facts.
-     Hall of Fame slides → guldbaggund (.info-hof klasse).
+     Hall of Fame slides → guldbaggrund (.info-hof klasse).
      Kan også vises manuelt via knap i Admin → Info.
+     Lukkes med ✕ eller ESC.
      ═══════════════════════════════════════ -->
 <div id="info-overlay">
   <button id="info-close" onclick="(function(){ const o=document.getElementById('info-overlay'),i=document.getElementById('info-inner'); i.classList.remove('info-in'); i.classList.add('info-out'); o.classList.remove('info-in','info-hof'); setTimeout(()=>{ i.classList.remove('info-out'); },600); })()" title="Luk">✕</button>
@@ -934,10 +933,10 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
 
 <script>
 /* ════════════════════════════════════════════════════════════
-   BEST ONE A/S — WEB PERFORMANCE DASHBOARD
+   BEST ONE A/S — WEB PERFORMANCE DASHBOARD v2.0
    ════════════════════════════════════════════════════════════
    Fil:     index.html (enkelt-fil app, ingen dependencies)
-   Hosting: Netlify (statisk)
+   Hosting: GitHub Pages (github.com/munksgaard91/best-one-dashboard)
    Data:    localStorage 'bo7' (primær) + JSONBin.io sync (sekundær)
 
    ARKITEKTUR-OVERBLIK:
@@ -948,10 +947,10 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
    └──────────────┬──────────────────────┘
                   │
    ┌──────────────▼──────────────────────┐
-   │  render()  ← doSync() hvert 5. sek │
+   │  render()  ← doSync() hvert 15 sek │
    │  - totals()    summerer alle emps   │
    │  - countUp()   animerede tællere    │
-   │  - renderList() top 3/2 pr. afd.   │
+   │  - renderList() top 4/2 pr. afd.   │
    └──────────────┬──────────────────────┘
                   │
    ┌──────────────▼──────────────────────┐
@@ -963,7 +962,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
    └─────────────────────────────────────┘
                   │
    ┌──────────────▼──────────────────────┐
-   │  Info-splash (setInterval 30 min)   │
+   │  Info-splash (tidsbaseret schedule) │
    │  → buildInfoSlides (live + manual)  │
    │  → showInfoSlide                    │
    └─────────────────────────────────────┘
@@ -972,9 +971,16 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
    password, *Goal, *Rec, *LRec, *LRecName,
    bonus, infoFacts[], employees[]
 
-   TEAMS: gators (🐊 grøn) / sharks (🦈 guld)
+   TEAMS:      gators (🐊 grøn) / sharks (🦈 guld) / marketing (📣 blå)
    AFDELINGER: site / text / session
    EMOJI-POOL: 11 unikke Apple emojis (én pr. medarbejder)
+
+   NØGLE-INTERVALLER:
+   - doSync:            hvert 15 sek
+   - tick (ur/dato):    hvert 60 sek
+   - checkMonthlyReset: hvert 5. time
+   - info scheduler:    hvert 2. min (tjekker mod INFO_SCHEDULE)
+   - auto-reload:       kl. 22:00 og 04:00
    ════════════════════════════════════════════════════════════ */
 
 /* ════════════════════════════════════════
@@ -1083,14 +1089,10 @@ function dataSig(d){ const t=totals(d); return `${t.sites}|${t.texts}|${t.sessio
    med gamle JSONBin-værdier mens brugeren redigerer. */
 let adminOpen = false;
 
-/* Poller JSONBin hvert 5. sekund.
-   Springer over hvis admin er åben — ellers ville sync
-   overskrive D.employees med gamle værdier og celebration-diff'en
-   ville altid vise ingen ændringer → ingen splashes. */
-// Cache af seneste kendte data-signatur — skip render hvis uændret
+// Cache: seneste kendte data-signatur — skip render hvis uændret
 let _lastKnownSig = null;
 
-// Cache af info-slides — genbygges kun når data ændres
+// Cache: info-slides — genbygges kun når data ændres (dataSig skifter)
 let _infoSlidesCache = null;
 let _infoSlidesCacheSig = null;
 
@@ -1189,7 +1191,8 @@ function top2(employees, field){ return sortWithTiebreak(employees, field).slice
 
 /* ════════════════════════════════════════
    UR + DATO
-   Opdateres hvert sekund.
+   Opdateres hvert minut (60 sek).
+   Kolon blinker via CSS animation (gratis på GPU).
    Dansk ugedag + måned formateres manuelt.
    ════════════════════════════════════════ */
 const _WDAYS=['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
