@@ -474,11 +474,19 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
    ════════════════════════════════════════ */
 .fire-bg{ position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0;transition:opacity 1.2s ease; }
 .stat-block.on-fire .fire-bg{ opacity:1; }
+.stat-block.on-fire-hot .fire-bg{ opacity:1; }
 .fire-bg span{ position:absolute;font-size:20px;opacity:0;animation:floatFire var(--dur) ease-in-out infinite var(--delay);bottom:-30px; }
+.stat-block.on-fire-hot .fire-bg span{ font-size:26px;animation-name:floatFireHot; }
 @keyframes floatFire{
   0%  { transform:translateY(0) rotate(-6deg); opacity:0; }
   15% { opacity:0.18; }
   85% { opacity:0.12; }
+  100%{ transform:translateY(-130px) rotate(6deg); opacity:0; }
+}
+@keyframes floatFireHot{
+  0%  { transform:translateY(0) rotate(-6deg); opacity:0; }
+  15% { opacity:0.45; }
+  85% { opacity:0.32; }
   100%{ transform:translateY(-130px) rotate(6deg); opacity:0; }
 }
 /* Sørg for at kortindhold vises over fire-bg */
@@ -1346,7 +1354,8 @@ function renderTotalsOnly(){
     if(cardId){
       const card = document.getElementById(cardId);
       card.classList.toggle('goal-reached', reached);
-      card.classList.toggle('on-fire', goal > 0 && rawPct >= 80 && !reached);
+      card.classList.toggle('on-fire', goal > 0 && rawPct >= 80 && rawPct < 90 && !reached);
+      card.classList.toggle('on-fire-hot', goal > 0 && rawPct >= 90 && !reached);
     }
   }
   prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal,    'card-sites');
@@ -1390,7 +1399,8 @@ function render(oldTotals){
     if(cardId){
       const card = document.getElementById(cardId);
       card.classList.toggle('goal-reached', reached);
-      card.classList.toggle('on-fire', goal > 0 && rawPct >= 80 && !reached);
+      card.classList.toggle('on-fire', goal > 0 && rawPct >= 80 && rawPct < 90 && !reached);
+      card.classList.toggle('on-fire-hot', goal > 0 && rawPct >= 90 && !reached);
     }
   }
   prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal,    'card-sites');
