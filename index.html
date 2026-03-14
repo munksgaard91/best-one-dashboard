@@ -143,7 +143,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
   background:rgba(8,12,22,0);
   transition:background 0.8s ease;
 }
-#info-overlay.info-in{ background:rgba(8,12,22,0.94); }
+#info-overlay.info-in{ background:rgba(8,12,22,0.94); pointer-events:auto; }
 .info-inner{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;width:80%;max-width:900px;
@@ -1102,17 +1102,22 @@ async function doSync(){
   // Tjek om der er en ny info-slide trigger
   const lastInfoId = localStorage.getItem('bo7_lastInfoId');
   if(remote.infoTriggerId && remote.infoTriggerId !== lastInfoId){
-    localStorage.setItem('bo7_lastInfoId', remote.infoTriggerId);
-    if(dataSig(remote) !== dataSig(D)){
-      D = mergeDeep({...DEF}, remote);
-      saveLocal(D);
-      _lastKnownSig = dataSig(D);
-      _infoSlidesCache = null; // invalidér slide-cache
-      render(snapshotTotals(D));
+    // Hvis lastInfoId er null (første sideload / incognito), gem trigger-id uden at vise slide
+    if(lastInfoId === null){
+      localStorage.setItem('bo7_lastInfoId', remote.infoTriggerId);
+    } else {
+      localStorage.setItem('bo7_lastInfoId', remote.infoTriggerId);
+      if(dataSig(remote) !== dataSig(D)){
+        D = mergeDeep({...DEF}, remote);
+        saveLocal(D);
+        _lastKnownSig = dataSig(D);
+        _infoSlidesCache = null;
+        render(snapshotTotals(D));
+      }
+      setSyncStatus('ok');
+      showInfoSlide();
+      return;
     }
-    setSyncStatus('ok');
-    showInfoSlide();
-    return;
   }
 
   // Tjek om der er en ny celebration vi ikke har set
@@ -2056,20 +2061,49 @@ function showInfoSlide(){
   }));
 
   const fadeOut = INFO_SLIDE_DUR - 800;
-  setTimeout(()=>{
+  const tFade = setTimeout(()=>{
     inner.classList.remove('info-in');
     inner.classList.add('info-out');
-    overlay.classList.remove('info-in');
-    overlay.classList.remove('info-hof');
+    overlay.classList.remove('info-in','info-hof');
   }, fadeOut);
 
-  setTimeout(()=>{
+  const tDone = setTimeout(()=>{
     inner.classList.remove('info-out');
   }, INFO_SLIDE_DUR);
+
+  // ✕ knap
+  const closeBtn = document.getElementById('info-close');
+  function onInfoClose(){
+    clearTimeout(tFade);
+    clearTimeout(tDone);
+    closeBtn.removeEventListener('click', onInfoClose);
+    inner.classList.remove('info-in');
+    inner.classList.add('info-out');
+    overlay.classList.remove('info-in','info-hof');
+    setTimeout(()=>{ inner.classList.remove('info-out'); }, 600);
+  }
+  closeBtn.removeEventListener('click', onInfoClose); // sikr ingen dobbelt-binding
+  closeBtn.addEventListener('click', onInfoClose);
 }
 
-// Start scheduler — første kald efter 30 min, derefter hvert 30. min
-setInterval(showInfoSlide, INFO_INTERVAL);
+// ESC lukker både info-slide og celebration-splash
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Escape') return;
+  document.getElementById('info-close').click();
+  document.getElementById('cel-close').click();
+});
+
+// Tidsbaseret info-slide scheduler — vises på faste tidspunkter
+const INFO_SCHEDULE = ['08:00','08:45','09:15','09:45','10:30','11:00','11:40','12:45','13:30','14:30','15:00','15:30','15:55','16:30','17:30','18:30'];
+let _lastShownSlot = null;
+setInterval(()=>{
+  const now = new Date();
+  const hm = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  if(INFO_SCHEDULE.includes(hm) && hm !== _lastShownSlot){
+    _lastShownSlot = hm;
+    showInfoSlide();
+  }
+}, 120000); // tjek hvert 2. minut
 
 /* triggerInfoSlide: bruges fra admin-knappen.
    Afspiller slide lokalt + pusher infoTriggerId til JSONBin
