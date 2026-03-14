@@ -128,6 +128,9 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
 .stat-block.gators .fill{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
 .stat-block.sharks .fill{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
 .stat-block.tp     .fill{background:linear-gradient(90deg,#a07830,var(--tp));}
+.fill{position:relative;overflow:hidden;}
+.fill::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 2.4s ease-in-out infinite;}
+@keyframes shimmer{0%{left:-60%;}100%{left:160%;}}
 
 /* ════════════════════════════════════════
    INFO-SPLASH (hvert 30. min)
