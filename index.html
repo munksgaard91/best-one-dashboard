@@ -20,7 +20,7 @@
   --mktg:#4a5f7a; --mktg-light:#6a80a0; --mktg-dim:rgba(74,95,122,0.12); --mktg-border:rgba(74,95,122,0.28);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
+html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;}
 
 /* ════════════════════════════════════════
    BAGGRUNDS-CREATURES
@@ -31,7 +31,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
    ════════════════════════════════════════ */
 .creatures{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict;}
 .creature{position:absolute;pointer-events:none;user-select:none;display:flex;align-items:center;justify-content:center;width:130px;height:130px;will-change:transform;transform:translateZ(0);}
-.creature .ico{font-size:96px;opacity:0.22;line-height:1;position:relative;z-index:1;}
+.creature .ico{font-size:96px;opacity:0.22;line-height:1;position:relative;z-index:1;image-rendering:crisp-edges;}
 .c1{top:20%;left:-150px;animation:p1 58s linear infinite;}
 .c2{top:5%;right:-150px;animation:p2 70s linear infinite 10s;}
 .c3{bottom:-150px;left:25%;animation:p3 82s linear infinite 25s;}
@@ -128,7 +128,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
 .stat-block.gators .fill{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
 .stat-block.sharks .fill{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
 .stat-block.tp     .fill{background:linear-gradient(90deg,#a07830,var(--tp));}
-.fill{position:relative;overflow:hidden;}
+.fill{position:relative;overflow:hidden;transform:translateZ(0);}
 .fill::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 2.4s ease-in-out infinite;}
 @keyframes shimmer{0%{left:-60%;}100%{left:160%;}}
 
@@ -276,6 +276,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
   margin-bottom:18px;
   filter:drop-shadow(0 0 28px rgba(255,255,255,0.18));
   animation:celEmojiFloat 3s ease-in-out infinite;
+  image-rendering:crisp-edges;
 }
 @keyframes celEmojiFloat{
   0%,100%{ transform:translateY(0) scale(1); }
@@ -473,7 +474,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
    Diskrete 🔥 emojis der stiger op bagfra.
    Kun transform+opacity — kører på GPU.
    ════════════════════════════════════════ */
-.fire-bg{ position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0;transition:opacity 1.2s ease; }
+.fire-bg{ position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0;transition:opacity 1.2s ease;transform:translateZ(0); }
 .stat-block.on-fire .fire-bg{ opacity:1; }
 .stat-block.on-fire-hot .fire-bg{ opacity:1; }
 .fire-bg span{ position:absolute;font-size:20px;opacity:0;animation:floatFire var(--dur) ease-in-out infinite var(--delay);bottom:-30px; }
