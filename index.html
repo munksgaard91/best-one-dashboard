@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   CSS CUSTOM PROPERTIES (farvepalette)
+   ════════════════════════════════════════ */
+:root {
+  --bg:#0c1220; --surface:#111928; --border:rgba(255,255,255,0.07);
+  --text:#e8edf5; --text-dim:#4a6080; --blue:#3a6fd8;
+  --gators:#6b8f6e; --gators-light:#8aaf8d; --gators-dim:rgba(107,143,110,0.12); --gators-border:rgba(107,143,110,0.28);
+  --sharks:#9e7f3a; --sharks-light:#c4a050; --sharks-dim:rgba(158,127,58,0.12); --sharks-border:rgba(158,127,58,0.28);
+  --sessions:#b84040; --sessions-light:#e06060;
+  --tp:#c9a84c; --tp-dim:rgba(201,168,76,0.1); --tp-border:rgba(201,168,76,0.25);
+  --mktg:#4a5f7a; --mktg-light:#6a80a0; --mktg-dim:rgba(74,95,122,0.12); --mktg-border:rgba(74,95,122,0.28);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
+
+/* ════════════════════════════════════════
+   BAGGRUNDS-CREATURES
+   10 dyr (5 hajer 🦈 + 5 krokodiller 🐊)
+   Starter off-screen fra unikke kanter og
+   sejler diagonalt henover skærmen i loops.
+   Opacity 0.14 = subtile men synlige.
+   ════════════════════════════════════════ */
+.creatures{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict;}
+.creature{position:absolute;pointer-events:none;user-select:none;display:flex;align-items:center;justify-content:center;width:130px;height:130px;will-change:transform;transform:translateZ(0);}
+.creature .halo{position:absolute;inset:-55px;border-radius:50%;opacity:0.45;}
+.creature .ico{font-size:96px;opacity:0.22;line-height:1;position:relative;z-index:1;}
+.creature.shark .halo{background:radial-gradient(circle,rgba(180,140,50,0.55),transparent 70%);}
+.creature.gator .halo{background:radial-gradient(circle,rgba(90,140,95,0.55),transparent 70%);}
+.c1{top:20%;left:-150px;animation:p1 58s linear infinite;}
+.c2{top:5%;right:-150px;animation:p2 70s linear infinite 10s;}
+.c3{bottom:-150px;left:25%;animation:p3 82s linear infinite 25s;}
+.c4{top:60%;left:-150px;animation:p4 64s linear infinite 5s;}
+.c5{top:-150px;right:30%;animation:p5 76s linear infinite 35s;}
+@keyframes p1{0%{transform:translate(0,0) rotate(-6deg);}50%{transform:translate(55vw,8vh) rotate(3deg);}100%{transform:translate(110vw,14vh) rotate(-4deg);}}
+@keyframes p2{0%{transform:translate(0,0) rotate(174deg);}50%{transform:translate(-50vw,40vh) rotate(171deg);}100%{transform:translate(-110vw,68vh) rotate(177deg);}}
+@keyframes p3{0%{transform:translate(0,0) rotate(-88deg);}50%{transform:translate(12vw,-55vh) rotate(-90deg);}100%{transform:translate(22vw,-110vh) rotate(-87deg);}}
+@keyframes p4{0%{transform:translate(0,0) rotate(-4deg);}50%{transform:translate(48vw,-20vh) rotate(5deg);}100%{transform:translate(110vw,-35vh) rotate(-3deg);}}
+@keyframes p5{0%{transform:translate(0,0) rotate(91deg);}50%{transform:translate(-15vw,48vh) rotate(89deg);}100%{transform:translate(-28vw,110vh) rotate(92deg);}}
+
+/* ════════════════════════════════════════
+   HOVED-LAYOUT
+   CSS Grid med 4 rækker:
+   1. Header (måned + ur)
+   2. Stat-kort (4 store tal-bokse)
+   3. Top 3-lister (4 kolonner)
+   4. Footer (bonus + logo)
+   ════════════════════════════════════════ */
+#app{position:relative;z-index:1;width:100%;height:100%;display:grid;grid-template-rows:auto 0.8fr 1.2fr auto;padding:28px 48px 24px;gap:14px;}
+
+/* ════════════════════════════════════════
+   HEADER
+   Venstre: Måned + År (stort, hvid)
+   Højre: Ur (HH:MM:SS), dato, sync-status
+   Sync-dot: grøn=ok, rød=fejl, gul=syncer
+   ════════════════════════════════════════ */
+header{display:flex;align-items:flex-start;justify-content:space-between;}
+.month{font-family:'DM Mono',monospace;font-size:clamp(28px,2.2vw,42px);font-weight:500;letter-spacing:1px;color:var(--text);}
+.header-left{display:flex;flex-direction:column;gap:3px;}
+#dept-lbl{font-size:clamp(11px,0.9vw,16px);font-weight:500;color:var(--text-dim);letter-spacing:0.5px;}
+.header-right{display:flex;align-items:flex-end;flex-direction:column;gap:3px;}
+.clock-row{display:flex;align-items:center;gap:10px;}
+#time-emoji{font-size:clamp(16px,1.4vw,26px);line-height:1;}
+#clock{font-family:'DM Mono',monospace;font-size:clamp(28px,2.2vw,42px);font-weight:400;letter-spacing:2px;line-height:1;}
+#clock .colon{animation:colonBlink 1s step-end infinite;}
+@keyframes colonBlink{0%,100%{opacity:1;}50%{opacity:0;}}
+#date{font-size:clamp(11px,0.9vw,16px);font-weight:500;color:var(--text-dim);letter-spacing:0.5px;}
+#sync-status{font-size:10px;color:var(--text-dim);letter-spacing:1px;display:flex;align-items:center;gap:5px;min-height:13px;}
+.sync-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.sync-dot.ok{background:#6b8f6e;}
+.sync-dot.err{background:#c06060;}
+.sync-dot.wait{background:#9e7f3a;animation:blink 1s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+/* ════════════════════════════════════════
+   STAT-KORT (øverste række, 4 bokse)
+   Indeholder:
+   - Overskrift + ikon
+   - Stort samlet tal (beregnes fra medarbejdere)
+   - Progressbar mod månedsmål
+   - 🏆 Fælles rekord (historisk bedste måned)
+   Farver: blue=Sager, gators=Tekster,
+           sharks=Sessioner, tp=Trustpilot
+   ════════════════════════════════════════ */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;}
+.stat-block{background:rgba(17,25,40,0.82);border:1px solid var(--border);border-radius:16px;padding:clamp(16px,1.6vh,28px) clamp(20px,1.8vw,32px) clamp(14px,1.4vh,24px);display:flex;flex-direction:column;gap:clamp(6px,0.8vh,12px);position:relative;overflow:hidden;justify-content:space-between;}
+.stat-block::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0;}
+.stat-block.blue::after{background:linear-gradient(90deg,#2a55c0,#6a9ee8);}
+.stat-block.gators::after{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
+.stat-block.sharks::after{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
+.stat-block.tp::after{background:linear-gradient(90deg,#a07830,var(--tp));}
+.stat-block.goal-reached{background:rgba(30,24,10,0.88);border-color:rgba(201,168,76,0.35);}
+.stat-block.goal-reached::after{background:linear-gradient(90deg,#a07830,#f0d060,#a07830);}
+.stat-top{display:flex;align-items:flex-start;justify-content:space-between;}
+.stat-label{font-size:clamp(16px,1.3vw,22px);font-weight:800;letter-spacing:0.3px;color:var(--text);}
+.stat-icon{font-size:clamp(17px,1.4vw,24px);opacity:0.5;}
+.stat-num{font-size:clamp(52px,6vw,100px);font-weight:800;line-height:0.9;letter-spacing:-2px;color:var(--text);}
+.stat-record{display:flex;align-items:center;gap:8px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.05);}
+.stat-record .rec-label{font-size:clamp(9px,0.7vw,12px);font-weight:700;letter-spacing:0.5px;color:var(--text-dim);opacity:0.7;white-space:nowrap;}
+.stat-record .rec-val{font-family:'DM Mono',monospace;font-size:clamp(18px,1.6vw,28px);font-weight:700;letter-spacing:-1px;}
+.stat-block.blue   .rec-val{color:#6a9ee8;}
+.stat-block.gators .rec-val{color:var(--gators-light);}
+.stat-block.sharks .rec-val{color:var(--sessions-light);}
+.stat-block.tp     .rec-val{color:var(--tp);}
+.rec-divider{color:rgba(255,255,255,0.12);font-size:14px;}
+.progress-section{display:flex;flex-direction:column;gap:5px;}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;}
+.progress-caption{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);display:flex;align-items:center;gap:6px;}
+.pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.stat-block.blue   .pulse-dot{background:#6a9ee8;animation:pulseDot 2.2s ease infinite;}
+.stat-block.gators .pulse-dot{background:var(--gators-light);animation:pulseDot 2.2s ease infinite 0.5s;}
+.stat-block.sharks .pulse-dot{background:var(--sessions-light);animation:pulseDot 2.2s ease infinite 1s;}
+.stat-block.tp     .pulse-dot{background:var(--tp);animation:pulseDot 2.2s ease infinite 1.5s;}
+@keyframes pulseDot{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.8);opacity:0.35;}}
+.progress-pct{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;}
+.stat-block.blue   .progress-pct{color:#6a9ee8;}
+.stat-block.gators .progress-pct{color:var(--gators-light);}
+.stat-block.sharks .progress-pct{color:var(--sessions-light);}
+.stat-block.tp     .progress-pct{color:var(--tp);}
+.track{height:4px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;}
+.fill{height:100%;border-radius:99px;width:0%;transition:width 1.6s cubic-bezier(0.16,1,0.3,1);}
+.stat-block.blue   .fill{background:linear-gradient(90deg,#2a55c0,#6a9ee8);}
+.stat-block.gators .fill{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
+.stat-block.sharks .fill{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
+.stat-block.tp     .fill{background:linear-gradient(90deg,#a07830,var(--tp));}
+
+/* ════════════════════════════════════════
+   INFO-SPLASH (hvert 30. min)
+   Viser automatiske slides med live data
+   og manuelle facts fra admin.
+   ════════════════════════════════════════ */
+#info-overlay{
+  position:fixed;inset:0;z-index:195;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  background:rgba(8,12,22,0);
+  transition:background 0.8s ease;
+}
+#info-overlay.info-in{ background:rgba(8,12,22,0.94); }
+.info-inner{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;text-align:center;width:80%;max-width:900px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.info-inner.info-in{ opacity:1;transform:translateY(0); }
+.info-inner.info-out{ opacity:0;transform:translateY(-16px);transition:opacity 0.5s ease-in,transform 0.5s ease-in; }
+.info-tag{
+  font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:22px;opacity:0.6;
+}
+.info-emoji{ font-size:72px;line-height:1;margin-bottom:28px; }
+.info-headline{
+  font-size:clamp(32px,5vw,68px);font-weight:800;
+  line-height:1.05;letter-spacing:-2px;color:var(--text);
+  margin-bottom:16px;
+}
+.info-sub{
+  font-size:clamp(16px,2vw,22px);font-weight:400;
+  color:rgba(232,237,245,0.5);letter-spacing:0;line-height:1.9;
+}
+.info-progress-bar{
+  width:320px;height:5px;background:rgba(255,255,255,0.07);
+  border-radius:99px;overflow:hidden;margin-top:40px;
+}
+.info-progress-fill{
+  height:100%;border-radius:99px;
+  background:rgba(255,255,255,0.2);
+  width:100%;
+  animation:infoProgress var(--info-dur) linear forwards;
+}
+@keyframes infoProgress{ 0%{width:100%} 100%{width:0%} }
+
+#info-overlay.info-hof{ background:rgba(40,28,4,0.97); }
+#info-overlay.info-hof .info-tag{ color:var(--tp);opacity:0.8; }
+#info-overlay.info-hof .info-headline{ color:#f5c842;text-shadow:0 0 60px rgba(245,200,66,0.25); }
+#info-overlay.info-hof .info-sub{ color:rgba(245,200,66,0.45); }
+#info-overlay.info-hof .info-progress-fill{ background:rgba(245,200,66,0.3); }
+#info-close{display:none;position:absolute;top:24px;right:28px;background:none;border:none;color:rgba(255,255,255,0.25);font-size:22px;cursor:pointer;line-height:1;transition:color 0.2s;z-index:1;}
+#info-overlay.info-in #info-close{display:block;}
+#info-close:hover{color:rgba(255,255,255,0.7);}
+
+/* ════════════════════════════════════════
+   REFRESH SWEEP ANIMATION
+   En lysstreg scanner henover skærmen top→bund,
+   efterfulgt af et kort glow-pulse på alle kort.
+   Udløses ved gem (celebrate og stille).
+   ════════════════════════════════════════ */
+#refresh-sweep{
+  position:fixed;inset:0;z-index:190;
+  pointer-events:none;overflow:hidden;
+  opacity:0;
+}
+#refresh-sweep::before{
+  content:'';
+  position:absolute;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.55) 40%,rgba(255,255,255,0.9) 50%,rgba(255,255,255,0.55) 60%,transparent 100%);
+  box-shadow:0 0 40px 12px rgba(255,255,255,0.18);
+  top:-4px;
+}
+#refresh-sweep.sweeping{
+  opacity:1;
+  animation:sweepFade 0.9s ease forwards;
+}
+#refresh-sweep.sweeping::before{
+  animation:sweepLine 0.9s cubic-bezier(0.4,0,0.6,1) forwards;
+}
+@keyframes sweepLine{
+  0%  { top:-4px; }
+  100%{ top:calc(100vh + 4px); }
+}
+@keyframes sweepFade{
+  0%  { opacity:1; }
+  80% { opacity:1; }
+  100%{ opacity:0; }
+}
+/* Pulse på kort efter sweep */
+.refresh-pulse{
+  animation:cardPulse 0.55s ease forwards !important;
+}
+@keyframes cardPulse{
+  0%  { box-shadow:0 0 0 0 rgba(255,255,255,0); }
+  40% { box-shadow:0 0 0 6px rgba(255,255,255,0.07); }
+  100%{ box-shadow:0 0 0 0 rgba(255,255,255,0); }
+}
+/* ════════════════════════════════════════
+   FEJRINGSANIMATIONER
+   Kø-baseret: én splash per ændret medarbejder.
+   Hvert splash vises i 12 sek. → animeres væk.
+   ════════════════════════════════════════ */
+#cel-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  background:rgba(8,12,22,0);
+  transition:background 0.6s ease;
+}
+#cel-overlay.cel-active{ pointer-events:auto; }
+#cel-close{display:none;position:absolute;top:24px;right:28px;background:none;border:none;color:rgba(255,255,255,0.25);font-size:22px;cursor:pointer;line-height:1;transition:color 0.2s;z-index:1;}
+#cel-overlay.cel-active #cel-close{display:block;}
+#cel-close:hover{color:rgba(255,255,255,0.7);}
+#cel-overlay.cel-in{ background:rgba(8,12,22,0.92); }
+
+.cel-inner{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0px;
+  opacity:0;transform:scale(0.88) translateY(24px);
+  transition:opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
+  text-align:center;
+  width:100%;
+  pointer-events:none;
+}
+.cel-inner.cel-in{ opacity:1;transform:scale(1) translateY(0); }
+.cel-inner.cel-out{ opacity:0;transform:scale(1.06) translateY(-20px);transition:opacity 0.45s ease-in, transform 0.45s ease-in; }
+
+.cel-team{
+  font-size:clamp(20px,2.2vw,32px);font-weight:800;letter-spacing:1px;
+  margin-top:20px;margin-bottom:0;
+  opacity:0.9;
+}
+.cel-team.gators{ color:var(--gators-light); }
+.cel-team.sharks{ color:var(--sharks-light); }
+
+.cel-emp-emoji{
+  font-size:90px;line-height:1;
+  margin-bottom:18px;
+  filter:drop-shadow(0 0 28px rgba(255,255,255,0.18));
+  animation:celEmojiFloat 3s ease-in-out infinite;
+}
+@keyframes celEmojiFloat{
+  0%,100%{ transform:translateY(0) scale(1); }
+  50%{ transform:translateY(-10px) scale(1.06); }
+}
+
+.cel-name{
+  font-size:clamp(52px,7vw,96px);font-weight:800;
+  line-height:0.95;letter-spacing:-3px;
+  color:var(--text);
+  margin-bottom:20px;
+  text-shadow:0 0 60px rgba(255,255,255,0.08);
+}
+
+.cel-metric-label{
+  font-size:clamp(18px,1.8vw,28px);font-weight:700;letter-spacing:1px;
+  color:var(--text-dim);margin-bottom:14px;
+}
+
+.cel-count-wrap{
+  display:flex;align-items:center;gap:22px;
+}
+.cel-old{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(48px,6vw,80px);font-weight:500;
+  color:rgba(255,255,255,0.18);
+  letter-spacing:-2px;
+  text-decoration:line-through;
+  text-decoration-color:rgba(255,255,255,0.12);
+}
+.cel-arrow{
+  font-size:32px;opacity:0.3;
+}
+.cel-new{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(72px,9vw,130px);font-weight:800;
+  letter-spacing:-4px;line-height:0.9;
+}
+.cel-new.blue   { color:#6a9ee8;text-shadow:0 0 60px rgba(106,158,232,0.4); }
+.cel-new.gators { color:var(--gators-light);text-shadow:0 0 60px rgba(138,175,141,0.4); }
+.cel-new.sharks { color:var(--sharks-light);text-shadow:0 0 60px rgba(196,160,80,0.4); }
+.cel-new.tp     { color:var(--tp);text-shadow:0 0 60px rgba(0,182,122,0.4); }
+
+/* Glow-ring bag det store tal */
+.cel-glow{
+  position:absolute;
+  width:480px;height:480px;border-radius:50%;
+  filter:blur(100px);opacity:0;
+  pointer-events:none;
+  transition:opacity 1.2s ease;
+  z-index:-1;
+}
+.cel-glow.cel-in{ opacity:0.22; }
+.cel-glow.blue   { background:radial-gradient(circle,#3a6fd8,transparent 70%); }
+.cel-glow.gators { background:radial-gradient(circle,var(--gators),transparent 70%); }
+.cel-glow.sharks { background:radial-gradient(circle,var(--sharks),transparent 70%); }
+.cel-glow.tp     { background:radial-gradient(circle,#c9a84c,transparent 70%); }
+
+/* Anmeldelser-tilstand: baggrund bliver guld */
+#cel-overlay.cel-tp{ background:rgba(120,88,20,0) !important; }
+#cel-overlay.cel-tp.cel-in{ background:rgba(90,62,8,0.97) !important; }
+.cel-tp-star{
+  font-size:40px;letter-spacing:4px;line-height:1;
+  margin-bottom:10px;color:#f5c842;
+  opacity:0;transform:translateY(8px);
+  transition:opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+  text-shadow:0 0 20px rgba(245,200,66,0.6);
+}
+.cel-tp-star.cel-in{ opacity:1;transform:translateY(0); }
+.cel-tp-logo{
+  font-size:14px;font-weight:800;letter-spacing:2px;
+  color:rgba(255,255,255,0.55);margin-bottom:28px;
+  opacity:0;
+  transition:opacity 0.5s ease 0.5s;
+}
+.cel-tp-logo.cel-in{ opacity:1; }
+
+/* Bonus-splash specifikt layout */
+.cel-bonus-label{
+  font-size:14px;font-weight:800;letter-spacing:0.5px;
+  color:var(--text-dim);margin-bottom:6px;
+}
+.cel-bonus-sub{
+  font-size:15px;font-weight:500;letter-spacing:0.3px;
+  color:rgba(232,237,245,0.45);margin-bottom:28px;
+}
+.cel-bonus-emoji{
+  font-size:72px;line-height:1;
+  margin-bottom:22px;
+  filter:drop-shadow(0 0 28px rgba(255,200,50,0.3));
+  animation:celEmojiFloat 3s ease-in-out infinite;
+}
+.cel-bonus-amount{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(64px,9vw,128px);font-weight:800;
+  letter-spacing:-4px;line-height:0.9;
+  color:var(--text);
+  text-shadow:0 0 60px rgba(255,200,50,0.25);
+}
+.cel-bonus-kr{
+  font-size:clamp(24px,3vw,42px);font-weight:500;
+  color:rgba(232,237,245,0.45);margin-left:12px;
+  letter-spacing:0;
+}
+
+/* Anmeldelser-tilstand: kontrastkorrektioner på guld baggrund */
+#cel-overlay.cel-tp .cel-team          { color:rgba(255,255,255,0.95); }
+#cel-overlay.cel-tp .cel-team.gators   { color:rgba(255,255,255,0.95); }
+#cel-overlay.cel-tp .cel-team.sharks   { color:rgba(255,255,255,0.95); }
+#cel-overlay.cel-tp .cel-new.tp        { color:#f5c842;text-shadow:0 0 40px rgba(245,200,66,0.5); }
+#cel-overlay.cel-tp .cel-old           { color:rgba(255,255,255,0.28); }
+#cel-overlay.cel-tp .cel-glow          { opacity:0.18 !important; }
+#cel-overlay.cel-tp .cel-name          { color:#fff; }
+.cel-particle{
+  position:fixed;
+  font-size:42px;line-height:1;
+  pointer-events:none;
+  z-index:201;
+  will-change:transform,opacity;
+  animation:celParticle var(--dur) cubic-bezier(0.22,1,0.36,1) var(--delay) forwards;
+}
+@keyframes celParticle{
+  0%  { transform:translate(0,0) rotate(0deg) scale(0.4); opacity:0; }
+  12% { opacity:1; }
+  100%{ transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(var(--sf)); opacity:0; }
+}
+
+/* ════════════════════════════════════════
+   TOP 3-LISTER (nederste række, 4 kolonner)
+   Automatisk sorteret efter medarbejder-tal.
+   Kun medarbejdere med værdi > 0 vises.
+   Afdelingsfilter:
+   - Hjemmeside-folk  → Sager-liste
+   - Tekstforfattere  → Tekster-liste
+   - Fotografer       → Sessioner-liste
+   - Trustpilot       → alle medarbejdere
+   Tom liste viser "Ingen resultater endnu"
+   ════════════════════════════════════════ */
+.lists-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;min-height:0;}
+.list-block{background:rgba(17,25,40,0.82);border:1px solid var(--border);border-radius:18px;padding:clamp(16px,1.8vh,28px) clamp(18px,1.8vw,30px);display:flex;flex-direction:column;gap:clamp(7px,0.9vh,12px);min-height:0;overflow:hidden;justify-content:space-between;}
+.list-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.list-heading{font-size:13px;font-weight:800;letter-spacing:0.3px;color:var(--text);}
+.list-items{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0;overflow:hidden;}
+
+/* Subdued list rows */
+.list-row{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:8px;padding:5px 4px;border-radius:0;border:none;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;animation:fadeUp 0.35s ease backwards;min-width:0;}
+.list-row:last-child{border-bottom:none;}
+.list-row:nth-child(1){animation-delay:0.04s;}
+.list-row:nth-child(2){animation-delay:0.1s;}
+.list-row:nth-child(3){animation-delay:0.16s;}
+.list-row:nth-child(4){animation-delay:0.22s;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.list-row.gators{background:none;}
+.list-row.sharks{background:none;}
+.list-row.tp-row{background:none;}
+.list-row.none{background:none;}
+.medal{font-size:clamp(13px,1.1vw,18px);line-height:1;text-align:center;opacity:0.7;}
+.p-name{font-size:clamp(13px,1.1vw,18px);font-weight:600;color:rgba(232,237,245,0.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.team-pill{font-size:clamp(7px,0.55vw,10px);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:99px;flex-shrink:0;white-space:nowrap;}
+.team-pill.gators{background:var(--gators-dim);color:var(--gators-light);border:1px solid var(--gators-border);}
+.team-pill.sharks{background:var(--sharks-dim);color:var(--sharks-light);border:1px solid var(--sharks-border);}
+.team-pill.marketing{background:var(--mktg-dim);color:var(--mktg-light);border:1px solid var(--mktg-border);}
+.p-count{font-family:'DM Mono',monospace;font-size:clamp(18px,1.6vw,28px);font-weight:700;flex-shrink:0;color:#fff;opacity:1;min-width:2.2ch;text-align:right;}
+.list-row.gators .p-count{color:#fff;}
+.list-row.sharks .p-count{color:#fff;}
+.list-row.tp-row .p-count{color:#fff;}
+.list-row.none   .p-count{color:rgba(255,255,255,0.5);}
+.list-placeholder{font-size:11px;color:var(--text-dim);opacity:0.4;letter-spacing:1px;padding:12px 4px;font-style:italic;}
+.list-row-chaser{ opacity:0.5; }
+.list-row-chaser .p-name{ font-size:clamp(11px,0.9vw,15px); }
+.list-row-chaser .p-count{ font-size:clamp(14px,1.2vw,22px); }
+.list-record{display:flex;align-items:center;gap:8px;margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.list-record .lr-label{font-size:clamp(9px,0.7vw,12px);font-weight:700;letter-spacing:0.5px;color:var(--text-dim);opacity:0.7;white-space:nowrap;}
+.list-record .lr-divider{color:rgba(255,255,255,0.12);font-size:14px;}
+.list-record em{font-family:'DM Mono',monospace;font-size:clamp(14px,1.3vw,22px);font-weight:700;letter-spacing:-1px;font-style:normal;color:rgba(255,255,255,0.55);}
+.list-record .lr-name{font-size:clamp(10px,0.8vw,14px);font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.3px;margin-left:6px;}
+#lrec-sites em{color:#6a9ee8;}
+#lrec-texts em{color:var(--gators-light);}
+#lrec-sessions em{color:var(--sessions-light);}
+#lrec-tp em{color:var(--tp);}
+
+/* ════════════════════════════════════════
+   FOOTER
+   Venstre: Web fælles bonus (stort beløb i DK-format)
+   Højre: Best One A/S logo (SVG, inline)
+   ════════════════════════════════════════ */
+.footer{display:flex;align-items:center;justify-content:space-between;padding:12px 0 0;border-top:1px solid rgba(255,255,255,0.07);}
+.bonus-area{display:flex;align-items:center;gap:14px;}
+.bonus-label{font-size:clamp(22px,1.8vw,32px);font-weight:500;letter-spacing:1px;color:var(--text);}
+.bonus-emoji{font-size:clamp(22px,1.8vw,30px);}
+.bonus-amount{font-family:'DM Mono',monospace;font-size:clamp(30px,2.4vw,46px);font-weight:500;color:var(--text);letter-spacing:-1px;}
+.bonus-suffix{font-size:clamp(14px,1.1vw,20px);color:var(--text-dim);margin-left:5px;}
+.bo-logo{height:clamp(22px,2vw,36px);width:auto;opacity:0.45;filter:brightness(2) saturate(0.4);}
+
+/* ════════════════════════════════════════
+   REKORD-GLØDE
+   Hvis aktuelt samlet tal >= fællesrekorden
+   får rekordtallet en gylden puls + glow.
+   Klassen .rec-breaking sættes i render().
+   ════════════════════════════════════════ */
+.rec-val.rec-breaking{
+  animation:recBreak 2.4s ease infinite;
+}
+@keyframes recBreak{
+  0%,100%{ opacity:1; }
+  50%    { opacity:0.5; }
+}
+   Breakpoints: 768px (tablet), 480px (telefon)
+   ════════════════════════════════════════ */
+@media(max-width:768px){
+  #app{padding:24px 24px 20px;gap:14px;}
+  .stats-row{grid-template-columns:1fr 1fr;gap:12px;}
+  .lists-row{grid-template-columns:1fr 1fr;gap:12px;}
+  .stat-num{font-size:clamp(32px,7vw,52px);}
+}
+
+
+
+/* ════════════════════════════════════════
+   ADMIN-KNAP
+   Fast placeret nede til højre.
+   Næsten usynlig — hover gør den synlig.
+   Genvej: Ctrl+Shift+A
+   ════════════════════════════════════════ */
+#admin-trigger{position:fixed;bottom:16px;right:20px;z-index:50;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:rgba(74,96,128,0.25);cursor:pointer;user-select:none;transition:color 0.2s;}
+#admin-trigger:hover{color:var(--text-dim);}
+
+/* ════════════════════════════════════════
+   ADMIN OVERLAY + PASSWORD-BOKS
+   Vises oven på alt (z-index 100).
+   Kodeord tjekkes mod D.password (gemt lokalt).
+   ════════════════════════════════════════ */
+#overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(8,12,22,0.92);backdrop-filter:blur(16px);align-items:center;justify-content:center;}
+#overlay.open{display:flex;}
+#pw-box{display:flex;flex-direction:column;align-items:center;gap:16px;padding:48px 56px;background:var(--surface);border:1px solid var(--border);border-radius:22px;}
+#pw-box h2{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text-dim);}
+#pw-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:12px 20px;color:var(--text);font-family:'DM Mono',monospace;font-size:18px;letter-spacing:4px;text-align:center;outline:none;width:220px;transition:border-color 0.2s;}
+#pw-input:focus{border-color:var(--blue);}
+#pw-err{font-size:11px;color:#c06060;font-weight:500;min-height:14px;}
+.btn-primary{padding:11px 28px;background:var(--blue);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s;}
+.btn-primary:hover{opacity:0.82;}
+
+/* ════════════════════════════════════════
+   ADMIN-PANEL
+   4 faner:
+   1. Medarbejdere — tilføj/slet, sæt tal
+   2. Mål & rekorder — månedsmål + rekorder
+   3. Bonus — team bonus i kr.
+   4. Sync & Indstillinger — JSONBin + kodeord
+
+   2 gem-knapper:
+   🎉 Gem & Fejr → celebrate=true (animationer later)
+   💾 Gem & Sync → celebrate=false (stille gem)
+   ════════════════════════════════════════ */
+#admin-box{display:none;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:34px 38px;width:860px;max-height:92vh;overflow-y:auto;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.admin-header h2{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text-dim);}
+.close-btn{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;transition:color 0.2s;}
+.close-btn:hover{color:var(--text);}
+.admin-tabs{display:flex;gap:6px;margin-bottom:24px;}
+.admin-tab{padding:7px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:all 0.2s;}
+.admin-tab.active{background:var(--blue);border-color:var(--blue);color:white;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.admin-section{margin-bottom:22px;}
+.admin-section-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.admin-note{font-size:11px;color:var(--text-dim);margin-bottom:10px;line-height:1.5;}
+.admin-note a{color:#6a9ee8;text-decoration:none;}
+.admin-note a:hover{text-decoration:underline;}
+.ag2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ag3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.ag4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+.field input,.field select{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;outline:none;width:100%;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--blue);}
+.field select option{background:#111928;}
+.save-btn{width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s;margin-top:4px;}
+.save-btn:hover{opacity:0.82;}
+.save-btn.save-quiet:hover{background:rgba(255,255,255,0.11)!important;opacity:1;}
+
+/* ════════════════════════════════════════
+   MEDARBEJDER-TABEL (admin fane 1)
+   Kolonner: Emoji | Navn | Afdeling | Team | tal-felter | slet
+   Emoji: vælges fra fast liste på 11 Apple emojis (unikke)
+   Afdeling styrer hvilke tal-felter der er aktive:
+     site    → kun Sager + TP
+     text    → kun Tekster + TP
+     session → kun Sessioner + TP
+   Totaler og top 3 opdateres live ved ændringer.
+   ════════════════════════════════════════ */
+.emp-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.emp-table th{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.emp-table td{padding:5px 6px;vertical-align:middle;}
+.emp-table tr:not(:last-child) td{border-bottom:1px solid rgba(255,255,255,0.03);}
+.emp-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:6px 9px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;outline:none;width:100%;transition:border-color 0.2s;}
+.emp-input:focus{border-color:var(--blue);}
+.emp-input.num{font-family:'DM Mono',monospace;text-align:center;width:70px;}
+.emp-select{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:6px 9px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;outline:none;width:100%;transition:border-color 0.2s;}
+.emp-select option{background:#111928;}
+.emp-del{background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:all 0.2s;line-height:1;}
+.emp-del:hover{background:rgba(192,96,96,0.15);color:#e08080;}
+.emp-group-header td{
+  padding:18px 10px 5px;
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-dim);border-bottom:1px solid var(--border);
+}
+.emp-group-header:first-child td{ padding-top:6px; }
+.emp-group-header .dept-badge{
+  display:inline-flex;align-items:center;gap:6px;
+}
+.emp-group-header .dept-icon{ font-size:12px; }
+.emp-group-header .header-inner{ display:flex;align-items:center; }
+.drag-handle{color:var(--text-dim);opacity:0.3;cursor:grab;font-size:14px;text-align:center;padding:0 4px;user-select:none;}
+.drag-handle:hover{opacity:0.7;}
+tr.drag-dragging{opacity:0.4;}
+tr.drag-over td{border-top:2px solid var(--blue)!important;}
+.add-emp-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.add-emp-btn:hover{background:rgba(58,111,216,0.15);border-color:var(--blue);color:var(--text);}
+
+#admin-box::-webkit-scrollbar{width:4px;}
+#admin-box::-webkit-scrollbar-track{background:transparent;}
+#admin-box::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     BAGGRUNDS-CREATURES
+     5 hajer (🦈 Sharks/guld) + 5 krokodiller (🐊 Gators/grøn)
+     Sejler diagonalt henover skærmen i loops via CSS keyframes p1-p10.
+     z-index:0 = altid bag alt indhold.
+     ═══════════════════════════════════════ -->
+<div class="creatures">
+  <div class="creature shark c1"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature shark c2"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature shark c3"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature gator c4"><div class="halo"></div><div class="ico">🐊</div></div>
+  <div class="creature gator c5"><div class="halo"></div><div class="ico">🐊</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HOVED-APP (#app)
+     CSS Grid: header / stat-kort / lister / footer
+     ═══════════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER: venstre = måned + afdeling, højre = ur + dato + sync-dot -->
+  <header>
+    <div class="header-left">
+      <div class="month" id="month-lbl">Marts</div>
+      <div id="dept-lbl">Webafdelingen</div>
+    </div>
+    <div class="header-right">
+      <div class="clock-row">
+        <span id="time-emoji"></span>
+        <div id="clock">00:00</div>
+      </div>
+      <div id="date">Tirsdag 10. marts 2026</div>
+      <div id="sync-status"></div>
+    </div>
+  </header>
+
+  <!-- STAT-KORT: 4 kolonner (Sager/blå, Tekster/grøn, Sessioner/rød, Anmeldelser/guld)
+       Totaler beregnes live fra D.employees. Rekorder vises i bunden af hvert kort. -->
+  <div class="stats-row">
+    <div class="stat-block blue" id="card-sites">
+      <div class="stat-top"><span class="stat-label">Sager</span><span class="stat-icon">🌐</span></div>
+      <div class="stat-num" id="n-sites">0</div>
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-sites">0 af 0</span></span>
+          <span class="progress-pct" id="pct-sites">0%</span>
+        </div>
+        <div class="track"><div class="fill" id="fill-sites"></div></div>
+      </div>
+      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sites">69</span></div>
+    </div>
+    <div class="stat-block gators" id="card-texts">
+      <div class="stat-top"><span class="stat-label">Tekster</span><span class="stat-icon">✍️</span></div>
+      <div class="stat-num" id="n-texts">0</div>
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-texts">0 af 0</span></span>
+          <span class="progress-pct" id="pct-texts">0%</span>
+        </div>
+        <div class="track"><div class="fill" id="fill-texts"></div></div>
+      </div>
+      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-texts">214</span></div>
+    </div>
+    <div class="stat-block sharks" id="card-sessions">
+      <div class="stat-top"><span class="stat-label">Sessioner</span><span class="stat-icon">📷</span></div>
+      <div class="stat-num" id="n-sessions">0</div>
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-sessions">0 af 0</span></span>
+          <span class="progress-pct" id="pct-sessions">0%</span>
+        </div>
+        <div class="track"><div class="fill" id="fill-sessions"></div></div>
+      </div>
+      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sessions">16</span></div>
+    </div>
+    <div class="stat-block tp" id="card-tp">
+      <div class="stat-top"><span class="stat-label">Anmeldelser</span><span class="stat-icon">⭐</span></div>
+      <div class="stat-num" id="n-tp">0</div>
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-tp">0 af 0</span></span>
+          <span class="progress-pct" id="pct-tp">0%</span>
+        </div>
+        <div class="track"><div class="fill" id="fill-tp"></div></div>
+      </div>
+      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-tp">0</span></div>
+    </div>
+  </div>
+
+  <!-- TOP 3-LISTER: 4 kolonner matcher stat-kortene.
+       Hjemmesider → site-afd., Tekster → text-afd., Sessioner → session-afd., Anmeldelser → alle.
+       lrec-* = individuel rekordindehaver vises i bunden. -->
+  <div class="lists-row">
+    <div class="list-block">
+      
+      <div class="list-items" id="list-sites"></div>
+      <div class="list-record" id="lrec-sites"></div>
+    </div>
+    <div class="list-block">
+      
+      <div class="list-items" id="list-texts"></div>
+      <div class="list-record" id="lrec-texts"></div>
+    </div>
+    <div class="list-block">
+      
+      <div class="list-items" id="list-sessions"></div>
+      <div class="list-record" id="lrec-sessions"></div>
+    </div>
+    <div class="list-block">
+      
+      <div class="list-items" id="list-tp"></div>
+      <div class="list-record" id="lrec-tp"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER: venstre = team bonus (kr.), højre = Best One A/S logo (inline SVG) -->
+  <div class="footer">
+    <div class="bonus-area">
+      <span class="bonus-label">Web fælles bonus</span>
+      <span class="bonus-emoji">💰</span>
+      <span class="bonus-amount" id="bonus-display">0<span class="bonus-suffix"> kr.</span></span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+      <svg class="bo-logo" viewBox="0 0 727 141" xmlns="http://www.w3.org/2000/svg" onclick="openAdmin()" style="cursor:pointer;">
+        <path fill="#ffffff" d="M212.4,93.2h-64.6c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C212.9,85.7,212.7,88.3,212.4,93.2z M153.4,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.1-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C160.6,61.5,156.6,62.9,153.4,65.6z"/>
+        <path fill="#ffffff" d="M237.4,128.7c-7.2-1.7-13-3.9-17.4-6.6l9.3-21.3c4,2.5,8.9,4.5,14.4,6c5.6,1.5,11.1,2.2,16.6,2.2c5,0,8.6-0.5,10.7-1.6c2.1-1,3.2-2.5,3.2-4.5s-1.3-3.4-3.9-4.2c-2.6-0.8-6.6-1.6-12.2-2.4c-7.1-0.9-13.1-2-18.1-3.4c-5-1.4-9.3-4-12.9-7.9c-3.6-3.8-5.4-9.2-5.4-16.1c0-5.7,1.7-10.7,5.1-15.2c3.4-4.4,8.3-7.9,14.8-10.5c6.5-2.6,14.3-3.9,23.4-3.9c6.5,0,12.8,0.7,19.2,2c6.3,1.3,11.6,3.2,15.9,5.6l-9.3,21.2c-7.9-4.4-16.4-6.6-25.6-6.6c-4.9,0-8.5,0.6-10.8,1.7c-2.3,1.1-3.4,2.7-3.4,4.5c0,2.1,1.3,3.5,3.8,4.3c2.5,0.8,6.7,1.7,12.5,2.5c7.3,1.1,13.4,2.4,18.2,3.8c4.8,1.4,9,4,12.5,7.8c3.6,3.8,5.3,9,5.3,15.8c0,5.6-1.7,10.6-5.1,15c-3.4,4.4-8.4,7.9-15,10.4c-6.6,2.5-14.6,3.8-23.9,3.8C251.9,131.2,244.6,130.4,237.4,128.7z"/>
+        <path fill="#ffffff" d="M310.4,44.2V21h31.2v23.1h20.3v23.3h-20.3V97c0,3.2,0.8,5.7,2.5,7.5c1.7,1.8,4,2.7,6.8,2.7c3.6,0,6.8-0.9,9.5-2.8l7.7,21.8c-2.6,1.6-5.8,2.9-9.6,3.8c-3.8,0.9-7.8,1.3-12.1,1.3c-11.6,0-20.5-2.8-26.7-8.5c-6.2-5.7-9.3-14.2-9.3-25.4V67.4V44.2z"/>
+        <path fill="#ffffff" d="M418.3,123.5c-9.7-5.1-17.3-12.2-22.8-21.3c-5.5-9.1-8.3-19.3-8.3-30.7c0-11.4,2.8-21.6,8.3-30.7c5.5-9.1,13.1-16.2,22.8-21.3c9.7-5.1,20.6-7.7,32.7-7.7s23,2.6,32.7,7.7c9.7,5.1,17.3,12.2,22.8,21.3c5.5,9.1,8.3,19.3,8.3,30.7c0,11.4-2.8,21.6-8.3,30.7c-5.5,9.1-13.1,16.2-22.8,21.3c-9.7,5.1-20.6,7.7-32.7,7.7S428,128.7,418.3,123.5z M466.8,100.2c4.7-2.7,8.4-6.6,11.2-11.6c2.7-5,4.1-10.7,4.1-17.1c0-6.4-1.4-12.2-4.1-17.1c-2.7-5-6.5-8.8-11.2-11.6c-4.7-2.7-10-4.1-15.7-4.1c-5.8,0-11,1.4-15.7,4.1c-4.7,2.7-8.4,6.6-11.2,11.6c-2.7,5-4.1,10.7,4.1,17.1c0,6.5,1.4,12.2,4.1,17.1c2.7,5,6.5,8.8,11.2,11.6c4.7,2.7,9.9,4.1,15.7,4.1C456.8,104.3,462.1,103,466.8,100.2z"/>
+        <path fill="#ffffff" d="M606.5,50.7c6.7,6.6,10.1,16.5,10.1,29.7v50.8h-31.2V85.5c0-12.1-4.9-18.2-14.6-18.2c-5.4,0-9.7,1.8-12.9,5.2c-3.2,3.5-4.8,8.7-4.8,15.7v43h-31.2V42.3h29.7V52c3.5-3.6,7.7-6.4,12.5-8.3c4.8-1.9,10.1-2.9,15.7-2.9C590.9,40.9,599.8,44.2,606.5,50.7z"/>
+        <path fill="#ffffff" d="M719.6,93.2H655c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C720.1,85.7,719.9,88.3,719.6,93.2z M660.7,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.2-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C667.9,61.5,663.9,62.9,660.7,65.6z"/>
+        <path fill="#ffffff" d="M102.9,61c-4.3-7-10.3-12.4-18-16.3c-7.7-3.9-16.4-5.9-26.1-5.9c-6.8,0-13,1-18.8,2.9V7.2H8.3l0.1,74.9h0c0,0.9-0.1,1.8-0.1,2.8c0,8.9,2.2,16.9,6.5,23.9c4.3,7,10.4,12.5,18.1,16.5c7.7,4,16.3,5.9,25.9,5.9c9.7,0,18.4-2,26.1-5.9c7.7-4,13.7-9.5,18-16.5c4.3-7,6.4-15,6.4-23.9S107.2,68,102.9,61z M72.4,100.6c-3.5,3.8-8,5.7-13.5,5.7c-5.5,0-10-1.9-13.5-5.7c-3.5-3.8-5.3-9-5.3-15.8c0-6.6,1.8-11.8,5.3-15.5c3.5-3.7,8-5.6,13.5-5.6c5.5,0,10,1.9,13.5,5.6c3.5,3.7,5.3,8.9,5.3,15.5C77.6,91.6,75.9,96.8,72.4,100.6z"/>
+      </svg>
+      <span style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.18);font-weight:500;text-transform:uppercase;">Dashboard — version 2.0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     INFO-SPLASH OVERLAY
+     Vises automatisk hvert 30. minut (INFO_INTERVAL).
+     Indhold bygges af buildInfoSlides() fra live data + manuelle facts.
+     Hall of Fame slides → guldbaggund (.info-hof klasse).
+     Kan også vises manuelt via knap i Admin → Info.
+     ═══════════════════════════════════════ -->
+<div id="info-overlay">
+  <button id="info-close" onclick="(function(){ const o=document.getElementById('info-overlay'),i=document.getElementById('info-inner'); i.classList.remove('info-in'); i.classList.add('info-out'); o.classList.remove('info-in','info-hof'); setTimeout(()=>{ i.classList.remove('info-out'); },600); })()" title="Luk">✕</button>
+  <div class="info-inner" id="info-inner">
+    <div class="info-tag" id="info-tag"></div>
+    <div class="info-emoji" id="info-emoji"></div>
+    <div class="info-headline" id="info-headline"></div>
+    <div class="info-sub" id="info-sub"></div>
+    <div class="info-progress-bar"><div class="info-progress-fill" id="info-progress-fill"></div></div>
+  </div>
+</div>
+
+<div id="refresh-sweep"></div>
+
+<!-- ═══════════════════════════════════════
+     FEJRINGS-SPLASH OVERLAY (z-index: 200)
+     Vises ved "🎉 Gem & Fejr" hvis tal er steget.
+     3 layouts via CSS-klasser:
+       Standard:  emoji + navn + team + metric + tæller
+       .cel-tp:   guld baggrund + ★★★★★ for Anmeldelser
+       Bonus:     💰 + beløb + "Flere penge i klassekassen"
+     ═══════════════════════════════════════ -->
+<div id="cel-overlay">
+  <button id="cel-close" title="Luk">✕</button>
+  <div class="cel-glow" id="cel-glow"></div>
+  <div class="cel-inner" id="cel-inner">
+    <!-- TP-branding (kun synlig ved TP-splash) -->
+    <div class="cel-tp-star" id="cel-tp-star">★★★★★</div>
+    <div class="cel-tp-logo" id="cel-tp-logo">Anmeldelser</div>
+
+    <!-- Standard medarbejder-splash -->
+    <div class="cel-emp-emoji" id="cel-emp-emoji"></div>
+    <div class="cel-name" id="cel-name"></div>
+    <div class="cel-metric-label" id="cel-metric-label"></div>
+    <div class="cel-count-wrap" id="cel-count-wrap">
+      <span class="cel-old" id="cel-old"></span>
+      <span class="cel-arrow">→</span>
+      <span class="cel-new" id="cel-new"></span>
+    </div>
+    <div class="cel-team" id="cel-team"></div>
+
+    <!-- Bonus-splash (alternativt layout) -->
+    <div class="cel-bonus-emoji" id="cel-bonus-emoji" style="display:none">💰</div>
+    <div class="cel-bonus-label" id="cel-bonus-label" style="display:none">Web fælles bonus</div>
+    <div class="cel-bonus-sub" id="cel-bonus-sub" style="display:none">Flere penge i klassekassen</div>
+    <div class="cel-bonus-amount" id="cel-bonus-amount" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Admin-knap: næsten usynlig, hover gør den synlig. Genvej: Ctrl+Shift+A -->
+<!-- Admin åbnes ved klik på Best One-logoet i footeren -->
+
+<!-- ═══════════════════════════════════════
+     ADMIN OVERLAY
+     #pw-box:    kodeord-login (vis altid først)
+     #admin-box: selve admin-panelet (vis efter login)
+     5 faner: Medarbejdere / Mål & rekorder / Bonus / Info / Sync & Indstillinger
+     Klik udenfor admin-boksen lukker den.
+     ═══════════════════════════════════════ -->
+<div id="overlay">
+  <div id="pw-box">
+    <h2>Admin Login</h2>
+    <input type="password" id="pw-input" placeholder="Kodeord" autocomplete="off">
+    <div id="pw-err"></div>
+    <button class="btn-primary" onclick="checkPw()">Log ind</button>
+  </div>
+
+  <div id="admin-box">
+    <div class="admin-header">
+      <h2>Rediger data</h2>
+      <button class="close-btn" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('employees')">👥 Medarbejdere</button>
+      <button class="admin-tab" onclick="switchTab('goals')">🎯 Mål &amp; rekorder</button>
+      <button class="admin-tab" onclick="switchTab('bonus')">💰 Bonus</button>
+      <button class="admin-tab" onclick="switchTab('info')">💡 Info</button>
+      <button class="admin-tab" onclick="switchTab('config')">⚙ Sync &amp; Indstillinger</button>
+    </div>
+
+    <!-- TAB: EMPLOYEES -->
+    <div class="tab-pane active" id="tab-employees">
+      <div class="admin-section">
+        <div class="admin-section-label">Medarbejdere — tal opdaterer totaler &amp; top 3 automatisk</div>
+        <table class="emp-table">
+          <thead>
+            <tr>
+              <th style="width:18px"></th>
+              <th style="width:50px;text-align:center">Emoji</th>
+              <th style="width:150px">Navn</th>
+              <th style="width:130px">Afdeling</th>
+              <th style="width:110px">Team</th>
+              <th style="width:80px;text-align:center">Nyfak</th>
+              <th style="width:80px;text-align:center">Anm. ⭐</th>
+              <th style="width:36px"></th>
+            </tr>
+          </thead>
+          <tbody id="emp-tbody"></tbody>
+        </table>
+        <button class="add-emp-btn" onclick="addEmployee()">+ Tilføj medarbejder</button>
+      </div>
+    </div>
+
+    <!-- TAB: GOALS -->
+    <div class="tab-pane" id="tab-goals">
+      <div class="admin-section">
+        <div class="admin-section-label">Månedlige mål</div>
+        <div class="ag4">
+          <div class="field"><label>Sager mål</label><input type="number" id="g-sites-goal" min="1"></div>
+          <div class="field"><label>Tekster mål</label><input type="number" id="g-texts-goal" min="1"></div>
+          <div class="field"><label>Sessioner mål</label><input type="number" id="g-sessions-goal" min="1"></div>
+          <div class="field"><label>Anmeldelser mål</label><input type="number" id="g-tp-goal" min="1"></div>
+        </div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-label">🏆 Fælles rekorder (vises i toppen)</div>
+        <div class="ag4">
+          <div class="field"><label>Sager rekord</label><input type="number" id="g-sites-rec" min="0"></div>
+          <div class="field"><label>Tekster rekord</label><input type="number" id="g-texts-rec" min="0"></div>
+          <div class="field"><label>Sessioner rekord</label><input type="number" id="g-sessions-rec" min="0"></div>
+          <div class="field"><label>Anmeldelser rekord</label><input type="number" id="g-tp-rec" min="0"></div>
+        </div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-label">Liste-rekorder (vises under top 3)</div>
+        <div class="ag4">
+          <div class="field"><label>Sager</label><input type="number" id="g-sites-lrec" min="0" placeholder="22"></div>
+          <div class="field"><label>Sager — rekordHolder</label><input type="text" id="g-sites-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Tekster</label><input type="number" id="g-texts-lrec" min="0" placeholder="87"></div>
+          <div class="field"><label>Tekster — rekordHolder</label><input type="text" id="g-texts-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Sessioner</label><input type="text" id="g-sessions-lrec" placeholder="(tom = ingen)"></div>
+          <div class="field"><label>Sessioner — rekordHolder</label><input type="text" id="g-sessions-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Anmeldelser</label><input type="text" id="g-tp-lrec" placeholder="(tom = ingen)"></div>
+          <div class="field"><label>Anmeldelser — rekordHolder</label><input type="text" id="g-tp-lrec-name" placeholder="Navn"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: INFO -->
+    <div class="tab-pane" id="tab-info">
+      <div class="admin-section">
+        <div class="admin-section-label">Manuelle facts — vises i rotation hvert 30. minut</div>
+        <p class="admin-note">Skriv én fact per linje. Blandes automatisk med live data fra dashboardet.</p>
+        <textarea id="info-facts" rows="8" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;line-height:1.6;outline:none;resize:vertical;" placeholder="Vi er verdens bedste hold 🏆&#10;Husk at drikke vand 💧&#10;God stemning = gode resultater ✨"></textarea>
+        <button class="add-emp-btn" style="margin-top:10px;" onclick="triggerInfoSlide()">▶ Vis tilfældig slide nu</button>
+      </div>
+    </div>
+
+    <!-- TAB: BONUS -->
+    <div class="tab-pane" id="tab-bonus">
+      <div class="admin-section">
+        <div class="admin-section-label">Web fælles bonus</div>
+        <div class="ag2">
+          <div class="field"><label>Bonus (kr.)</label><input type="number" id="a-bonus" min="0" max="99999" placeholder="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SYNC & INDSTILLINGER -->
+    <div class="tab-pane" id="tab-config">
+      <div class="ag2" style="gap:20px;">
+        <div>
+          <div class="admin-section-label" style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);">🔗 JSONBin Sync</div>
+          <p class="admin-note" style="margin-bottom:10px;">Opret gratis konto på <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → New Bin → kopiér Master Key og Bin ID. Tomme felter = kun lokal lagring.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="field"><label>Master Key</label><input type="password" id="cfg-key" placeholder="$2a$10$..."></div>
+            <div class="field"><label>Bin ID</label><input type="text" id="cfg-bin" placeholder="64abc123..."></div>
+          </div>
+        </div>
+        <div>
+          <div class="admin-section-label" style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);">🔑 Kodeord</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="field"><label>Nyt kodeord</label><input type="password" id="a-newpw" placeholder="(tomt = behold nuværende)"></div>
+            <div class="field"><label>Bekræft</label><input type="password" id="a-confirmpw"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+      <button class="save-btn save-celebrate" onclick="saveAdmin(true)">🎉 Gem &amp; Fejr</button>
+      <button class="save-btn save-quiet" onclick="saveAdmin(false)" style="background:rgba(255,255,255,0.07);color:var(--text-dim);">💾 Gem &amp; Sync</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   BEST ONE A/S — WEB PERFORMANCE DASHBOARD
+   ════════════════════════════════════════════════════════════
+   Fil:     index.html (enkelt-fil app, ingen dependencies)
+   Hosting: Netlify (statisk)
+   Data:    localStorage 'bo7' (primær) + JSONBin.io sync (sekundær)
+
+   ARKITEKTUR-OVERBLIK:
+   ┌─────────────────────────────────────┐
+   │  DEF (standarddata/fallback)        │
+   │  D   (aktivt datasæt, fra LS/Bin)  │
+   │  CFG (JSONBin credentials)          │
+   └──────────────┬──────────────────────┘
+                  │
+   ┌──────────────▼──────────────────────┐
+   │  render()  ← doSync() hvert 5. sek │
+   │  - totals()    summerer alle emps   │
+   │  - countUp()   animerede tællere    │
+   │  - renderList() top 3/2 pr. afd.   │
+   └──────────────┬──────────────────────┘
+                  │
+   ┌──────────────▼──────────────────────┐
+   │  Admin panel (saveAdmin)            │
+   │  → buildCelebrationQueue (diff)     │
+   │  → runCelebrationQueue              │
+   │    → showSplash + spawnConfetti     │
+   │  → triggerRefreshSweep              │
+   └─────────────────────────────────────┘
+                  │
+   ┌──────────────▼──────────────────────┐
+   │  Info-splash (setInterval 30 min)   │
+   │  → buildInfoSlides (live + manual)  │
+   │  → showInfoSlide                    │
+   └─────────────────────────────────────┘
+
+   DATASTRUKTUR (D):
+   password, *Goal, *Rec, *LRec, *LRecName,
+   bonus, infoFacts[], employees[]
+
+   TEAMS: gators (🐊 grøn) / sharks (🦈 guld)
+   AFDELINGER: site / text / session
+   EMOJI-POOL: 11 unikke Apple emojis (én pr. medarbejder)
+   ════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════
+   STANDARDDATA (DEF)
+   Bruges som fallback hvis localStorage 'bo7' er tom.
+   Alle tal nulstilles månedligt manuelt via admin.
+
+   Felter:
+   - password:        admin-kodeord (ændrbart i admin)
+   - *Goal:           månedlige mål (vises i progressbar)
+   - *Rec:            fælles rekorder (historisk bedste måned)
+   - *LRec + *LRecName: individuelle rekordindehavere (navn + tal)
+   - bonus:           team bonus i kr.
+   - infoFacts:       manuelle facts til info-splash rotation
+   - employees:       array af medarbejdere (se struktur nedenfor)
+
+   Medarbejder-struktur:
+   { name, team ('gators'|'sharks'), dept ('site'|'text'|'session'),
+     emoji, sites, texts, sessions, tp }
+   ════════════════════════════════════════ */
+const DEF = {
+  password:'1234',
+  sitesGoal:20, textsGoal:50, sessionsGoal:10, tpGoal:20,
+  sitesRec:69, textsRec:214, sessionsRec:16, tpRec:12,
+  sitesLRec:22, textsLRec:87, sessionsLRec:16, tpLRec:9,
+  sitesLRecName:'Sten', textsLRecName:'Marie', sessionsLRecName:'Casper', tpLRecName:'Shania',
+  infoFacts: [
+    'Vi er verdens bedste hold 🏆',
+  ],
+  lastResetMonth: null, /* 'YYYY-MM' — opdateres automatisk ved månedsskift */
+  celebrationId: null,  /* timestamp-streng — skifter ved hvert "Gem & Fejr" */
+  pendingCelebration: [], /* celebration-kø til remote klienter */
+  infoTriggerId: null,  /* timestamp — skifter når admin trykker "Vis slide nu" */
+  employees:[
+    {name:'Tina',    team:'sharks', dept:'site',    emoji:'💻', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Sten',    team:'sharks', dept:'site',    emoji:'🗿', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Silva',   team:'sharks', dept:'site',    emoji:'🇵🇹', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Mogens',  team:'gators', dept:'site',    emoji:'🕊️', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Shania',  team:'gators', dept:'site',    emoji:'🐪', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Hernvig', team:'gators', dept:'site',    emoji:'🔵', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Memis',   team:'gators', dept:'site',    emoji:'🇹🇷', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Monica',  team:'sharks', dept:'text',    emoji:'🪗', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Carl',    team:'gators', dept:'text',    emoji:'🧠', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Jonas',   team:'sharks', dept:'text',    emoji:'👓', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Casper',  team:'gators', dept:'session', emoji:'🪕', sites:0, texts:0, sessions:0, tp:0},
+  ]
+};
+// Medalje-emojis til top 3 rækker
+const MEDALS=['🥇','🥈','🥉'];
+const DEPT_LABEL={site:'Hjemmeside', text:'Tekstforfatter', session:'Fotograf'};
+
+/* ════════════════════════════════════════
+   STATE
+   D   = aktivt datasæt (fra localStorage 'bo7')
+   CFG = JSONBin konfiguration (fra 'bo7cfg')
+         { key: Master Key, bin: Bin ID }
+   ════════════════════════════════════════ */
+let D   = loadLocal();
+let CFG = loadCfg();
+
+/* loadLocal: henter fra localStorage, merger med DEF som fallback
+   mergeDeep: kopierer alle felter fra src ind i base,
+              employees-array erstattes helt (ikke merged felt for felt) */
+function loadLocal(){ try{ const r=localStorage.getItem('bo7'); return r?mergeDeep({...DEF},JSON.parse(r)):{...DEF}; }catch(e){ return{...DEF}; } }
+function mergeDeep(base, src){ const out={...base}; for(const k in src){ if(k==='employees') out.employees=src.employees; else if(src[k]!==undefined) out[k]=src[k]; } return out; }
+function saveLocal(d){ localStorage.setItem('bo7',JSON.stringify(d)); }
+/* loadCfg: henter JSONBin-credentials fra localStorage.
+   Hardcodede credentials bruges som fallback (kan overskrives i admin). */
+function loadCfg(){ try{ const r=localStorage.getItem('bo7cfg'); return r?JSON.parse(r):{key:'$2a$10$u.ub6bJNuG9XwN7qnjwsL.xR7DZ546K3MJcmELP4933.NipxRubsO',bin:'69b1b8b1aa77b81da9d81362'}; }catch(e){ return{key:'$2a$10$u.ub6bJNuG9XwN7qnjwsL.xR7DZ546K3MJcmELP4933.NipxRubsO',bin:'69b1b8b1aa77b81da9d81362'}; } }
+function saveCfg(c){ localStorage.setItem('bo7cfg',JSON.stringify(c)); }
+function binOk(){ return CFG.key&&CFG.bin; }
+
+/* ════════════════════════════════════════
+   JSONBIN SYNC
+   fetchBin: GET latest → returnerer data eller null
+   pushBin:  PUT → overskriver hele bin med D
+   doSync:   poller hvert 5. sek, opdaterer kun hvis
+             data er forskelligt (dataSig-sammenligning)
+   setSyncStatus: opdaterer sync-dot i header
+     'ok'   = grøn (synced)
+     'err'  = rød (fejl)
+     'wait' = gul blinkende (syncer)
+   ════════════════════════════════════════ */
+async function fetchBin(){
+  if(!binOk()) return null;
+  try{ const r=await fetch(`https://api.jsonbin.io/v3/b/${CFG.bin}/latest`,{headers:{'X-Master-Key':CFG.key,'X-Bin-Meta':'false'}}); return r.ok?await r.json():null; }
+  catch(e){ return null; }
+}
+// Skriver data til JSONBin (PUT = overskriver hele bin)
+async function pushBin(d){
+  if(!binOk()) return false;
+  try{ const r=await fetch(`https://api.jsonbin.io/v3/b/${CFG.bin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':CFG.key},body:JSON.stringify(d)}); return r.ok; }
+  catch(e){ return false; }
+}
+// Opdaterer sync-indikatoren i header (ok/err/wait)
+function setSyncStatus(s){
+  const el=document.getElementById('sync-status');
+  if(!binOk()){ el.innerHTML=''; return; }
+  const lbl={ok:'Synced',err:'Sync fejl',wait:'Syncer...'};
+  el.innerHTML=`<span class="sync-dot ${s}"></span>${lbl[s]||''}`;
+}
+// Simpel signatur til at detektere ændringer fra remote
+function dataSig(d){ const t=totals(d); return `${t.sites}|${t.texts}|${t.sessions}|${t.tp}|${d.bonus||0}`; }
+/* adminOpen: sættes true/false når admin åbnes/lukkes.
+   Pauser doSync så den ikke overskriver D.employees
+   med gamle JSONBin-værdier mens brugeren redigerer. */
+let adminOpen = false;
+
+/* Poller JSONBin hvert 5. sekund.
+   Springer over hvis admin er åben — ellers ville sync
+   overskrive D.employees med gamle værdier og celebration-diff'en
+   ville altid vise ingen ændringer → ingen splashes. */
+// Cache af seneste kendte data-signatur — skip render hvis uændret
+let _lastKnownSig = null;
+
+// Cache af info-slides — genbygges kun når data ændres
+let _infoSlidesCache = null;
+let _infoSlidesCacheSig = null;
+
+async function doSync(){
+  if(!binOk() || adminOpen) return;
+  const remote=await fetchBin();
+  if(!remote){ setSyncStatus('err'); return; }
+
+  // Tjek om der er en ny info-slide trigger
+  const lastInfoId = localStorage.getItem('bo7_lastInfoId');
+  if(remote.infoTriggerId && remote.infoTriggerId !== lastInfoId){
+    localStorage.setItem('bo7_lastInfoId', remote.infoTriggerId);
+    if(dataSig(remote) !== dataSig(D)){
+      D = mergeDeep({...DEF}, remote);
+      saveLocal(D);
+      _lastKnownSig = dataSig(D);
+      _infoSlidesCache = null; // invalidér slide-cache
+      render(snapshotTotals(D));
+    }
+    setSyncStatus('ok');
+    showInfoSlide();
+    return;
+  }
+
+  // Tjek om der er en ny celebration vi ikke har set
+  const lastCelId = localStorage.getItem('bo7_lastCelId');
+  const hasNewCel = remote.celebrationId && remote.celebrationId !== lastCelId
+                    && remote.pendingCelebration && remote.pendingCelebration.length > 0;
+
+  if(hasNewCel){
+    localStorage.setItem('bo7_lastCelId', remote.celebrationId);
+    const old = snapshotTotals(D);
+    D = mergeDeep({...DEF}, remote);
+    saveLocal(D);
+    _lastKnownSig = dataSig(D);
+    _infoSlidesCache = null;
+    render(old);
+    setSyncStatus('ok');
+    runCelebrationQueue(remote.pendingCelebration, ()=> triggerRefreshSweep());
+    return;
+  }
+
+  // Normal data-sync — skip render hvis data er uændret
+  const remoteSig = dataSig(remote);
+  if(remoteSig !== _lastKnownSig){
+    const old=snapshotTotals(D);
+    D=mergeDeep({...DEF},remote);
+    saveLocal(D);
+    _lastKnownSig = remoteSig;
+    _infoSlidesCache = null;
+    render(old);
+  }
+  setSyncStatus('ok');
+}
+setInterval(doSync,15000);
+
+/* ════════════════════════════════════════
+   RENDER
+   render(oldTotals): opdaterer hele dashboardet.
+     - Tæller alle tal op fra oldTotals til nye totaler
+     - Opdaterer progressbars og rekord-værdier
+     - Bygger top 3/2 lister pr. afdeling
+     - Renderer rekordindehavere i bunden af lister
+   Kaldes ved: sideload, sync-opdatering, admin-gem
+   ════════════════════════════════════════ */
+function totals(d){
+  const emps=d.employees||[];
+  return {
+    sites:    emps.reduce((s,e)=>s+(e.sites||0),0),
+    texts:    emps.filter(e=>e.team!=='marketing').reduce((s,e)=>s+(e.texts||0),0),
+    sessions: emps.reduce((s,e)=>s+(e.sessions||0),0),
+    tp:       emps.reduce((s,e)=>s+(e.tp||0),0),
+  };
+}
+// Laver et snapshot af totaler (bruges til at sammenligne før/efter gem)
+function snapshotTotals(d){ return {...totals(d)}; }
+
+// Returnerer top 3 medarbejdere sorteret efter et givet felt
+// Sorterer med tie-breaking på original array-index (tidligst tilføjet vinder ved uafgjort)
+function sortWithTiebreak(employees, field){
+  return employees
+    .map((e, idx) => ({ e, idx }))
+    .sort((a, b) => {
+      const diff = (b.e[field]||0) - (a.e[field]||0);
+      return diff !== 0 ? diff : a.idx - b.idx; // lavest index vinder ved uafgjort
+    })
+    .map(x => x.e);
+}
+function top4(employees, field){ return sortWithTiebreak(employees, field).slice(0,4); }
+function top2(employees, field){ return sortWithTiebreak(employees, field).slice(0,2); }
+
+/* ════════════════════════════════════════
+   UR + DATO
+   Opdateres hvert sekund.
+   Dansk ugedag + måned formateres manuelt.
+   ════════════════════════════════════════ */
+const _WDAYS=['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
+const _MONS_LO=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
+const _MONS_UP=['Januar','Februar','Marts','April','Maj','Juni','Juli','August','September','Oktober','November','December'];
+const _elClock=document.getElementById('clock');
+const _elDate=document.getElementById('date');
+const _elMonth=document.getElementById('month-lbl');
+function getTimeEmoji(){
+  const now = new Date();
+  const day = now.getDay(); // 0=søn, 1=man, ..., 5=fre, 6=lør
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const t = h * 60 + m;
+
+  // Weekend = fri
+  if(day === 0 || day === 6) return '🌙';
+
+  const isFriday = day === 5;
+
+  // Fælles slots alle dage
+  if(t >= 8*60+30  && t < 8*60+40)  return '📋'; // briefing
+  if(t >= 10*60    && t < 10*60+15) return '☕'; // formiddagspause
+  if(t >= 11*60+45 && t < 12*60+30) return '🍕'; // frokost
+  if(t >= 14*60    && t < 14*60+15) return '☕'; // eftermiddagspause
+
+  // Fredag-specifikke slots
+  if(isFriday && t >= 15*60 && t < 15*60+30) return '📋'; // fredagsbriefing
+  if(isFriday && (t >= 15*60+30 || t < 8*60+30)) return '🌙'; // fri efter 15:30
+
+  // Normal fri efter 16:00
+  if(!isFriday && (t >= 16*60 || t < 8*60+30)) return '🌙';
+
+  // Arbejdstid
+  return isFriday ? '🔥' : '🚀';
+}
+
+function tick(){
+  const now=new Date(),p=n=>String(n).padStart(2,'0');
+  _elClock.innerHTML=`${p(now.getHours())}<span class="colon">:</span>${p(now.getMinutes())}`;
+  document.getElementById('time-emoji').textContent = getTimeEmoji();
+  _elDate.textContent=`${_WDAYS[now.getDay()]} ${now.getDate()}. ${_MONS_LO[now.getMonth()]} ${now.getFullYear()}`;
+  _elMonth.textContent=_MONS_UP[now.getMonth()];
+}
+setInterval(tick,60000); tick();
+
+/* ════════════════════════════════════════
+   AUTOMATISK MÅNEDSNULSTILLING
+   Tjekkes ved hvert tick (1/sek).
+   Nulstiller d. 1. i hver måned:
+     - Alle medarbejderes sites/texts/sessions/tp → 0
+     - sitesGoal/textsGoal/sessionsGoal/tpGoal   → 0
+   Rekorder, bonus og medarbejdernavne bevares.
+   lastResetMonth gemmes som 'YYYY-MM' i D
+   så nulstillingen kun sker én gang pr. måned.
+   ════════════════════════════════════════ */
+function checkMonthlyReset(){
+  const now = new Date();
+  if(now.getDate() !== 1) return; // kun d. 1.
+  const key = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  if(D.lastResetMonth === key) return; // allerede nulstillet denne måned
+  /* Nulstil alle medarbejderes tal */
+  (D.employees||[]).forEach(e=>{ e.sites=0; e.texts=0; e.sessions=0; e.tp=0; });
+  /* Nulstil månedsmål (vises som "0 af 0" til ny måned sættes) */
+  D.sitesGoal=0; D.textsGoal=0; D.sessionsGoal=0; D.tpGoal=0;
+  D.lastResetMonth = key;
+  saveLocal(D);
+  if(binOk()){ pushBin(D); }
+  render(null);
+  console.log(`[Dashboard] Månedsnulstilling udført: ${key}`);
+}
+setInterval(checkMonthlyReset, 5 * 60 * 60 * 1000); // tjek hver 5. time
+checkMonthlyReset(); // tjek også ved sideload
+
+// Automatisk genindlæsning kl. 22:00 og 04:00 — nulstiller browser-hukommelse
+setInterval(()=>{ const h=new Date().getHours(); if(h===22||h===4) location.reload(); }, 60000);
+
+// Animeret tæller: tæller fra én værdi til en anden over ~1.2s
+function countUp(el,from,to){
+  const t0=performance.now(),dur=1200;
+  (function step(now){ const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4); el.textContent=Math.round(from+(to-from)*e); if(p<1)requestAnimationFrame(step); })(t0);
+}
+// Samme som countUp men formaterer som dansk kr. (toLocaleString)
+function countUpBonus(el,from,to){
+  const t0=performance.now(),dur=1200;
+  (function step(now){ const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4); const v=Math.round(from+(to-from)*e); el.innerHTML=`${v.toLocaleString('da-DK')}<span class="bonus-suffix"> kr.</span>`; if(p<1)requestAnimationFrame(step); })(t0);
+}
+
+/* Renderer top 3/2 liste i én kolonne.
+   Filtrerer medarbejdere med 0 fra — viser placeholder hvis ingen. */
+function renderList(containerId, items, field, rowClass){
+  const el=document.getElementById(containerId); el.innerHTML='';
+  const active = items.filter(p=>(p[field]||0)>0);
+  if(active.length===0){
+    const ph=document.createElement('div');
+    ph.className='list-placeholder';
+    ph.textContent='Ingen resultater endnu';
+    el.appendChild(ph);
+    return;
+  }
+  active.forEach((p,i)=>{
+    const t=p.team||'none';
+    const isMktg = t === 'marketing';
+    const cls = rowClass || (t==='gators'?'gators':t==='sharks'?'sharks':'none');
+    const isChaser = i === 3;
+    const pill = !isChaser && (t==='gators'||t==='sharks')
+      ? `<span class="team-pill ${t}">${t==='gators'?'Gators':'Sharks'}</span>`
+      : (!isChaser && isMktg) ? `<span class="team-pill marketing">Marketing</span>` : '';
+    const row=document.createElement('div');
+    row.className=`list-row ${cls}${isChaser?' list-row-chaser':''}`;
+    row.innerHTML=`<span class="medal">${isChaser ? '' : (MEDALS[i]||'')}</span><span class="p-name">${p.name||'—'}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
+    el.appendChild(row);
+  });
+}
+
+/* Letvægts-render: opdaterer KUN totaler + progressbars.
+   Bruges mens admin er åben (live tastning).
+   Koster ~10% af fuld render — ingen liste-DOM-ændringer. */
+function renderTotalsOnly(){
+  const T=totals(D);
+  document.getElementById('n-sites').textContent    = T.sites;
+  document.getElementById('n-texts').textContent    = T.texts;
+  document.getElementById('n-sessions').textContent = T.sessions;
+  document.getElementById('n-tp').textContent       = T.tp;
+  function prog(capId,pctId,fillId,val,goal,cardId){
+    const reached = goal > 0 && val >= goal;
+    const pct = goal > 0 ? Math.min(Math.round(val/goal*100),100) : 0;
+    document.getElementById(capId).textContent=`${val} af ${goal}`;
+    document.getElementById(pctId).textContent= reached ? `${Math.round(val/goal*100)}%` : `${pct}%`;
+    document.getElementById(fillId).style.width=pct+'%';
+    if(cardId) document.getElementById(cardId).classList.toggle('goal-reached', reached);
+  }
+  prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal,    'card-sites');
+  prog('cap-texts',   'pct-texts',   'fill-texts',   T.texts,    D.textsGoal,    'card-texts');
+  prog('cap-sessions','pct-sessions','fill-sessions', T.sessions, D.sessionsGoal, 'card-sessions');
+  prog('cap-tp',      'pct-tp',      'fill-tp',       T.tp,       D.tpGoal,       'card-tp');
+}
+
+function render(oldTotals){
+  const T=totals(D);
+  const prev=oldTotals||{sites:0,texts:0,sessions:0,tp:0,bonus:0};
+  countUp(document.getElementById('n-sites'),   prev.sites||0,    T.sites);
+  countUp(document.getElementById('n-texts'),   prev.texts||0,    T.texts);
+  countUp(document.getElementById('n-sessions'),prev.sessions||0, T.sessions);
+  countUp(document.getElementById('n-tp'),      prev.tp||0,       T.tp);
+  countUpBonus(document.getElementById('bonus-display'),prev.bonus||0,D.bonus||0);
+
+  document.getElementById('rec-sites').textContent    = D.sitesRec??22;
+  document.getElementById('rec-texts').textContent    = D.textsRec??88;
+  document.getElementById('rec-sessions').textContent = D.sessionsRec??50;
+  document.getElementById('rec-tp').textContent       = D.tpRec??0;
+
+  /* Rekord-breaking indikator: gylden gløde hvis aktuelt tal >= fællesrekord */
+  [
+    ['rec-sites',    T.sites,    D.sitesRec],
+    ['rec-texts',    T.texts,    D.textsRec],
+    ['rec-sessions', T.sessions, D.sessionsRec],
+    ['rec-tp',       T.tp,       D.tpRec],
+  ].forEach(([id, val, rec])=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('rec-breaking', rec > 0 && val >= rec);
+  });
+
+  function prog(capId,pctId,fillId,val,goal,cardId){
+    const reached = goal > 0 && val >= goal;
+    const pct = goal > 0 ? Math.min(Math.round(val/goal*100),100) : 0;
+    document.getElementById(capId).textContent=`${val} af ${goal}`;
+    document.getElementById(pctId).textContent= reached ? `${Math.round(val/goal*100)}%` : `${pct}%`;
+    setTimeout(()=>document.getElementById(fillId).style.width=pct+'%',150);
+    if(cardId) document.getElementById(cardId).classList.toggle('goal-reached', reached);
+  }
+  prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal,    'card-sites');
+  prog('cap-texts',   'pct-texts',   'fill-texts',   T.texts,    D.textsGoal,    'card-texts');
+  prog('cap-sessions','pct-sessions','fill-sessions', T.sessions, D.sessionsGoal, 'card-sessions');
+  prog('cap-tp',      'pct-tp',      'fill-tp',       T.tp,       D.tpGoal,       'card-tp');
+
+  // Auto top 3/2
+  const emps=D.employees||[];
+  const siteEmps  = emps.filter(e=>e.dept==='site');
+  const textEmps  = emps.filter(e=>e.dept==='text' || e.team==='marketing');
+  const sessEmps  = emps.filter(e=>e.dept==='session');
+
+  // For sites/texts/tp: top3 from all employees of that dept, sorted by field
+  // For sessions: top2 from session dept
+  renderList('list-sites',    top4(siteEmps.length? siteEmps : emps, 'sites'),    'sites');
+  renderList('list-texts',    top4(textEmps.length? textEmps : emps, 'texts'),    'texts');
+  renderList('list-sessions', top2(sessEmps.length? sessEmps : emps, 'sessions'), 'sessions');
+  renderList('list-tp',       top4(emps, 'tp'), 'tp', 'tp-row');
+
+  // List records
+  const lr=(id,v,name)=>{ document.getElementById(id).innerHTML = (v&&v!==''&&v!='0')?`<span class="lr-label">🏆 Rekord</span><span class="lr-divider">|</span><em>${v}</em>${name?`<span class="lr-name">${name}</span>`:''}`:''; };
+  lr('lrec-sites',    D.sitesLRec,    D.sitesLRecName);
+  lr('lrec-texts',    D.textsLRec,    D.textsLRecName);
+  lr('lrec-sessions', D.sessionsLRec, D.sessionsLRecName);
+  lr('lrec-tp',       D.tpLRec,       D.tpLRecName);
+}
+render(null);
+
+/* ════════════════════════════════════════
+   ADMIN PANEL
+   unlocked: om kodeord er bekræftet i denne session
+             (nulstilles ikke ved luk, kun ved sidereload)
+
+   openAdmin()   → viser overlay; pw-boks hvis ikke unlocked
+   closeAdmin()  → fjerner .open klassen
+   checkPw()     → sammenligner med D.password
+   showPanel()   → snapshot _preEditEmps, viser admin-boks
+   fillForm()    → populerer alle admin-felter med D + CFG
+   saveAdmin(celebrate):
+     1. Gem CFG til localStorage
+     2. Byg celebrate-kø FØR D overskrives (diff af _preEditEmps)
+     3. Opdater D med alle admin-felter
+     4. Gem lokalt + push til JSONBin
+     5. Kør celebration-kø eller bare refresh-sweep
+   switchTab(name) → aktiverer rigtig tab-knap og tab-pane
+
+   celebrate=true  → 🎉 Gem & Fejr (animationer)
+   celebrate=false → 💾 Gem & Sync (stille)
+   ════════════════════════════════════════ */
+let unlocked=false;
+function switchTab(name){
+  document.querySelectorAll('.admin-tab').forEach((t,i)=>{ t.classList.toggle('active', ['employees','goals','bonus','info','config'][i]===name); });
+  document.querySelectorAll('.tab-pane').forEach(p=>{ p.classList.toggle('active', p.id==='tab-'+name); });
+}
+function openAdmin(){
+  adminOpen = true;
+  document.getElementById('overlay').classList.add('open');
+  if(unlocked){ showPanel(); }
+  else{
+    document.getElementById('pw-box').style.display='flex';
+    document.getElementById('admin-box').style.display='none';
+    document.getElementById('pw-input').value='';
+    document.getElementById('pw-err').textContent='';
+    setTimeout(()=>document.getElementById('pw-input').focus(),80);
+  }
+}
+function closeAdmin(){
+  adminOpen = false;
+  document.getElementById('overlay').classList.remove('open');
+}
+document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') checkPw(); });
+function checkPw(){
+  if(document.getElementById('pw-input').value===D.password){ unlocked=true; showPanel(); }
+  else{ document.getElementById('pw-err').textContent='Forkert kodeord'; document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus(); }
+}
+function showPanel(){
+  // Snapshot medarbejdere inden redigering — bruges til celebrate-diff
+  window._preEditEmps = JSON.parse(JSON.stringify(D.employees||[]));
+  document.getElementById('pw-box').style.display='none';
+  document.getElementById('admin-box').style.display='block';
+  fillForm();
+}
+
+function fillForm(){
+  document.getElementById('cfg-key').value=CFG.key||'';
+  document.getElementById('cfg-bin').value=CFG.bin||'';
+  document.getElementById('g-sites-goal').value=D.sitesGoal||20;
+  document.getElementById('g-texts-goal').value=D.textsGoal||50;
+  document.getElementById('g-sessions-goal').value=D.sessionsGoal||10;
+  document.getElementById('g-tp-goal').value=D.tpGoal||20;
+  document.getElementById('g-sites-rec').value=D.sitesRec??22;
+  document.getElementById('g-texts-rec').value=D.textsRec??88;
+  document.getElementById('g-sessions-rec').value=D.sessionsRec??50;
+  document.getElementById('g-tp-rec').value=D.tpRec||0;
+  document.getElementById('g-sites-lrec').value=D.sitesLRec??22;
+  document.getElementById('g-sites-lrec-name').value=D.sitesLRecName||'';
+  document.getElementById('g-texts-lrec').value=D.textsLRec??87;
+  document.getElementById('g-texts-lrec-name').value=D.textsLRecName||'';
+  document.getElementById('g-sessions-lrec').value=D.sessionsLRec||'';
+  document.getElementById('g-sessions-lrec-name').value=D.sessionsLRecName||'';
+  document.getElementById('g-tp-lrec').value=D.tpLRec||'';
+  document.getElementById('g-tp-lrec-name').value=D.tpLRecName||'';
+  document.getElementById('a-bonus').value=D.bonus||0;
+  document.getElementById('info-facts').value=(D.infoFacts||[]).join('\n');
+  document.getElementById('a-newpw').value='';
+  document.getElementById('a-confirmpw').value='';
+  renderEmpTable();
+}
+
+/* ════════════════════════════════════════
+   MEDARBEJDER-TABEL (renderEmpTable)
+   Grupperer D.employees efter dept i 4 grupper:
+     site / text / session / '' (ikke tildelt)
+   Grupper uden medlemmer springes over.
+   Originale array-indices bevares så updateEmp(idx)
+   stadig peger korrekt i D.employees.
+   Tal-celler grås ud (—) hvis de ikke er relevante
+   for medarbejderens afdeling.
+   ════════════════════════════════════════ */
+
+/* 11 faste Apple emojis — én per medarbejder (unik):
+   🗿 Moai, 🪗 Akkordeon, 👓 Briller, 🇵🇹 Portugal,
+   💻 Macbook, 🪕 Banjo, 🐪 Kamel, 🇹🇷 Tyrkiet,
+   🧠 Hjerne, 🔵 Blå cirkel, 🕊️ Due */
+const EMOJI_POOL = ['🗿','🪗','👓','🇵🇹','💻','🪕','🐪','🇹🇷','🧠','🔵','🕊️'];
+
+function usedEmojis(excludeIdx){
+  return (D.employees||[]).filter((_,i)=>i!==excludeIdx).map(e=>e.emoji).filter(Boolean);
+}
+
+/* Drag-and-drop state */
+let _dragSrcIdx = null;
+
+function renderEmpTable(){
+  const tbody = document.getElementById('emp-tbody');
+  tbody.innerHTML = '';
+
+  const GROUPS = [
+    { dept:'site',    label:'Hjemmeside',    icon:'🌐' },
+    { dept:'text',    label:'Tekstforfatter', icon:'✍️' },
+    { dept:'session', label:'Fotograf',       icon:'📷' },
+    { dept:'',        label:'Ikke tildelt',   icon:'❓' },
+  ];
+
+  const emps = D.employees || [];
+
+  GROUPS.forEach(group => {
+    const members = emps
+      .map((emp, idx) => ({ emp, idx }))
+      .filter(({ emp }) => (group.dept === '' ? !emp.dept : emp.dept === group.dept));
+
+    if(members.length === 0) return;
+
+    // Gruppe-header
+    const headerRow = document.createElement('tr');
+    headerRow.className = 'emp-group-header';
+    headerRow.innerHTML = `<td colspan="8"><div class="header-inner"><span class="dept-badge"><span class="dept-icon">${group.icon}</span>${group.label} <span style="opacity:0.4;margin-left:4px">(${members.length})</span></span></div></td>`;
+    tbody.appendChild(headerRow);
+
+    // Medarbejder-rækker
+    members.forEach(({ emp, idx }) => {
+      const dept = emp.dept || '';
+      const nyfakField = dept === 'site' ? 'sites' : dept === 'text' ? 'texts' : dept === 'session' ? 'sessions' : 'sites';
+      const nyfakVal = emp[nyfakField] || 0;
+
+      const taken = usedEmojis(idx);
+      const emojiOpts = EMOJI_POOL.map(e => {
+        const disabled = taken.includes(e) ? 'disabled' : '';
+        const sel = emp.emoji === e ? 'selected' : '';
+        return `<option value="${e}" ${sel} ${disabled}>${e}</option>`;
+      }).join('');
+
+      const tr = document.createElement('tr');
+      tr.draggable = true;
+      tr.dataset.idx = idx;
+      tr.dataset.dept = group.dept;
+
+      tr.innerHTML = `
+        <td class="drag-handle" title="Træk for at omsortere">⠿</td>
+        <td>
+          <select class="emp-select" style="width:54px;text-align:center;font-size:18px;padding:4px 2px;" oninput="updateEmp(${idx},'emoji',this.value)">
+            <option value="">—</option>
+            ${emojiOpts}
+          </select>
+        </td>
+        <td><input class="emp-input" value="${emp.name||''}" oninput="updateEmp(${idx},'name',this.value)" placeholder="Navn"></td>
+        <td>
+          <select class="emp-select" onchange="updateEmp(${idx},'dept',this.value);renderEmpTable();">
+            <option value="site"    ${dept==='site'?'selected':''}>Hjemmeside</option>
+            <option value="text"    ${dept==='text'?'selected':''}>Tekstforfatter</option>
+            <option value="session" ${dept==='session'?'selected':''}>Fotograf</option>
+          </select>
+        </td>
+        <td>
+          <select class="emp-select" oninput="updateEmp(${idx},'team',this.value)">
+            <option value="gators"    ${emp.team==='gators'?'selected':''}>🐊 Gators</option>
+            <option value="sharks"    ${emp.team==='sharks'?'selected':''}>🦈 Sharks</option>
+            <option value="marketing" ${emp.team==='marketing'?'selected':''}>📣 Marketing</option>
+          </select>
+        </td>
+        <td><input class="emp-input num" type="number" min="0" value="${nyfakVal}" oninput="updateEmp(${idx},'${nyfakField}',+this.value)"></td>
+        <td><input class="emp-input num" type="number" min="0" value="${emp.tp||0}" oninput="updateEmp(${idx},'tp',+this.value)"></td>
+        <td><button class="emp-del" onclick="removeEmp(${idx})" title="Slet">✕</button></td>
+      `;
+
+      // Drag events
+      tr.addEventListener('dragstart', e => {
+        _dragSrcIdx = idx;
+        tr.classList.add('drag-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      tr.addEventListener('dragend', () => {
+        tr.classList.remove('drag-dragging');
+        tbody.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
+      });
+      tr.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        tbody.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
+        if(_dragSrcIdx !== idx) tr.classList.add('drag-over');
+      });
+      tr.addEventListener('drop', e => {
+        e.preventDefault();
+        if(_dragSrcIdx === null || _dragSrcIdx === idx) return;
+        // Kun inden for samme gruppe
+        const srcDept = (D.employees[_dragSrcIdx]||{}).dept || '';
+        const tgtDept = (D.employees[idx]||{}).dept || '';
+        if(srcDept !== tgtDept) return;
+        // Swap i D.employees
+        const empsArr = D.employees;
+        const tmp = empsArr[_dragSrcIdx];
+        empsArr[_dragSrcIdx] = empsArr[idx];
+        empsArr[idx] = tmp;
+        _dragSrcIdx = null;
+        renderEmpTable();
+        render(snapshotTotals(D));
+      });
+
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function updateEmp(idx, field, val){
+  if(!D.employees[idx]) return;
+  D.employees[idx][field]=val;
+  renderTotalsOnly(); // letvægts — kun totaler mens admin er åben
+}
+function addEmployee(){
+  D.employees.push({name:'',team:'gators',dept:'site',sites:0,texts:0,sessions:0,tp:0});
+  renderEmpTable();
+}
+function removeEmp(idx){
+  D.employees.splice(idx,1);
+  renderEmpTable();
+  render(snapshotTotals(D));
+}
+
+function gi(id){ return parseInt(document.getElementById(id).value)||0; }
+function gs(id){ return document.getElementById(id).value||''; }
+
+async function saveAdmin(celebrate=false){
+  const np=document.getElementById('a-newpw').value.trim(), cp=document.getElementById('a-confirmpw').value.trim();
+  if(np&&np!==cp){ alert('Kodeordene stemmer ikke overens.'); return; }
+  CFG={key:gs('cfg-key'),bin:gs('cfg-bin')}; saveCfg(CFG);
+  const old=snapshotTotals(D);
+
+  // Byg celebrate-kø FØR data overskrives
+  const oldBonus = D.bonus || 0;
+  const newBonus = gi('a-bonus');
+  const queue = celebrate ? buildCelebrationQueue(window._preEditEmps||[], D.employees||[], oldBonus, newBonus) : [];
+  const newCelId = (celebrate && queue.length > 0) ? Date.now().toString() : (D.celebrationId || null);
+
+  D={
+    ...D,
+    password:np||D.password,
+    sitesGoal:gi('g-sites-goal')||1, textsGoal:gi('g-texts-goal')||1, sessionsGoal:gi('g-sessions-goal')||1, tpGoal:gi('g-tp-goal')||1,
+    sitesRec:gi('g-sites-rec'), textsRec:gi('g-texts-rec'), sessionsRec:gi('g-sessions-rec'), tpRec:gi('g-tp-rec'),
+    sitesLRec:gi('g-sites-lrec'), textsLRec:gi('g-texts-lrec'), sessionsLRec:gs('g-sessions-lrec'), tpLRec:gs('g-tp-lrec'),
+    sitesLRecName:gs('g-sites-lrec-name'), textsLRecName:gs('g-texts-lrec-name'), sessionsLRecName:gs('g-sessions-lrec-name'), tpLRecName:gs('g-tp-lrec-name'),
+    bonus:gi('a-bonus'),
+    lastResetMonth: D.lastResetMonth || null,
+    infoFacts: document.getElementById('info-facts').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    celebrationId: newCelId,
+    pendingCelebration: (celebrate && queue.length > 0) ? queue : [],
+  };
+
+  // Host markerer celebration som set så den ikke afspiller dobbelt via doSync
+  if(celebrate && queue.length > 0){
+    localStorage.setItem('bo7_lastCelId', newCelId);
+  }
+  saveLocal(D);
+  _lastKnownSig = dataSig(D);
+  _infoSlidesCache = null; // invalidér cache ved gem
+  render(old);
+  if(binOk()){ setSyncStatus('wait'); const ok=await pushBin(D); setSyncStatus(ok?'ok':'err'); }
+  closeAdmin();
+  window._preEditEmps = null;
+  if(queue.length > 0){
+    runCelebrationQueue(queue, ()=> triggerRefreshSweep());
+  } else {
+    triggerRefreshSweep();
+  }
+}
+
+/* ════════════════════════════════════════
+   FEJRINGSANIMATIONER
+   buildCelebrationQueue: finder ændrede tal
+   runCelebrationQueue:   kører splashes i rækkefølge
+   showSplash:            viser én fullscreen splash
+   spawnConfetti:         skyder emoji-partikler ud
+   ════════════════════════════════════════ */
+
+/* ════════════════════════════════════════
+   FEJRINGS-KONSTANTER
+   CEL_FIELD_META: label + farve-klasse + ikon pr. felt
+   CEL_TEAM_META:  label + CSS-klasse pr. team
+   CEL_SPLASH_DURATION: ms en splash er synlig (12 sek)
+   CEL_GAP: pause mellem splashes i en kø (1.2 sek)
+   ════════════════════════════════════════ */
+const CEL_FIELD_META = {
+  sites:    { label:'Sager',     color:'blue',   icon:'🌐' },
+  texts:    { label:'Tekster',   color:'gators', icon:'✍️' },
+  sessions: { label:'Sessioner', color:'sharks', icon:'📷' },
+  tp:       { label:'Anmeldelser', color:'tp',     icon:'⭐' },
+};
+const CEL_TEAM_META = {
+  gators: { label:'🐊 Gators', cls:'gators' },
+  sharks: { label:'🦈 Sharks', cls:'sharks' },
+};
+const CEL_SPLASH_DURATION = 20000; // ms synlig
+const CEL_GAP             = 1200;  // ms pause mellem splashes
+
+/* ════════════════════════════════════════
+   REFRESH SWEEP
+   Kører en scan-linje henover skærmen +
+   et kort pulse på alle stat/list-kort.
+   ════════════════════════════════════════ */
+function triggerRefreshSweep(){
+  const sweep = document.getElementById('refresh-sweep');
+  sweep.classList.remove('sweeping');
+  void sweep.offsetWidth; // reflow
+  sweep.classList.add('sweeping');
+  // Pulse alle kort 300ms inde (når linjen er ca. halvvejs)
+  setTimeout(()=>{
+    document.querySelectorAll('.stat-block, .list-block').forEach(el=>{
+      el.classList.remove('refresh-pulse');
+      void el.offsetWidth;
+      el.classList.add('refresh-pulse');
+    });
+  }, 300);
+  sweep.addEventListener('animationend', ()=> sweep.classList.remove('sweeping'), { once:true });
+}
+
+/* buildCelebrationQueue(oldEmps, newEmps, oldBonus, newBonus)
+   Sammenligner medarbejdere index-for-index.
+   Returnerer array af splash-items for hvert felt der er steget.
+   Bonus tilføjes sidst i køen hvis den er steget.
+   type:'emp'   → { name, emoji, team, field, oldVal, newVal }
+   type:'bonus' → { oldVal, newVal } */
+function buildCelebrationQueue(oldEmps, newEmps, oldBonus, newBonus){
+  const queue = [];
+  newEmps.forEach((emp, idx) => {
+    if(emp.team === 'marketing') return; // marketing fejres ikke
+    const old = oldEmps[idx] || {};
+    ['sites','texts','sessions','tp'].forEach(field => {
+      const ov = old[field]||0, nv = emp[field]||0;
+      if(nv > ov){
+        queue.push({ type:'emp', name:emp.name||'—', emoji:emp.emoji||'🏆', team:emp.team||'gators', field, oldVal:ov, newVal:nv });
+      }
+    });
+  });
+  if(newBonus > oldBonus){
+    queue.push({ type:'bonus', oldVal:oldBonus, newVal:newBonus });
+  }
+  return queue;
+}
+
+function runCelebrationQueue(queue, onComplete){
+  let i = 0;
+  _celRunning = true;
+  function next(){
+    if(i >= queue.length){ _celRunning = false; if(onComplete) onComplete(); return; }
+    showSplash(queue[i], ()=>{ i++; if(i < queue.length) setTimeout(next, CEL_GAP); else { _celRunning = false; if(onComplete) onComplete(); } });
+  }
+  next();
+}
+
+/* showSplash(item, onDone)
+   Viser én fullscreen splash og kalder onDone når den er færdig.
+   Håndterer 3 layouts via isBonus / isTP flags:
+     isBonus: bonus-layout med 💰 og kr.-beløb
+     isTP:    guld baggrund + ★★★★★ stjerner
+     default: standard emp-layout
+   Hard reset af CSS-klasser + void offsetWidth
+   sikrer at animations ikke bløder over fra forrige splash. */
+function showSplash(item, onDone){
+  const overlay = document.getElementById('cel-overlay');
+  const inner   = document.getElementById('cel-inner');
+  const glow    = document.getElementById('cel-glow');
+
+  // --- Hard reset: fjern alle animation-klasser og force reflow ---
+  overlay.classList.remove('cel-active','cel-in','cel-tp');
+  inner.classList.remove('cel-in','cel-out');
+  glow.classList.remove('cel-in');
+  document.querySelectorAll('.cel-tp-star,.cel-tp-logo').forEach(el => el.classList.remove('cel-in'));
+  void inner.offsetWidth; // force reflow så transitions starter fra ren base-state
+
+  const isBonus = item.type === 'bonus';
+  const isTP    = !isBonus && item.field === 'tp';
+  const meta    = isBonus ? null : CEL_FIELD_META[item.field];
+  const teamM   = isBonus ? null : (CEL_TEAM_META[item.team] || CEL_TEAM_META.gators);
+
+  // --- Toggle which layout elements are visible ---
+  const empEls   = ['cel-team','cel-emp-emoji','cel-name','cel-metric-label','cel-count-wrap'];
+  const bonusEls = ['cel-bonus-emoji','cel-bonus-label','cel-bonus-sub','cel-bonus-amount'];
+  const tpEls    = ['cel-tp-star','cel-tp-logo'];
+
+  empEls.forEach(id => document.getElementById(id).style.display   = isBonus ? 'none' : '');
+  bonusEls.forEach(id => document.getElementById(id).style.display = isBonus ? ''     : 'none');
+  tpEls.forEach(id => {
+    const el = document.getElementById(id);
+    el.style.display = isTP ? '' : 'none';
+    el.classList.remove('cel-in');
+  });
+
+  // --- TP overlay class ---
+  overlay.classList.toggle('cel-tp', isTP);
+
+  if(isBonus){
+    glow.className = 'cel-glow';
+    glow.style.background = 'radial-gradient(circle,rgba(255,200,50,0.5),transparent 70%)';
+    document.getElementById('cel-bonus-amount').innerHTML = item.oldVal.toLocaleString('da-DK') + '<span class="cel-bonus-kr">kr.</span>';
+  } else {
+    glow.style.background = '';
+    glow.className = 'cel-glow ' + (isTP ? 'tp' : meta.color);
+    document.getElementById('cel-team').textContent         = teamM.label;
+    document.getElementById('cel-team').className           = 'cel-team ' + teamM.cls;
+    document.getElementById('cel-emp-emoji').textContent    = item.emoji;
+    document.getElementById('cel-name').textContent         = item.name;
+    document.getElementById('cel-metric-label').textContent = isTP ? '' : `Antal ${meta.label}`;
+    document.getElementById('cel-old').textContent          = item.oldVal;
+    const celNew = document.getElementById('cel-new');
+    celNew.className    = 'cel-new ' + meta.color;
+    celNew.textContent  = item.oldVal;
+    // For TP: hide metric label row (stars handle it)
+    if(isTP) document.getElementById('cel-metric-label').style.display = 'none';
+  }
+
+  // --- Fade in ---
+  overlay.classList.add('cel-active','cel-in');
+  inner.classList.remove('cel-out');
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      inner.classList.add('cel-in');
+      glow.classList.add('cel-in');
+      if(isTP) tpEls.forEach(id => document.getElementById(id).classList.add('cel-in'));
+    });
+  });
+
+  // Count up
+  setTimeout(()=>{
+    if(isBonus){
+      const el = document.getElementById('cel-bonus-amount');
+      // Tæl op med kr.-suffix der altid er synlig
+      const t0=performance.now(), dur=1400;
+      (function step(now){
+        const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,4);
+        const v=Math.round(item.oldVal+(item.newVal-item.oldVal)*e);
+        el.innerHTML=`${v.toLocaleString('da-DK')}<span class="cel-bonus-kr">kr.</span>`;
+        if(p<1) requestAnimationFrame(step);
+      })(t0);
+      spawnConfetti('💰', Math.min(Math.floor((item.newVal - item.oldVal)/500), 30) + 12);
+    } else {
+      countUp(document.getElementById('cel-new'), item.oldVal, item.newVal);
+      spawnConfetti(item.emoji, item.newVal - item.oldVal);
+    }
+  }, 600);
+
+  // --- Fade out ---
+  const fadeOutAt = CEL_SPLASH_DURATION - 700;
+  const closeBtn = document.getElementById('cel-close');
+
+  function cleanup(){
+    clearTimeout(tFadeOut);
+    clearTimeout(tDone);
+    closeBtn.removeEventListener('click', onClose);
+  }
+
+  const tFadeOut = setTimeout(()=>{
+    inner.classList.remove('cel-in');
+    inner.classList.add('cel-out');
+    glow.classList.remove('cel-in');
+    overlay.classList.remove('cel-in');
+    if(isTP) tpEls.forEach(id => document.getElementById(id).classList.remove('cel-in'));
+  }, fadeOutAt);
+
+  const tDone = setTimeout(()=>{
+    cleanup();
+    overlay.classList.remove('cel-active','cel-tp');
+    inner.classList.remove('cel-out');
+    onDone();
+  }, CEL_SPLASH_DURATION);
+
+  // ✕ knap — afbryd splash og gå videre
+  function onClose(){
+    cleanup();
+    inner.classList.remove('cel-in');
+    inner.classList.add('cel-out');
+    glow.classList.remove('cel-in');
+    overlay.classList.remove('cel-in');
+    setTimeout(()=>{
+      overlay.classList.remove('cel-active','cel-tp');
+      inner.classList.remove('cel-out');
+      onDone();
+    }, 450);
+  }
+  closeBtn.addEventListener('click', onClose);
+}
+
+/* spawnConfetti(emoji, delta)
+   Spawner 18-48 emoji-partikler der flyver ud fra skærmens midte.
+   delta (forskel i tal) bruges til at skalere antal partikler.
+   Hvert element fjerner sig selv via animationend-event. */
+function spawnConfetti(emoji, delta){
+  const count = Math.min(18 + Math.floor(delta * 1.2), 48);
+  const cx = window.innerWidth  / 2;
+  const cy = window.innerHeight / 2;
+  for(let i = 0; i < count; i++){
+    const el = document.createElement('div');
+    el.className = 'cel-particle';
+    el.textContent = emoji;
+    const baseAngle = (i / count) * 360;
+    const angle = (baseAngle + (Math.random() - 0.5) * 40) * Math.PI / 180;
+    const dist  = 320 + Math.random() * 340;
+    const tx    = Math.cos(angle) * dist;
+    const ty    = Math.sin(angle) * dist - Math.random() * 120;
+    const rot   = (Math.random() - 0.5) * 540;
+    const sf    = 0.3 + Math.random() * 0.5;
+    const dur   = (1.8 + Math.random() * 1.6).toFixed(2);
+    const delay = (Math.random() * 0.5).toFixed(2);
+    el.style.cssText += `left:${cx}px;top:${cy}px;--tx:${tx}px;--ty:${ty}px;--rot:${rot}deg;--sf:${sf};--dur:${dur}s;--delay:${delay}s;font-size:${32 + Math.random() * 28}px;`;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', ()=> el.remove());
+  }
+}
+
+/* ════════════════════════════════════════
+   INFO-SPLASH SYSTEM
+   INFO_INTERVAL:  30 min mellem automatiske slides
+   INFO_SLIDE_DUR: 8 sek pr. slide (inkl. progressbar)
+
+   buildInfoSlides(): bygger og shuffler et array af slides.
+     Automatiske slides (fra live D):
+       - Top 3 hjemmesider / tekster / anmeldelser
+       - Månedsmål progress (X% i mål, Y mangler)
+       - Hall of Fame: fælles rekorder
+       - Hall of Fame: individuelle rekordindehavere
+       - Web fælles bonus (kun hvis > 0)
+     Manuelle slides: D.infoFacts (én linje = én slide)
+     Sessioner/Casper er bevidst udeladt overalt.
+
+   showInfoSlide(): viser én tilfældig slide.
+     Hall of Fame → tilføjer .info-hof (guldbaggund).
+     Progressbar animeres ned fra 100%→0% over INFO_SLIDE_DUR.
+     Kan kaldes manuelt fra Admin → Info knap.
+   ════════════════════════════════════════ */
+const INFO_INTERVAL  = 30 * 60 * 1000; // 30 min
+const INFO_SLIDE_DUR = 15000;           // 15 sek per slide
+let _celRunning = false; // sættes true mens celebration-kø kører
+
+function buildInfoSlides(){
+  const slides = [];
+  const emps   = D.employees || [];
+  const T      = totals(D);
+
+  // --- Top 3 sager ---
+  const topSites = [...emps].filter(e=>e.dept==='site'&&(e.sites||0)>0).sort((a,b)=>(b.sites||0)-(a.sites||0)).slice(0,3);
+  if(topSites.length){
+    const mon = _MONS_UP[new Date().getMonth()];
+    slides.push({
+      tag:'Månedens top — Hjemmesider', emoji:'🌐',
+      headline: `${topSites[0].name} fører i ${mon}!`,
+      sub: topSites.map((e,i)=>['🥇','🥈','🥉'][i]+' '+e.name+' — '+e.sites+' sager').join('<br>')
+    });
+  }
+
+  // --- Top 3 tekster ---
+  const topTexts = [...emps].filter(e=>e.dept==='text'&&(e.texts||0)>0).sort((a,b)=>(b.texts||0)-(a.texts||0)).slice(0,3);
+  if(topTexts.length){
+    const mon = _MONS_UP[new Date().getMonth()];
+    slides.push({
+      tag:'Månedens top — Tekster', emoji:'✍️',
+      headline: `${topTexts[0].name} fører i ${mon}!`,
+      sub: topTexts.map((e,i)=>['🥇','🥈','🥉'][i]+' '+e.name+' — '+e.texts+' tekster').join('<br>')
+    });
+  }
+
+  // --- Top 3 anmeldelser ---
+  const topTp = [...emps].filter(e=>(e.tp||0)>0).sort((a,b)=>(b.tp||0)-(a.tp||0)).slice(0,3);
+  if(topTp.length){
+    const mon = _MONS_UP[new Date().getMonth()];
+    slides.push({
+      tag:'Månedens top — Anmeldelser', emoji:'⭐',
+      headline: `${topTp[0].name} fører i ${mon}!`,
+      sub: topTp.map((e,i)=>['🥇','🥈','🥉'][i]+' '+e.name+' — '+e.tp+' anmeldelser').join('<br>')
+    });
+  }
+
+  // --- Progress mod mål ---
+  const goalDefs = [
+    { label:'sager',       val:T.sites, goal:D.sitesGoal, emoji:'🌐' },
+    { label:'tekster',     val:T.texts, goal:D.textsGoal, emoji:'✍️' },
+    { label:'anmeldelser', val:T.tp,    goal:D.tpGoal,    emoji:'⭐' },
+  ];
+  goalDefs.forEach(g=>{
+    if(g.goal > 0 && g.val > 0){
+      const pct = Math.round(g.val / g.goal * 100);
+      const left = g.goal - g.val;
+      const sub = left > 0
+        ? `${g.val} af ${g.goal} — ${left} mangler`
+        : `Mål nået! 🎉`;
+      slides.push({
+        tag:'Månedsmål', emoji: g.emoji,
+        headline: `Vi er ${pct}% i mål`,
+        sub: `Fælles ${g.label}: ` + sub
+      });
+    }
+  });
+
+  // --- 🏆 Fælles rekorder ---
+  if(D.sitesRec)
+    slides.push({ tag:'Hall of Fame — 🏆 Fælles rekord', emoji:'🏆', headline: D.sitesRec+' sager', sub:'Den bedste måned vi nogensinde har haft på hjemmesider' });
+  if(D.textsRec)
+    slides.push({ tag:'Hall of Fame — 🏆 Fælles rekord', emoji:'🏆', headline: D.textsRec+' tekster', sub:'Den bedste måned vi nogensinde har haft på tekster' });
+  if(D.tpRec)
+    slides.push({ tag:'Hall of Fame — 🏆 Fælles rekord', emoji:'🏆', headline: D.tpRec+' anmeldelser', sub:'Den bedste måned vi nogensinde har haft på anmeldelser' });
+
+  // --- Individuelle rekordindehavere ---
+  if(D.sitesLRec && D.sitesLRecName)
+    slides.push({ tag:'Hall of Fame', emoji:'🌐', headline: D.sitesLRecName, sub:'Personlig rekord: '+D.sitesLRec+' sager på én måned' });
+  if(D.textsLRec && D.textsLRecName)
+    slides.push({ tag:'Hall of Fame', emoji:'✍️', headline: D.textsLRecName, sub:'Personlig rekord: '+D.textsLRec+' tekster på én måned' });
+  if(D.tpLRec && D.tpLRecName)
+    slides.push({ tag:'Hall of Fame', emoji:'⭐', headline: D.tpLRecName, sub:'Personlig rekord: '+D.tpLRec+' anmeldelser på én måned' });
+
+  // --- Web fælles bonus ---
+  if(D.bonus > 0)
+    slides.push({
+      tag:'Web fælles bonus', emoji:'💰',
+      headline: D.bonus.toLocaleString('da-DK')+' kr.',
+      sub:'Så mange penge er i fællespuljen lige nu'
+    });
+
+  // --- Manuelle facts ---
+  (D.infoFacts||[]).forEach(fact=>{
+    slides.push({ tag:'Fun fact', emoji:'💡', headline: fact, sub:'' });
+  });
+
+  // Shuffle
+  for(let i=slides.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [slides[i],slides[j]]=[slides[j],slides[i]];
+  }
+  return slides;
+}
+
+function showInfoSlide(){
+  if(_celRunning) return; // celebration kører — vent
+  // Brug cached slides hvis data ikke har ændret sig
+  const currentSig = dataSig(D);
+  if(!_infoSlidesCache || _infoSlidesCacheSig !== currentSig){
+    _infoSlidesCache = buildInfoSlides();
+    _infoSlidesCacheSig = currentSig;
+  }
+  const slides = _infoSlidesCache;
+  if(!slides.length) return;
+  const slide = slides[Math.floor(Math.random() * slides.length)];
+
+  const overlay = document.getElementById('info-overlay');
+  const inner   = document.getElementById('info-inner');
+  const fill    = document.getElementById('info-progress-fill');
+
+  document.getElementById('info-tag').textContent      = slide.tag;
+  document.getElementById('info-emoji').textContent    = slide.emoji;
+  document.getElementById('info-headline').textContent = slide.headline;
+  document.getElementById('info-sub').innerHTML        = slide.sub;
+
+  // Reset progress animation
+  fill.style.animation = 'none';
+  fill.style.setProperty('--info-dur', INFO_SLIDE_DUR + 'ms');
+  void fill.offsetWidth;
+
+  overlay.classList.toggle('info-hof', slide.tag.startsWith('Hall of Fame'));
+  overlay.classList.add('info-in');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    inner.classList.add('info-in');
+    fill.style.animation = '';
+  }));
+
+  const fadeOut = INFO_SLIDE_DUR - 800;
+  setTimeout(()=>{
+    inner.classList.remove('info-in');
+    inner.classList.add('info-out');
+    overlay.classList.remove('info-in');
+    overlay.classList.remove('info-hof');
+  }, fadeOut);
+
+  setTimeout(()=>{
+    inner.classList.remove('info-out');
+  }, INFO_SLIDE_DUR);
+}
+
+// Start scheduler — første kald efter 30 min, derefter hvert 30. min
+setInterval(showInfoSlide, INFO_INTERVAL);
+
+/* triggerInfoSlide: bruges fra admin-knappen.
+   Afspiller slide lokalt + pusher infoTriggerId til JSONBin
+   så remote klienter også afspiller en slide inden for 15 sek. */
+async function triggerInfoSlide(){
+  const newId = Date.now().toString();
+  localStorage.setItem('bo7_lastInfoId', newId);
+  D.infoTriggerId = newId;
+  saveLocal(D);
+  showInfoSlide();
+  if(binOk()){
+    setSyncStatus('wait');
+    const ok = await pushBin(D);
+    setSyncStatus(ok ? 'ok' : 'err');
+  }
+}
+
+// Klik udenfor admin-boksen lukker den
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('overlay')) closeAdmin(); });
+// Ctrl+Shift+A åbner admin fra tastaturet
+document.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.shiftKey&&e.key==='A') openAdmin(); });
+// Initial sync ved sideload (kun hvis JSONBin er konfigureret)
+if(binOk()) doSync();
+</script>
+</body>
+</html>
