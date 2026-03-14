@@ -457,7 +457,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
 
 /* ════════════════════════════════════════
    FOOTER
-   Venstre: Web fælles bonus (stort beløb i DK-format)
+   Venstre: Web-Banken (stort beløb i DK-format)
    Højre: Best One A/S logo (SVG, inline)
    ════════════════════════════════════════ */
 .footer{display:flex;align-items:center;justify-content:space-between;padding:12px 0 0;border-top:1px solid rgba(255,255,255,0.07);}
@@ -746,7 +746,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
   <!-- FOOTER: venstre = team bonus (kr.), højre = Best One A/S logo (inline SVG) -->
   <div class="footer">
     <div class="bonus-area">
-      <span class="bonus-label">Web fælles bonus</span>
+      <span class="bonus-label">Web-Banken</span>
       <span class="bonus-emoji">💰</span>
       <span class="bonus-amount" id="bonus-display">0<span class="bonus-suffix"> kr.</span></span>
     </div>
@@ -815,7 +815,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
 
     <!-- Bonus-splash (alternativt layout) -->
     <div class="cel-bonus-emoji" id="cel-bonus-emoji" style="display:none">💰</div>
-    <div class="cel-bonus-label" id="cel-bonus-label" style="display:none">Web fælles bonus</div>
+    <div class="cel-bonus-label" id="cel-bonus-label" style="display:none">Web-Banken</div>
     <div class="cel-bonus-sub" id="cel-bonus-sub" style="display:none">Flere penge i klassekassen</div>
     <div class="cel-bonus-amount" id="cel-bonus-amount" style="display:none"></div>
   </div>
@@ -924,7 +924,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
     <!-- TAB: BONUS -->
     <div class="tab-pane" id="tab-bonus">
       <div class="admin-section">
-        <div class="admin-section-label">Web fælles bonus</div>
+        <div class="admin-section-label">Web-Banken</div>
         <div class="ag2">
           <div class="field"><label>Bonus (kr.)</label><input type="number" id="a-bonus" min="0" max="99999" placeholder="0"></div>
         </div>
@@ -1962,7 +1962,7 @@ function spawnConfetti(emoji, delta){
        - Månedsmål progress (X% i mål, Y mangler)
        - Hall of Fame: fælles rekorder
        - Hall of Fame: individuelle rekordindehavere
-       - Web fælles bonus (kun hvis > 0)
+       - Web-Banken (kun hvis > 0)
      Manuelle slides: D.infoFacts (én linje = én slide)
      Sessioner/Casper er bevidst udeladt overalt.
 
@@ -2050,10 +2050,10 @@ function buildInfoSlides(){
   if(D.tpLRec && D.tpLRecName)
     slides.push({ tag:'Hall of Fame', emoji:'⭐', headline: D.tpLRecName, sub:'Personlig rekord: '+D.tpLRec+' anmeldelser på én måned' });
 
-  // --- Web fælles bonus ---
+  // --- Web-Banken ---
   if(D.bonus > 0)
     slides.push({
-      tag:'Web fælles bonus', emoji:'💰',
+      tag:'Web-Banken', emoji:'💰',
       headline: D.bonus.toLocaleString('da-DK')+' kr.',
       sub:'Så mange penge er i fællespuljen lige nu'
     });
