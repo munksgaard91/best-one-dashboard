@@ -122,7 +122,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
 .stat-block.gators .progress-pct{color:var(--gators-light);}
 .stat-block.sharks .progress-pct{color:var(--sessions-light);}
 .stat-block.tp     .progress-pct{color:var(--tp);}
-.track{height:4px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;}
+.track{height:7px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;}
 .fill{height:100%;border-radius:99px;width:0%;transition:width 1.6s cubic-bezier(0.16,1,0.3,1);}
 .stat-block.blue   .fill{background:linear-gradient(90deg,#2a55c0,#6a9ee8);}
 .stat-block.gators .fill{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
@@ -428,6 +428,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;}
 .list-row:nth-child(2){animation-delay:0.1s;}
 .list-row:nth-child(3){animation-delay:0.16s;}
 .list-row:nth-child(4){animation-delay:0.22s;}
+.list-row:nth-child(5){animation-delay:0.28s;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .list-row.gators{background:none;}
 .list-row.sharks{background:none;}
@@ -1215,7 +1216,7 @@ function sortWithTiebreak(employees, field){
     })
     .map(x => x.e);
 }
-function top4(employees, field){ return sortWithTiebreak(employees, field).slice(0,4); }
+function top5(employees, field){ return sortWithTiebreak(employees, field).slice(0,5); }
 function top2(employees, field){ return sortWithTiebreak(employees, field).slice(0,2); }
 
 /* ════════════════════════════════════════
@@ -1250,10 +1251,10 @@ function getTimeEmoji(){
 
   // Fredag-specifikke slots
   if(isFriday && t >= 15*60 && t < 15*60+30) return '📋'; // fredagsbriefing
-  if(isFriday && (t >= 15*60+30 || t < 8*60+30)) return '🌙'; // fri efter 15:30
+  if(isFriday && (t >= 15*60+30 || t < 8*60)) return '🌙'; // fri efter 15:30
 
   // Normal fri efter 16:00
-  if(!isFriday && (t >= 16*60 || t < 8*60+30)) return '🌙';
+  if(!isFriday && (t >= 16*60 || t < 8*60)) return '🌙';
 
   // Arbejdstid
   return isFriday ? '🔥' : '🚀';
@@ -1326,7 +1327,7 @@ function renderList(containerId, items, field, rowClass){
     const t=p.team||'none';
     const isMktg = t === 'marketing';
     const cls = rowClass || (t==='gators'?'gators':t==='sharks'?'sharks':'none');
-    const isChaser = i === 3;
+    const isChaser = i >= 3;
     const pill = !isChaser && (t==='gators'||t==='sharks')
       ? `<span class="team-pill ${t}">${t==='gators'?'Gators':'Sharks'}</span>`
       : (!isChaser && isMktg) ? `<span class="team-pill marketing">Marketing</span>`
@@ -1419,10 +1420,10 @@ function render(oldTotals){
 
   // For sites/texts/tp: top3 from all employees of that dept, sorted by field
   // For sessions: top2 from session dept
-  renderList('list-sites',    top4(siteEmps.length? siteEmps : emps, 'sites'),    'sites');
-  renderList('list-texts',    top4(textEmps.length? textEmps : emps, 'texts'),    'texts');
+  renderList('list-sites',    top5(siteEmps.length? siteEmps : emps, 'sites'),    'sites');
+  renderList('list-texts',    top5(textEmps.length? textEmps : emps, 'texts'),    'texts');
   renderList('list-sessions', top2(sessEmps.length? sessEmps : emps, 'sessions'), 'sessions');
-  renderList('list-tp',       top4(emps, 'tp'), 'tp', 'tp-row');
+  renderList('list-tp',       top5(emps, 'tp'), 'tp', 'tp-row');
 
   // List records
   const lr=(id,v,name)=>{ document.getElementById(id).innerHTML = (v&&v!==''&&v!='0')?`<span class="lr-label">🏆 Rekord</span><span class="lr-divider">|</span><em>${v}</em>${name?`<span class="lr-name">${name}</span>`:''}`:''; };
