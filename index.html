@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ════════════════════════════════════════
@@ -16,113 +15,99 @@
   --gators:#6b8f6e; --gators-light:#8aaf8d; --gators-dim:rgba(107,143,110,0.12); --gators-border:rgba(107,143,110,0.28);
   --sharks:#9e7f3a; --sharks-light:#c4a050; --sharks-dim:rgba(158,127,58,0.12); --sharks-border:rgba(158,127,58,0.28);
   --sessions:#b84040; --sessions-light:#e06060;
-  --tp:#a855f7; --tp-dim:rgba(168,85,247,0.1); --tp-border:rgba(168,85,247,0.25);
-  --mktg:#4a5f7a; --mktg-light:#6a80a0; --mktg-dim:rgba(74,95,122,0.12); --mktg-border:rgba(74,95,122,0.28);
+  --tp:#c9a84c; --tp-dim:rgba(201,168,76,0.1); --tp-border:rgba(201,168,76,0.25);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;}
+html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
 
 /* ════════════════════════════════════════
    BAGGRUNDS-CREATURES
-   5 dyr: 3 hajer 🦈 (Sharks) + 2 krokodiller 🐊 (Gators)
-   Sejler diagonalt henover skærmen i loops via p1-p5 keyframes.
-   Opacity 0.38 = synlige men ikke distraherende.
+   10 dyr (5 hajer 🦈 + 5 krokodiller 🐊)
+   Starter off-screen fra unikke kanter og
+   sejler diagonalt henover skærmen i loops.
+   Opacity 0.14 = subtile men synlige.
    ════════════════════════════════════════ */
-.creatures{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict;}
-.creature{position:absolute;pointer-events:none;user-select:none;display:flex;align-items:center;justify-content:center;width:130px;height:130px;will-change:transform;transform:translateZ(0);}
-.creature .ico{font-size:96px;opacity:0.38;line-height:1;position:relative;z-index:1;image-rendering:crisp-edges;}
+.creatures{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.creature{position:absolute;pointer-events:none;user-select:none;display:flex;align-items:center;justify-content:center;width:130px;height:130px;}
+.creature .halo{position:absolute;inset:-55px;border-radius:50%;filter:blur(60px);opacity:0.65;}
+.creature .ico{font-size:96px;opacity:0.28;line-height:1;position:relative;z-index:1;}
+.creature.shark .halo{background:radial-gradient(circle,rgba(180,140,50,0.55),transparent 70%);}
+.creature.gator .halo{background:radial-gradient(circle,rgba(90,140,95,0.55),transparent 70%);}
 .c1{top:20%;left:-150px;animation:p1 58s linear infinite;}
 .c2{top:5%;right:-150px;animation:p2 70s linear infinite 10s;}
 .c3{bottom:-150px;left:25%;animation:p3 82s linear infinite 25s;}
 .c4{top:60%;left:-150px;animation:p4 64s linear infinite 5s;}
 .c5{top:-150px;right:30%;animation:p5 76s linear infinite 35s;}
+.c6{bottom:-150px;right:15%;animation:p6 90s linear infinite 15s;}
+.c7{top:40%;right:-150px;animation:p7 68s linear infinite 45s;}
+.c8{top:-150px;left:55%;animation:p8 86s linear infinite 20s;}
+.c9{bottom:-150px;left:70%;animation:p9 74s linear infinite 8s;}
+.c10{top:80%;right:-150px;animation:p10 96s linear infinite 50s;}
 @keyframes p1{0%{transform:translate(0,0) rotate(-6deg);}50%{transform:translate(55vw,8vh) rotate(3deg);}100%{transform:translate(110vw,14vh) rotate(-4deg);}}
 @keyframes p2{0%{transform:translate(0,0) rotate(174deg);}50%{transform:translate(-50vw,40vh) rotate(171deg);}100%{transform:translate(-110vw,68vh) rotate(177deg);}}
 @keyframes p3{0%{transform:translate(0,0) rotate(-88deg);}50%{transform:translate(12vw,-55vh) rotate(-90deg);}100%{transform:translate(22vw,-110vh) rotate(-87deg);}}
 @keyframes p4{0%{transform:translate(0,0) rotate(-4deg);}50%{transform:translate(48vw,-20vh) rotate(5deg);}100%{transform:translate(110vw,-35vh) rotate(-3deg);}}
 @keyframes p5{0%{transform:translate(0,0) rotate(91deg);}50%{transform:translate(-15vw,48vh) rotate(89deg);}100%{transform:translate(-28vw,110vh) rotate(92deg);}}
+@keyframes p6{0%{transform:translate(0,0) rotate(-92deg);}50%{transform:translate(-20vw,-50vh) rotate(-88deg);}100%{transform:translate(-38vw,-110vh) rotate(-91deg);}}
+@keyframes p7{0%{transform:translate(0,0) rotate(176deg);}50%{transform:translate(-45vw,-25vh) rotate(173deg);}100%{transform:translate(-110vw,-45vh) rotate(178deg);}}
+@keyframes p8{0%{transform:translate(0,0) rotate(88deg);}50%{transform:translate(18vw,52vh) rotate(90deg);}100%{transform:translate(32vw,110vh) rotate(87deg);}}
+@keyframes p9{0%{transform:translate(0,0) rotate(-90deg);}50%{transform:translate(-10vw,-52vh) rotate(-88deg);}100%{transform:translate(-18vw,-110vh) rotate(-91deg);}}
+@keyframes p10{0%{transform:translate(0,0) rotate(172deg);}50%{transform:translate(-52vw,-30vh) rotate(175deg);}100%{transform:translate(-110vw,-55vh) rotate(170deg);}}
 
 /* ════════════════════════════════════════
    HOVED-LAYOUT
-   CSS Grid med 2 rækker × 4 kolonner:
-   Kolonne 1: WebBanken (fuld højde)
-   Kolonne 2: Sager stat + liste
-   Kolonne 3: Tekster stat + liste
-   Kolonne 4: Sessioner stat + Anmeldelser kombineret
+   CSS Grid med 4 rækker:
+   1. Header (måned + ur)
+   2. Stat-kort (4 store tal-bokse)
+   3. Top 3-lister (4 kolonner)
+   4. Footer (bonus + logo)
    ════════════════════════════════════════ */
-#app{position:relative;z-index:1;width:100%;height:100%;display:grid;grid-template-rows:auto 1fr;padding:20px 48px 24px;gap:14px;}
-header{display:flex;align-items:center;justify-content:space-between;}
-.header-center{display:flex;flex-direction:column;align-items:center;}
-.main-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;grid-template-rows:auto 1fr;gap:16px;min-height:0;}
-
-/* WebBanken — kolonne 1, fuld højde */
-.wb-divider{border:none;border-top:1px solid rgba(255,255,255,0.06);}
-.wb-section-lbl{font-size:clamp(10px,0.8vw,14px);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.8);margin-bottom:10px;}
-.wb-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.wb-row:last-child{margin-bottom:0;}
-.wb-amt{font-family:'DM Mono',monospace;font-size:clamp(11px,1vw,16px);font-weight:700;color:rgba(255,255,255,0.5);}
-.wb-amt-neg{font-family:'DM Mono',monospace;font-size:clamp(11px,1vw,16px);font-weight:700;color:rgba(192,96,96,0.8);}
-
-/* Kolonne 4: Sessioner + Anmeldelser kombineret */
-/* Kolonne 4: Sessioner + Anmeldelser — flex-kolonne der spænder begge rækker */
-.col-sessions-tp{display:flex;flex-direction:column;gap:16px;grid-column:4;grid-row:1/3;min-height:0;}
-
-border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display:flex;flex-direction:column;gap:clamp(5px,0.7vh,10px);flex:1;min-height:0;overflow:hidden;position:relative;}
-.tp-combo-block::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,#5a2d8a,var(--tp));}
-#card-tp .stat-num{ font-size:clamp(28px,3.4vw,58px); }
-#card-tp{ flex:1; min-height:0; }
-.tp-combo-divider{border:none;border-top:1px solid rgba(255,255,255,0.06);margin:4px 0;flex-shrink:0;}
-.tp-combo-block .p-name{ font-size:clamp(11px,0.9vw,15px); }
-.tp-combo-block .p-count{ font-size:clamp(13px,1.1vw,20px); }
-.tp-combo-block .medal{ font-size:clamp(11px,0.9vw,15px); }
-.tp-combo-block .team-pill{ font-size:clamp(6px,0.45vw,8px); }
+#app{position:relative;z-index:1;width:100%;height:100%;display:grid;grid-template-rows:auto 0.75fr 1.25fr auto;padding:36px 56px 28px;gap:18px;}
 
 /* ════════════════════════════════════════
    HEADER
-   Venstre: Måned + afdeling
-   Midte: Best One A/S logo + version (klikbar → åbner admin)
-   Højre: Ur (HH:MM, kolon blinker via CSS), dato, sync-dot
+   Venstre: Måned + År (stort, hvid)
+   Højre: Ur (HH:MM:SS), dato, sync-status
    Sync-dot: grøn=ok, rød=fejl, gul=syncer
    ════════════════════════════════════════ */
-
-.month{font-family:'DM Mono',monospace;font-size:clamp(28px,2.2vw,42px);font-weight:500;letter-spacing:1px;color:var(--text);}
+header{display:flex;align-items:flex-start;justify-content:space-between;}
+.month{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:1px;color:var(--text);}
 .header-left{display:flex;flex-direction:column;gap:3px;}
-#dept-lbl{font-size:clamp(11px,0.9vw,16px);font-weight:500;color:var(--text-dim);letter-spacing:0.5px;}
+#dept-lbl{font-size:11px;font-weight:500;color:var(--text-dim);letter-spacing:0.5px;}
 .header-right{display:flex;align-items:flex-end;flex-direction:column;gap:3px;}
-.clock-row{display:flex;align-items:center;gap:10px;}
-#time-emoji{font-size:clamp(16px,1.4vw,26px);line-height:1;}
-#clock{font-family:'DM Mono',monospace;font-size:clamp(28px,2.2vw,42px);font-weight:400;letter-spacing:2px;line-height:1;}
-#clock .colon{animation:colonBlink 1s step-end infinite;}
-@keyframes colonBlink{0%,100%{opacity:1;}50%{opacity:0;}}
-#date{font-size:clamp(11px,0.9vw,16px);font-weight:500;color:var(--text-dim);letter-spacing:0.5px;}
+#clock{font-family:'DM Mono',monospace;font-size:28px;font-weight:400;letter-spacing:2px;line-height:1;}
+#date{font-size:11px;font-weight:500;color:var(--text-dim);letter-spacing:0.5px;}
 #sync-status{font-size:10px;color:var(--text-dim);letter-spacing:1px;display:flex;align-items:center;gap:5px;min-height:13px;}
 .sync-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.sync-dot.ok{background:#6b8f6e;}
+.sync-dot.ok{background:#6b8f6e;box-shadow:0 0 5px #6b8f6e;}
 .sync-dot.err{background:#c06060;}
 .sync-dot.wait{background:#9e7f3a;animation:blink 1s ease infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
 
 /* ════════════════════════════════════════
-   STAT-KORT
-   Indeholder: label+ikon / stort tal / progressbar / fælles rekord
-   Farver: blue=Sager, gators=Tekster, sharks=Sessioner, tp=Anmeldelser (lilla)
-   WebBanken bruger også stat-block (grid-column:1, row:1)
+   STAT-KORT (øverste række, 4 bokse)
+   Indeholder:
+   - Overskrift + ikon
+   - Stort samlet tal (beregnes fra medarbejdere)
+   - Progressbar mod månedsmål
+   - Fælles rekord (historisk bedste måned)
+   Farver: blue=Sager, gators=Tekster,
+           sharks=Sessioner, tp=Trustpilot
    ════════════════════════════════════════ */
-.stat-block{background:rgba(17,25,40,0.82);border:1px solid var(--border);border-radius:16px;padding:clamp(16px,1.6vh,28px) clamp(20px,1.8vw,32px) clamp(14px,1.4vh,24px);display:flex;flex-direction:column;gap:clamp(6px,0.8vh,12px);position:relative;overflow:hidden;justify-content:space-between;}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;}
+.stat-block{background:rgba(17,25,40,0.22);border:1px solid var(--border);border-radius:16px;padding:16px 24px 14px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;backdrop-filter:blur(12px);}
 .stat-block::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0;}
 .stat-block.blue::after{background:linear-gradient(90deg,#2a55c0,#6a9ee8);}
 .stat-block.gators::after{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
 .stat-block.sharks::after{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
-.stat-block.tp::after{background:linear-gradient(90deg,#5a2d8a,var(--tp));}
-.stat-block.goal-reached{background:rgba(30,24,10,0.88);border-color:rgba(201,168,76,0.35);}
-.stat-block.goal-reached::after{background:linear-gradient(90deg,#a07830,#f0d060,#a07830);}
+.stat-block.tp::after{background:linear-gradient(90deg,#a07830,var(--tp));}
 .stat-top{display:flex;align-items:flex-start;justify-content:space-between;}
-.stat-label{font-size:clamp(16px,1.3vw,22px);font-weight:800;letter-spacing:0.3px;color:var(--text);}
-.stat-icon{font-size:clamp(17px,1.4vw,24px);opacity:0.5;}
-.stat-num{font-size:clamp(52px,6vw,100px);font-weight:800;line-height:0.9;letter-spacing:-2px;color:var(--text);}
+.stat-label{font-size:16px;font-weight:800;letter-spacing:0.3px;color:var(--text);}
+.stat-icon{font-size:17px;opacity:0.5;}
+.stat-num{font-size:clamp(38px,3.8vw,62px);font-weight:800;line-height:0.9;letter-spacing:-2px;color:var(--text);}
 .stat-record{display:flex;align-items:center;gap:8px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.05);}
-.stat-record .rec-label{font-size:clamp(9px,0.7vw,12px);font-weight:700;letter-spacing:0.5px;color:var(--text-dim);opacity:0.7;white-space:nowrap;}
-.stat-record .rec-val{font-family:'DM Mono',monospace;font-size:clamp(14px,1.3vw,22px);font-weight:700;letter-spacing:-1px;color:rgba(255,255,255,0.55);}
+.stat-record .rec-label{font-size:9px;font-weight:700;letter-spacing:0.5px;color:var(--text-dim);opacity:0.7;white-space:nowrap;}
+.stat-record .rec-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:700;letter-spacing:-1px;}
 .stat-block.blue   .rec-val{color:#6a9ee8;}
 .stat-block.gators .rec-val{color:var(--gators-light);}
 .stat-block.sharks .rec-val{color:var(--sessions-light);}
@@ -132,26 +117,78 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 .progress-meta{display:flex;justify-content:space-between;align-items:center;}
 .progress-caption{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);display:flex;align-items:center;gap:6px;}
 .pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.stat-block.blue   .pulse-dot{background:#6a9ee8;animation:pulseDot 2.2s ease infinite;}
-.stat-block.gators .pulse-dot{background:var(--gators-light);animation:pulseDot 2.2s ease infinite 0.5s;}
-.stat-block.sharks .pulse-dot{background:var(--sessions-light);animation:pulseDot 2.2s ease infinite 1s;}
-.stat-block.tp     .pulse-dot{background:var(--tp);animation:pulseDot 2.2s ease infinite 1.5s;}
-@keyframes pulseDot{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.8);opacity:0.35;}}
+.stat-block.blue   .pulse-dot{background:#6a9ee8;animation:pulseBlue 2.2s ease infinite;}
+.stat-block.gators .pulse-dot{background:var(--gators-light);animation:pulseGreen 2.2s ease infinite 0.5s;}
+.stat-block.sharks .pulse-dot{background:var(--sessions-light);animation:pulseYellow 2.2s ease infinite 1s;}
+.stat-block.tp     .pulse-dot{background:var(--tp);animation:pulseTp 2.2s ease infinite 1.5s;}
+@keyframes pulseBlue  {0%{box-shadow:0 0 0 0 rgba(106,158,232,0.65);}70%{box-shadow:0 0 0 6px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
+@keyframes pulseGreen {0%{box-shadow:0 0 0 0 rgba(138,175,141,0.65);}70%{box-shadow:0 0 0 6px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
+@keyframes pulseYellow{0%{box-shadow:0 0 0 0 rgba(196,160,80,0.65);}70%{box-shadow:0 0 0 6px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
+@keyframes pulseTp   {0%{box-shadow:0 0 0 0 rgba(0,182,122,0.65);}70%{box-shadow:0 0 0 6px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
 .progress-pct{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;}
 .stat-block.blue   .progress-pct{color:#6a9ee8;}
 .stat-block.gators .progress-pct{color:var(--gators-light);}
 .stat-block.sharks .progress-pct{color:var(--sessions-light);}
 .stat-block.tp     .progress-pct{color:var(--tp);}
-.track{height:7px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;}
+.track{height:4px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;}
 .fill{height:100%;border-radius:99px;width:0%;transition:width 1.6s cubic-bezier(0.16,1,0.3,1);}
 .stat-block.blue   .fill{background:linear-gradient(90deg,#2a55c0,#6a9ee8);}
 .stat-block.gators .fill{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
 .stat-block.sharks .fill{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
-.stat-block.tp     .fill{background:linear-gradient(90deg,#5a2d8a,var(--tp));}
-.fill{position:relative;overflow:hidden;transform:translateZ(0);}
-.fill::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 2.4s ease-in-out infinite;}
-@keyframes shimmer{0%{left:-60%;}100%{left:160%;}}
+.stat-block.tp     .fill{background:linear-gradient(90deg,#a07830,var(--tp));}
 
+/* ════════════════════════════════════════
+   INFO-SPLASH (hvert 30. min)
+   Viser automatiske slides med live data
+   og manuelle facts fra admin.
+   ════════════════════════════════════════ */
+#info-overlay{
+  position:fixed;inset:0;z-index:195;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  background:rgba(8,12,22,0);
+  transition:background 0.8s ease;
+}
+#info-overlay.info-in{ background:rgba(8,12,22,0.94); }
+.info-inner{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;text-align:center;width:80%;max-width:900px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.info-inner.info-in{ opacity:1;transform:translateY(0); }
+.info-inner.info-out{ opacity:0;transform:translateY(-16px);transition:opacity 0.5s ease-in,transform 0.5s ease-in; }
+.info-tag{
+  font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:22px;opacity:0.6;
+}
+.info-emoji{ font-size:72px;line-height:1;margin-bottom:28px; }
+.info-headline{
+  font-size:clamp(32px,5vw,68px);font-weight:800;
+  line-height:1.05;letter-spacing:-2px;color:var(--text);
+  margin-bottom:16px;
+}
+.info-sub{
+  font-size:clamp(16px,2vw,22px);font-weight:400;
+  color:rgba(232,237,245,0.5);letter-spacing:0;line-height:1.4;
+}
+.info-progress-bar{
+  width:320px;height:5px;background:rgba(255,255,255,0.07);
+  border-radius:99px;overflow:hidden;margin-top:40px;
+}
+.info-progress-fill{
+  height:100%;border-radius:99px;
+  background:rgba(255,255,255,0.2);
+  width:100%;
+  animation:infoProgress var(--info-dur) linear forwards;
+}
+@keyframes infoProgress{ 0%{width:100%} 100%{width:0%} }
+
+#info-overlay.info-hof{ background:rgba(40,28,4,0.97); }
+#info-overlay.info-hof .info-tag{ color:var(--tp);opacity:0.8; }
+#info-overlay.info-hof .info-headline{ color:#f5c842;text-shadow:0 0 60px rgba(245,200,66,0.25); }
+#info-overlay.info-hof .info-sub{ color:rgba(245,200,66,0.45); }
+#info-overlay.info-hof .info-progress-fill{ background:rgba(245,200,66,0.3); }
 
 /* ════════════════════════════════════════
    REFRESH SWEEP ANIMATION
@@ -199,8 +236,8 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 }
 /* ════════════════════════════════════════
    FEJRINGSANIMATIONER
-   Kø-baseret: én splash per ændret tal + WebBanken.
-   Hvert splash vises i 20 sek. → animeres væk.
+   Kø-baseret: én splash per ændret medarbejder.
+   Hvert splash vises i 12 sek. → animeres væk.
    ════════════════════════════════════════ */
 #cel-overlay{
   position:fixed;inset:0;z-index:200;
@@ -210,15 +247,12 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
   transition:background 0.6s ease;
 }
 #cel-overlay.cel-active{ pointer-events:auto; }
-#cel-close{display:none;position:absolute;top:24px;right:28px;background:none;border:none;color:rgba(255,255,255,0.25);font-size:22px;cursor:pointer;line-height:1;transition:color 0.2s;z-index:1;}
-#cel-overlay.cel-active #cel-close{display:block;}
-#cel-close:hover{color:rgba(255,255,255,0.7);}
 #cel-overlay.cel-in{ background:rgba(8,12,22,0.92); }
 
 .cel-inner{
   position:relative;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:0;
+  gap:0px;
   opacity:0;transform:scale(0.88) translateY(24px);
   transition:opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
   text-align:center;
@@ -229,9 +263,9 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 .cel-inner.cel-out{ opacity:0;transform:scale(1.06) translateY(-20px);transition:opacity 0.45s ease-in, transform 0.45s ease-in; }
 
 .cel-team{
-  font-size:clamp(20px,2.2vw,32px);font-weight:800;letter-spacing:1px;
-  margin-top:20px;margin-bottom:0;
-  opacity:0.9;
+  font-size:15px;font-weight:800;letter-spacing:1px;
+  margin-top:14px;margin-bottom:20px;
+  opacity:0.8;
 }
 .cel-team.gators{ color:var(--gators-light); }
 .cel-team.sharks{ color:var(--sharks-light); }
@@ -241,7 +275,6 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
   margin-bottom:18px;
   filter:drop-shadow(0 0 28px rgba(255,255,255,0.18));
   animation:celEmojiFloat 3s ease-in-out infinite;
-  image-rendering:crisp-edges;
 }
 @keyframes celEmojiFloat{
   0%,100%{ transform:translateY(0) scale(1); }
@@ -252,12 +285,12 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
   font-size:clamp(52px,7vw,96px);font-weight:800;
   line-height:0.95;letter-spacing:-3px;
   color:var(--text);
-  margin-bottom:20px;
+  margin-bottom:26px;
   text-shadow:0 0 60px rgba(255,255,255,0.08);
 }
 
 .cel-metric-label{
-  font-size:clamp(18px,1.8vw,28px);font-weight:700;letter-spacing:1px;
+  font-size:14px;font-weight:700;letter-spacing:1px;
   color:var(--text-dim);margin-bottom:14px;
 }
 
@@ -283,7 +316,7 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 .cel-new.blue   { color:#6a9ee8;text-shadow:0 0 60px rgba(106,158,232,0.4); }
 .cel-new.gators { color:var(--gators-light);text-shadow:0 0 60px rgba(138,175,141,0.4); }
 .cel-new.sharks { color:var(--sharks-light);text-shadow:0 0 60px rgba(196,160,80,0.4); }
-.cel-new.tp     { color:var(--tp);text-shadow:0 0 60px rgba(168,85,247,0.5); }
+.cel-new.tp     { color:var(--tp);text-shadow:0 0 60px rgba(0,182,122,0.4); }
 
 /* Glow-ring bag det store tal */
 .cel-glow{
@@ -298,14 +331,14 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 .cel-glow.blue   { background:radial-gradient(circle,#3a6fd8,transparent 70%); }
 .cel-glow.gators { background:radial-gradient(circle,var(--gators),transparent 70%); }
 .cel-glow.sharks { background:radial-gradient(circle,var(--sharks),transparent 70%); }
-.cel-glow.tp     { background:radial-gradient(circle,#a855f7,transparent 70%); }
+.cel-glow.tp     { background:radial-gradient(circle,#c9a84c,transparent 70%); }
 
 /* Anmeldelser-tilstand: baggrund bliver guld */
 #cel-overlay.cel-tp{ background:rgba(120,88,20,0) !important; }
 #cel-overlay.cel-tp.cel-in{ background:rgba(90,62,8,0.97) !important; }
 .cel-tp-star{
   font-size:40px;letter-spacing:4px;line-height:1;
-  margin-bottom:10px;color:#a855f7;
+  margin-bottom:10px;color:#f5c842;
   opacity:0;transform:translateY(8px);
   transition:opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
   text-shadow:0 0 20px rgba(245,200,66,0.6);
@@ -321,12 +354,12 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 
 /* Bonus-splash specifikt layout */
 .cel-bonus-label{
-  font-size:clamp(20px,2vw,32px);font-weight:800;letter-spacing:0.5px;
-  color:var(--text);margin-bottom:8px;
+  font-size:14px;font-weight:800;letter-spacing:0.5px;
+  color:var(--text-dim);margin-bottom:6px;
 }
 .cel-bonus-sub{
-  font-size:clamp(16px,1.5vw,24px);font-weight:500;letter-spacing:0.3px;
-  color:rgba(232,237,245,0.55);margin-bottom:28px;
+  font-size:15px;font-weight:500;letter-spacing:0.3px;
+  color:rgba(232,237,245,0.45);margin-bottom:28px;
 }
 .cel-bonus-emoji{
   font-size:72px;line-height:1;
@@ -340,20 +373,18 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
   letter-spacing:-4px;line-height:0.9;
   color:var(--text);
   text-shadow:0 0 60px rgba(255,200,50,0.25);
-  position:relative;display:inline-block;
 }
 .cel-bonus-kr{
   font-size:clamp(24px,3vw,42px);font-weight:500;
-  color:rgba(232,237,245,0.45);
+  color:rgba(232,237,245,0.45);margin-left:12px;
   letter-spacing:0;
-  position:absolute;bottom:0.1em;left:calc(100% + 10px);white-space:nowrap;
 }
 
 /* Anmeldelser-tilstand: kontrastkorrektioner på guld baggrund */
 #cel-overlay.cel-tp .cel-team          { color:rgba(255,255,255,0.95); }
 #cel-overlay.cel-tp .cel-team.gators   { color:rgba(255,255,255,0.95); }
 #cel-overlay.cel-tp .cel-team.sharks   { color:rgba(255,255,255,0.95); }
-#cel-overlay.cel-tp .cel-new.tp        { color:#a855f7;text-shadow:0 0 40px rgba(168,85,247,0.5); }
+#cel-overlay.cel-tp .cel-new.tp        { color:#f5c842;text-shadow:0 0 40px rgba(245,200,66,0.5); }
 #cel-overlay.cel-tp .cel-old           { color:rgba(255,255,255,0.28); }
 #cel-overlay.cel-tp .cel-glow          { opacity:0.18 !important; }
 #cel-overlay.cel-tp .cel-name          { color:#fff; }
@@ -372,103 +403,149 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 }
 
 /* ════════════════════════════════════════
-   LISTE-BLOKKE (grid row 2 for Sager+Tekster; integreret i Anmeldelser)
-   Sorteret efter medarbejder-tal, afdelingsfiltreret.
-   Sager → site-dept, Tekster → text-dept, Anmeldelser → alle.
-   Sessioner har ingen separat liste (kun stat-kort).
-   Tom liste viser "Hvem får fakket først? 🎯"
+   TOP 3-LISTER (nederste række, 4 kolonner)
+   Automatisk sorteret efter medarbejder-tal.
+   Kun medarbejdere med værdi > 0 vises.
+   Afdelingsfilter:
+   - Hjemmeside-folk  → Sager-liste
+   - Tekstforfattere  → Tekster-liste
+   - Fotografer       → Sessioner-liste
+   - Trustpilot       → alle medarbejdere
+   Tom liste viser "Ingen resultater endnu"
    ════════════════════════════════════════ */
-.list-block{background:rgba(17,25,40,0.82);border:1px solid var(--border);border-radius:18px;padding:clamp(16px,1.8vh,28px) clamp(18px,1.8vw,30px);display:flex;flex-direction:column;gap:clamp(7px,0.9vh,12px);min-height:0;overflow:hidden;justify-content:space-between;}
-.list-items{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0;overflow:hidden;}
+.lists-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;min-height:0;}
+.list-block{background:rgba(17,25,40,0.22);border:1px solid var(--border);border-radius:18px;padding:18px 22px;display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;backdrop-filter:blur(12px);}
+.list-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.list-heading{font-size:13px;font-weight:800;letter-spacing:0.3px;color:var(--text);}
+.list-items{display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;overflow:hidden;}
 
 /* Subdued list rows */
-.list-row{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:8px;padding:5px 4px;border-radius:0;border:none;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;animation:fadeUp 0.35s ease backwards;min-width:0;}
+.list-row{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:8px;padding:8px 4px;border-radius:0;border:none;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;animation:fadeUp 0.35s ease backwards;min-width:0;}
 .list-row:last-child{border-bottom:none;}
 .list-row:nth-child(1){animation-delay:0.04s;}
 .list-row:nth-child(2){animation-delay:0.1s;}
 .list-row:nth-child(3){animation-delay:0.16s;}
-.list-row:nth-child(4){animation-delay:0.22s;}
-.list-row:nth-child(5){animation-delay:0.28s;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .list-row.gators{background:none;}
 .list-row.sharks{background:none;}
 .list-row.tp-row{background:none;}
 .list-row.none{background:none;}
-.medal{font-size:clamp(13px,1.1vw,18px);line-height:1;text-align:center;opacity:0.7;}
-.p-name{font-size:clamp(13px,1.1vw,18px);font-weight:600;color:rgba(232,237,245,0.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-.team-pill{font-size:clamp(7px,0.55vw,10px);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:99px;flex-shrink:0;white-space:nowrap;}
+.medal{font-size:13px;line-height:1;text-align:center;opacity:0.7;}
+.p-name{font-size:13px;font-weight:600;color:rgba(232,237,245,0.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.team-pill{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:99px;flex-shrink:0;white-space:nowrap;}
 .team-pill.gators{background:var(--gators-dim);color:var(--gators-light);border:1px solid var(--gators-border);}
 .team-pill.sharks{background:var(--sharks-dim);color:var(--sharks-light);border:1px solid var(--sharks-border);}
-.team-pill.marketing{background:var(--mktg-dim);color:var(--mktg-light);border:1px solid var(--mktg-border);}
-.p-count{font-family:'DM Mono',monospace;font-size:clamp(18px,1.6vw,28px);font-weight:700;flex-shrink:0;color:#fff;opacity:1;min-width:2.2ch;text-align:right;}
+.p-count{font-family:'DM Mono',monospace;font-size:18px;font-weight:700;flex-shrink:0;color:#fff;opacity:1;min-width:2.2ch;text-align:right;}
 .list-row.gators .p-count{color:#fff;}
 .list-row.sharks .p-count{color:#fff;}
 .list-row.tp-row .p-count{color:#fff;}
-.list-row.none   .p-count{color:#fff;}
+.list-row.none   .p-count{color:rgba(255,255,255,0.5);}
 .list-placeholder{font-size:11px;color:var(--text-dim);opacity:0.4;letter-spacing:1px;padding:12px 4px;font-style:italic;}
-.list-row-chaser{ opacity:0.5; }
 .list-record{display:flex;align-items:center;gap:8px;margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
-.list-record .lr-label{font-size:clamp(9px,0.7vw,12px);font-weight:700;letter-spacing:0.5px;color:var(--text-dim);opacity:0.7;white-space:nowrap;}
+.list-record .lr-label{font-size:9px;font-weight:700;letter-spacing:0.5px;color:var(--text-dim);opacity:0.7;white-space:nowrap;}
 .list-record .lr-divider{color:rgba(255,255,255,0.12);font-size:14px;}
-.list-record em{font-family:'DM Mono',monospace;font-size:clamp(14px,1.3vw,22px);font-weight:700;letter-spacing:-1px;font-style:normal;color:rgba(255,255,255,0.55);}
-.list-record .lr-name{font-size:clamp(10px,0.8vw,14px);font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.3px;margin-left:6px;}
+.list-record em{font-family:'DM Mono',monospace;font-size:16px;font-weight:700;letter-spacing:-1px;font-style:normal;color:rgba(255,255,255,0.55);}
+.list-record .lr-name{font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.3px;margin-left:6px;}
 #lrec-sites em{color:#6a9ee8;}
 #lrec-texts em{color:var(--gators-light);}
+#lrec-sessions em{color:var(--sessions-light);}
 #lrec-tp em{color:var(--tp);}
 
-
-.bo-logo{height:clamp(22px,2vw,36px);width:auto;opacity:0.45;filter:brightness(2) saturate(0.4);}
-
 /* ════════════════════════════════════════
-   FIRE-BAGGRUND (vises ved 80%+ mod mål)
-   Diskrete 🔥 emojis der stiger op bagfra.
-   Kun transform+opacity — kører på GPU.
+   FOOTER
+   Venstre: Team Bonus (stort beløb i DK-format)
+   Højre: Best One A/S logo (SVG, inline)
    ════════════════════════════════════════ */
-.fire-bg{ position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0;transition:opacity 1.2s ease;transform:translateZ(0); }
-.stat-block.on-fire .fire-bg{ opacity:1; }
-.stat-block.on-fire-hot .fire-bg{ opacity:1; }
-.fire-bg span{ position:absolute;font-size:20px;opacity:0;animation:floatFire var(--dur) ease-in-out infinite var(--delay);bottom:-30px; }
-.stat-block.on-fire-hot .fire-bg span{ font-size:26px;animation-name:floatFireHot; }
-@keyframes floatFire{
-  0%  { transform:translateY(0) rotate(-6deg); opacity:0; }
-  15% { opacity:0.18; }
-  85% { opacity:0.12; }
-  100%{ transform:translateY(-130px) rotate(6deg); opacity:0; }
-}
-@keyframes floatFireHot{
-  0%  { transform:translateY(0) rotate(-6deg); opacity:0; }
-  15% { opacity:0.45; }
-  85% { opacity:0.32; }
-  100%{ transform:translateY(-130px) rotate(6deg); opacity:0; }
-}
-/* Sørg for at kortindhold vises over fire-bg */
-.stat-top,.stat-num,.progress-section,.stat-record{ position:relative;z-index:1; }
+.footer{display:flex;align-items:center;justify-content:space-between;padding:12px 0 0;border-top:1px solid rgba(255,255,255,0.07);}
+.bonus-area{display:flex;align-items:center;gap:14px;}
+.bonus-label{font-size:28px;font-weight:500;letter-spacing:1px;color:var(--text);}
+.bonus-emoji{font-size:26px;}
+.bonus-amount{font-family:'DM Mono',monospace;font-size:36px;font-weight:500;color:var(--text);letter-spacing:-1px;}
+.bonus-suffix{font-size:16px;color:var(--text-dim);margin-left:5px;}
+.bo-logo{height:26px;width:auto;opacity:0.45;filter:brightness(2) saturate(0.4);}
 
 /* ════════════════════════════════════════
-   REKORD-BREAKING INDIKATOR
+   REKORD-GLØDE
    Hvis aktuelt samlet tal >= fællesrekorden
-   får rekordtallet en gylden puls.
+   får rekordtallet en gylden puls + glow.
    Klassen .rec-breaking sættes i render().
    ════════════════════════════════════════ */
 .rec-val.rec-breaking{
   animation:recBreak 2.4s ease infinite;
 }
 @keyframes recBreak{
-  0%,100%{ opacity:1; }
-  50%    { opacity:0.5; }
+  0%,100%{ text-shadow:0 0 0px rgba(245,200,66,0);   opacity:1; }
+  50%    { text-shadow:0 0 18px rgba(245,200,66,0.8); opacity:1; }
 }
-/* ════════════════════════════════════════
-   RESPONSIVT LAYOUT
-   Breakpoints: 768px (tablet)
+   Breakpoints: 768px (tablet), 480px (telefon)
    ════════════════════════════════════════ */
 @media(max-width:768px){
   #app{padding:24px 24px 20px;gap:14px;}
-  .main-grid{grid-template-columns:1fr 1fr;gap:12px;}
-  #card-bank{grid-column:1/3;grid-row:auto;}
-  .col-sessions-tp{grid-column:1/3;grid-row:auto;}
+  .stats-row{grid-template-columns:1fr 1fr;gap:12px;}
+  .lists-row{grid-template-columns:1fr 1fr;gap:12px;}
   .stat-num{font-size:clamp(32px,7vw,52px);}
 }
 
+@media(max-width:480px){
+  html,body{overflow-y:auto;height:auto;}
+  #app{
+    height:auto;min-height:100%;
+    padding:20px 16px 100px;
+    grid-template-rows:auto auto auto auto;
+    gap:12px;
+  }
+
+  /* Header */
+  .month{font-size:22px;}
+  #clock{font-size:22px;}
+  #dept-lbl,#date{font-size:10px;}
+  #sync-status{font-size:9px;}
+
+  /* Stat-kort: 2 kolonner */
+  .stats-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-block{padding:12px 14px 11px;gap:6px;border-radius:14px;}
+  .stat-label{font-size:13px;}
+  .stat-num{font-size:clamp(28px,8vw,44px);letter-spacing:-1px;}
+  .stat-record{gap:5px;margin-top:3px;padding-top:3px;}
+  .stat-record .rec-val{font-size:16px;}
+  .stat-record .rec-label{font-size:8px;}
+  .progress-caption,.progress-pct{font-size:9px;}
+
+  /* Lister: 2 kolonner */
+  .lists-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .list-block{padding:12px 14px;gap:7px;border-radius:14px;}
+  .list-row{grid-template-columns:14px 1fr auto;gap:6px;padding:6px 2px;}
+  .team-pill{display:none;}
+  .p-name{font-size:12px;}
+  .p-count{font-size:15px;}
+  .medal{font-size:11px;}
+  .list-record em{font-size:15px;}
+  .list-record .lr-label{font-size:8px;}
+  .list-record .lr-name{font-size:9px;}
+
+  /* Footer */
+  .footer{flex-direction:column;align-items:flex-start;gap:10px;padding-top:10px;}
+  .bonus-label{font-size:20px;}
+  .bonus-amount{font-size:28px;}
+  .bonus-suffix{font-size:13px;}
+  .bo-logo{height:20px;}
+
+  /* Admin */
+  #admin-box{width:95vw;max-height:88vh;border-radius:18px;}
+  .admin-tabs{gap:6px;}
+  .admin-tab{font-size:10px;padding:6px 10px;}
+  .emp-table th,.emp-table td{font-size:10px;padding:5px 6px;}
+  .emp-table input[type=number]{width:52px;}
+
+  /* Info-splash */
+  .info-emoji{font-size:52px;margin-bottom:18px;}
+  .info-headline{letter-spacing:-1px;margin-bottom:12px;}
+  .info-sub{font-size:clamp(13px,3.5vw,17px);}
+  .info-progress-bar{width:200px;margin-top:28px;}
+
+  /* Celebration */
+  .cel-name{letter-spacing:-2px;}
+}
 
 /* ════════════════════════════════════════
    ADMIN-KNAP
@@ -496,10 +573,10 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 
 /* ════════════════════════════════════════
    ADMIN-PANEL
-   3 faner:
+   4 faner:
    1. Medarbejdere — tilføj/slet, sæt tal
    2. Mål & rekorder — månedsmål + rekorder
-   3. WebBanken — sæsonbidrag, forbrug, money goal
+   3. Bonus — team bonus i kr.
    4. Sync & Indstillinger — JSONBin + kodeord
 
    2 gem-knapper:
@@ -555,19 +632,16 @@ border-radius:16px;padding:clamp(14px,1.5vh,24px) clamp(16px,1.6vw,28px);display
 .emp-del{background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:all 0.2s;line-height:1;}
 .emp-del:hover{background:rgba(192,96,96,0.15);color:#e08080;}
 .emp-group-header td{
-  padding:18px 10px 5px;
+  padding:10px 10px 5px;
   font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
   color:var(--text-dim);border-bottom:1px solid var(--border);
+  padding-top:18px;
 }
 .emp-group-header:first-child td{ padding-top:6px; }
 .emp-group-header .dept-badge{
   display:inline-flex;align-items:center;gap:6px;
 }
 .emp-group-header .dept-icon{ font-size:12px; }
-.drag-handle{color:var(--text-dim);opacity:0.3;cursor:grab;font-size:14px;text-align:center;padding:0 4px;user-select:none;}
-.drag-handle:hover{opacity:0.7;}
-tr.drag-dragging{opacity:0.4;}
-tr.drag-over td{border-top:2px solid var(--blue)!important;}
 .add-emp-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
 .add-emp-btn:hover{background:rgba(58,111,216,0.15);border-color:var(--blue);color:var(--text);}
 
@@ -579,87 +653,47 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
 <body>
 
 <!-- ═══════════════════════════════════════
-     BAGGRUNDS-CREATURES: 3 hajer (c1-c3) + 2 krokodiller (c4-c5)
-     z-index:0 = altid bag alt indhold
+     BAGGRUNDS-CREATURES
+     5 hajer (🦈 Sharks/guld) + 5 krokodiller (🐊 Gators/grøn)
+     Sejler diagonalt henover skærmen i loops via CSS keyframes p1-p10.
+     z-index:0 = altid bag alt indhold.
      ═══════════════════════════════════════ -->
 <div class="creatures">
-  <div class="creature shark c1"><div class="ico">🦈</div></div>
-  <div class="creature shark c2"><div class="ico">🦈</div></div>
-  <div class="creature shark c3"><div class="ico">🦈</div></div>
-  <div class="creature gator c4"><div class="ico">🐊</div></div>
-  <div class="creature gator c5"><div class="ico">🐊</div></div>
+  <div class="creature shark c1"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature shark c2"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature shark c3"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature shark c4"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature shark c5"><div class="halo"></div><div class="ico">🦈</div></div>
+  <div class="creature gator c6"><div class="halo"></div><div class="ico">🐊</div></div>
+  <div class="creature gator c7"><div class="halo"></div><div class="ico">🐊</div></div>
+  <div class="creature gator c8"><div class="halo"></div><div class="ico">🐊</div></div>
+  <div class="creature gator c9"><div class="halo"></div><div class="ico">🐊</div></div>
+  <div class="creature gator c10"><div class="halo"></div><div class="ico">🐊</div></div>
 </div>
 
 <!-- ═══════════════════════════════════════
      HOVED-APP (#app)
-     CSS Grid: header / main-grid
-     main-grid: 4 kolonner × 2 rækker
+     CSS Grid: header / stat-kort / lister / footer
      ═══════════════════════════════════════ -->
 <div id="app">
 
-  <!-- HEADER: venstre = måned + afdeling, midte = logo, højre = ur + dato + sync-dot -->
+  <!-- HEADER: venstre = måned + afdeling, højre = ur + dato + sync-dot -->
   <header>
     <div class="header-left">
       <div class="month" id="month-lbl">Marts</div>
       <div id="dept-lbl">Webafdelingen</div>
     </div>
-    <div class="header-center">
-      <svg class="bo-logo" viewBox="0 0 727 141" xmlns="http://www.w3.org/2000/svg" onclick="openAdmin()" style="cursor:pointer;">
-        <path fill="#ffffff" d="M212.4,93.2h-64.6c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C212.9,85.7,212.7,88.3,212.4,93.2z M153.4,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.1-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C160.6,61.5,156.6,62.9,153.4,65.6z"/>
-        <path fill="#ffffff" d="M237.4,128.7c-7.2-1.7-13-3.9-17.4-6.6l9.3-21.3c4,2.5,8.9,4.5,14.4,6c5.6,1.5,11.1,2.2,16.6,2.2c5,0,8.6-0.5,10.7-1.6c2.1-1,3.2-2.5,3.2-4.5s-1.3-3.4-3.9-4.2c-2.6-0.8-6.6-1.6-12.2-2.4c-7.1-0.9-13.1-2-18.1-3.4c-5-1.4-9.3-4-12.9-7.9c-3.6-3.8-5.4-9.2-5.4-16.1c0-5.7,1.7-10.7,5.1-15.2c3.4-4.4,8.3-7.9,14.8-10.5c6.5-2.6,14.3-3.9,23.4-3.9c6.5,0,12.8,0.7,19.2,2c6.3,1.3,11.6,3.2,15.9,5.6l-9.3,21.2c-7.9-4.4-16.4-6.6-25.6-6.6c-4.9,0-8.5,0.6-10.8,1.7c-2.3,1.1-3.4,2.7-3.4,4.5c0,2.1,1.3,3.5,3.8,4.3c2.5,0.8,6.7,1.7,12.5,2.5c7.3,1.1,13.4,2.4,18.2,3.8c4.8,1.4,9,4,12.5,7.8c3.6,3.8,5.3,9,5.3,15.8c0,5.6-1.7,10.6-5.1,15c-3.4,4.4-8.4,7.9-15,10.4c-6.6,2.5-14.6,3.8-23.9,3.8C251.9,131.2,244.6,130.4,237.4,128.7z"/>
-        <path fill="#ffffff" d="M310.4,44.2V21h31.2v23.1h20.3v23.3h-20.3V97c0,3.2,0.8,5.7,2.5,7.5c1.7,1.8,4,2.7,6.8,2.7c3.6,0,6.8-0.9,9.5-2.8l7.7,21.8c-2.6,1.6-5.8,2.9-9.6,3.8c-3.8,0.9-7.8,1.3-12.1,1.3c-11.6,0-20.5-2.8-26.7-8.5c-6.2-5.7-9.3-14.2-9.3-25.4V67.4V44.2z"/>
-        <path fill="#ffffff" d="M418.3,123.5c-9.7-5.1-17.3-12.2-22.8-21.3c-5.5-9.1-8.3-19.3-8.3-30.7c0-11.4,2.8-21.6,8.3-30.7c5.5-9.1,13.1-16.2,22.8-21.3c9.7-5.1,20.6-7.7,32.7-7.7s23,2.6,32.7,7.7c9.7,5.1,17.3,12.2,22.8,21.3c5.5,9.1,8.3,19.3,8.3,30.7c0,11.4-2.8,21.6-8.3,30.7c-5.5,9.1-13.1,16.2-22.8,21.3c-9.7,5.1-20.6,7.7-32.7,7.7S428,128.7,418.3,123.5z M466.8,100.2c4.7-2.7,8.4-6.6,11.2-11.6c2.7-5,4.1-10.7,4.1-17.1c0-6.4-1.4-12.2-4.1-17.1c-2.7-5-6.5-8.8-11.2-11.6c-4.7-2.7-10-4.1-15.7-4.1c-5.8,0-11,1.4-15.7,4.1c-4.7,2.7-8.4,6.6-11.2,11.6c-2.7,5-4.1,10.7,4.1,17.1c0,6.5,1.4,12.2,4.1,17.1c2.7,5,6.5,8.8,11.2,11.6c4.7,2.7,9.9,4.1,15.7,4.1C456.8,104.3,462.1,103,466.8,100.2z"/>
-        <path fill="#ffffff" d="M606.5,50.7c6.7,6.6,10.1,16.5,10.1,29.7v50.8h-31.2V85.5c0-12.1-4.9-18.2-14.6-18.2c-5.4,0-9.7,1.8-12.9,5.2c-3.2,3.5-4.8,8.7-4.8,15.7v43h-31.2V42.3h29.7V52c3.5-3.6,7.7-6.4,12.5-8.3c4.8-1.9,10.1-2.9,15.7-2.9C590.9,40.9,599.8,44.2,606.5,50.7z"/>
-        <path fill="#ffffff" d="M719.6,93.2H655c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C720.1,85.7,719.9,88.3,719.6,93.2z M660.7,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.2-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C667.9,61.5,663.9,62.9,660.7,65.6z"/>
-        <path fill="#ffffff" d="M102.9,61c-4.3-7-10.3-12.4-18-16.3c-7.7-3.9-16.4-5.9-26.1-5.9c-6.8,0-13,1-18.8,2.9V7.2H8.3l0.1,74.9h0c0,0.9-0.1,1.8-0.1,2.8c0,8.9,2.2,16.9,6.5,23.9c4.3,7,10.4,12.5,18.1,16.5c7.7,4,16.3,5.9,25.9,5.9c9.7,0,18.4-2,26.1-5.9c7.7-4,13.7-9.5,18-16.5c4.3-7,6.4-15,6.4-23.9S107.2,68,102.9,61z M72.4,100.6c-3.5,3.8-8,5.7-13.5,5.7c-5.5,0-10-1.9-13.5-5.7c-3.5-3.8-5.3-9-5.3-15.8c0-6.6,1.8-11.8,5.3-15.5c3.5-3.7,8-5.6,13.5-5.6c5.5,0,10,1.9,13.5,5.6c3.5,3.7,5.3,8.9,5.3,15.5C77.6,91.6,75.9,96.8,72.4,100.6z"/>
-      </svg>
-      <div style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.18);font-weight:500;text-transform:uppercase;text-align:center;margin-top:3px;">Dashboard — version 3.0</div>
-    </div>
     <div class="header-right">
-      <div class="clock-row">
-        <span id="time-emoji"></span>
-        <div id="clock">00:00</div>
-      </div>
+      <div id="clock">00:00:00</div>
       <div id="date">Tirsdag 10. marts 2026</div>
       <div id="sync-status"></div>
     </div>
   </header>
 
-  <!-- HOVED-GRID: WebBanken | Sager | Tekster | Sessioner+Anmeldelser -->
-  <div class="main-grid">
-
-    <!-- Kolonne 1: WebBanken stat (row 1) -->
-    <div class="stat-block" id="card-bank" style="grid-column:1;grid-row:1;background:rgba(12,18,36,0.95);border-color:rgba(58,111,216,0.2);justify-content:flex-start;">
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,#a07830,#f5c842);"></div>
-      <div class="stat-top"><span class="stat-label">WebBanken</span><span class="stat-icon">💰</span></div>
-      <div style="flex:1"></div>
-      <div class="stat-num" id="wb-total" style="color:var(--text);white-space:nowrap;font-size:clamp(24px,2.4vw,40px);">0</div>
-      <div style="flex:1"></div>
-      <div class="progress-section">
-        <div class="progress-meta">
-          <span class="progress-caption"><span class="pulse-dot" style="background:#c9a84c;animation:pulseDot 2.2s ease infinite 2s"></span><span id="wb-prog-cap">0 af 0 kr.</span></span>
-          <span class="progress-pct" id="wb-prog-pct" style="color:#c9a84c">0%</span>
-        </div>
-        <div class="track"><div class="fill" id="wb-fill" style="background:linear-gradient(90deg,#a07830,#f5c842)"></div></div>
-      </div>
-      <div class="stat-record" style="visibility:hidden;pointer-events:none"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val">0</span></div>
-    </div>
-
-    <!-- Kolonne 1: WebBanken detaljer (row 2) -->
-    <div class="list-block" style="grid-column:1;grid-row:2;background:rgba(12,18,36,0.95);border-color:rgba(58,111,216,0.2);justify-content:flex-start;gap:clamp(8px,1vh,14px);">
-      <div class="wb-section-lbl">Hele sæsonen</div>
-      <div class="wb-row wb-team-row"><span class="team-pill gators">Gators</span><span class="wb-amt" id="wb-gators">0 kr.</span></div>
-      <div class="wb-row wb-team-row"><span class="team-pill sharks">Sharks</span><span class="wb-amt" id="wb-sharks">0 kr.</span></div>
-      <div class="wb-row wb-team-row"><span class="team-pill marketing">Marketing</span><span class="wb-amt" id="wb-mktg">0 kr.</span></div>
-      <div style="flex:1"></div>
-      <hr class="wb-divider" style="margin:0">
-      <div class="wb-row"><span style="font-size:clamp(10px,0.8vw,14px);color:rgba(255,255,255,0.35)">Optjent i alt</span><span class="wb-amt" id="wb-earned">0 kr.</span></div>
-      <div class="wb-row"><span style="font-size:clamp(10px,0.8vw,14px);color:rgba(255,255,255,0.35)">Forbrug</span><span class="wb-amt-neg" id="wb-spent">−0 kr.</span></div>
-    </div>
-
-    <!-- Kolonne 2: Sager stat (row 1) -->
-    <div class="stat-block blue" id="card-sites" style="grid-column:2;grid-row:1">
-      <div class="fire-bg"><span style="left:8%;--dur:4.5s;--delay:0s">🔥</span><span style="left:24%;--dur:5.5s;--delay:1.3s">🔥</span><span style="left:44%;--dur:4.8s;--delay:0.6s">🔥</span><span style="left:64%;--dur:5.2s;--delay:2.1s">🔥</span><span style="left:82%;--dur:4.2s;--delay:0.9s">🔥</span></div>
+  <!-- STAT-KORT: 4 kolonner (Sager/blå, Tekster/grøn, Sessioner/rød, Anmeldelser/guld)
+       Totaler beregnes live fra D.employees. Rekorder vises i bunden af hvert kort. -->
+  <div class="stats-row">
+    <div class="stat-block blue" id="card-sites">
       <div class="stat-top"><span class="stat-label">Sager</span><span class="stat-icon">🌐</span></div>
       <div class="stat-num" id="n-sites">0</div>
       <div class="progress-section">
@@ -669,18 +703,9 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
         <div class="track"><div class="fill" id="fill-sites"></div></div>
       </div>
-      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sites">69</span></div>
+      <div class="stat-record"><span class="rec-label">Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sites">69</span></div>
     </div>
-
-    <!-- Kolonne 2: Sager liste (row 2) -->
-    <div class="list-block" style="grid-column:2;grid-row:2">
-      <div class="list-items" id="list-sites"></div>
-      <div class="list-record" id="lrec-sites"></div>
-    </div>
-
-    <!-- Kolonne 3: Tekster stat (row 1) -->
-    <div class="stat-block gators" id="card-texts" style="grid-column:3;grid-row:1">
-      <div class="fire-bg"><span style="left:6%;--dur:5s;--delay:0.4s">🔥</span><span style="left:26%;--dur:4.6s;--delay:1.8s">🔥</span><span style="left:46%;--dur:5.3s;--delay:0.2s">🔥</span><span style="left:66%;--dur:4.9s;--delay:1.1s">🔥</span><span style="left:84%;--dur:5.1s;--delay:2.4s">🔥</span></div>
+    <div class="stat-block gators" id="card-texts">
       <div class="stat-top"><span class="stat-label">Tekster</span><span class="stat-icon">✍️</span></div>
       <div class="stat-num" id="n-texts">0</div>
       <div class="progress-section">
@@ -690,52 +715,94 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
         <div class="track"><div class="fill" id="fill-texts"></div></div>
       </div>
-      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-texts">214</span></div>
+      <div class="stat-record"><span class="rec-label">Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-texts">214</span></div>
     </div>
+    <div class="stat-block sharks" id="card-sessions">
+      <div class="stat-top"><span class="stat-label">Sessioner</span><span class="stat-icon">📷</span></div>
+      <div class="stat-num" id="n-sessions">0</div>
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-sessions">0 af 0</span></span>
+          <span class="progress-pct" id="pct-sessions">0%</span>
+        </div>
+        <div class="track"><div class="fill" id="fill-sessions"></div></div>
+      </div>
+      <div class="stat-record"><span class="rec-label">Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sessions">16</span></div>
+    </div>
+    <div class="stat-block tp" id="card-tp">
+      <div class="stat-top"><span class="stat-label">Anmeldelser</span><span class="stat-icon">⭐</span></div>
+      <div class="stat-num" id="n-tp">0</div>
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-tp">0 af 0</span></span>
+          <span class="progress-pct" id="pct-tp">0%</span>
+        </div>
+        <div class="track"><div class="fill" id="fill-tp"></div></div>
+      </div>
+      <div class="stat-record"><span class="rec-label">Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-tp">0</span></div>
+    </div>
+  </div>
 
-    <!-- Kolonne 3: Tekster liste (row 2) -->
-    <div class="list-block" style="grid-column:3;grid-row:2">
+  <!-- TOP 3-LISTER: 4 kolonner matcher stat-kortene.
+       Hjemmesider → site-afd., Tekster → text-afd., Sessioner → session-afd., Anmeldelser → alle.
+       lrec-* = individuel rekordindehaver vises i bunden. -->
+  <div class="lists-row">
+    <div class="list-block">
+      
+      <div class="list-items" id="list-sites"></div>
+      <div class="list-record" id="lrec-sites"></div>
+    </div>
+    <div class="list-block">
+      
       <div class="list-items" id="list-texts"></div>
       <div class="list-record" id="lrec-texts"></div>
     </div>
-
-    <!-- Kolonne 4: Sessioner stat + Anmeldelser kombineret (fuld højde) -->
-    <div class="col-sessions-tp">
-      <!-- Sessioner stat -->
-      <div class="stat-block sharks" id="card-sessions">
-        <div class="fire-bg"><span style="left:10%;--dur:4.7s;--delay:0.7s">🔥</span><span style="left:28%;--dur:5.4s;--delay:0s">🔥</span><span style="left:48%;--dur:4.4s;--delay:1.6s">🔥</span><span style="left:68%;--dur:5.6s;--delay:0.3s">🔥</span><span style="left:86%;--dur:4.3s;--delay:2.2s">🔥</span></div>
-        <div class="stat-top"><span class="stat-label">Sessioner</span><span class="stat-icon">📷</span></div>
-        <div class="stat-num" id="n-sessions">0</div>
-        <div class="progress-section">
-          <div class="progress-meta">
-            <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-sessions">0 af 0</span></span>
-            <span class="progress-pct" id="pct-sessions">0%</span>
-          </div>
-          <div class="track"><div class="fill" id="fill-sessions"></div></div>
-        </div>
-        <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sessions">16</span></div>
-      </div>
-      <!-- Anmeldelser kombineret kort -->
-      <div class="tp-combo-block stat-block tp" id="card-tp">
-        <div class="fire-bg"><span style="left:7%;--dur:5.2s;--delay:1.5s">🔥</span><span style="left:25%;--dur:4.5s;--delay:0.1s">🔥</span><span style="left:45%;--dur:5.7s;--delay:0.8s">🔥</span><span style="left:65%;--dur:4.6s;--delay:2s">🔥</span><span style="left:83%;--dur:5s;--delay:0.5s">🔥</span></div>
-        <div class="stat-top" style="flex-shrink:0"><span class="stat-label">Anmeldelser</span><span class="stat-icon">⭐</span></div>
-        <div class="stat-num" id="n-tp">0</div>
-        <div class="progress-section" style="flex-shrink:0">
-          <div class="progress-meta">
-            <span class="progress-caption"><span class="pulse-dot"></span><span id="cap-tp">0 af 0</span></span>
-            <span class="progress-pct" id="pct-tp">0%</span>
-          </div>
-          <div class="track"><div class="fill" id="fill-tp"></div></div>
-        </div>
-        <div class="stat-record" style="flex-shrink:0"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-tp">0</span></div>
-        <hr class="tp-combo-divider">
-        <div class="list-items" id="list-tp" style="flex:1;min-height:0;overflow:hidden;"></div>
-        <div class="list-record" id="lrec-tp"></div>
-      </div>
+    <div class="list-block">
+      
+      <div class="list-items" id="list-sessions"></div>
+      <div class="list-record" id="lrec-sessions"></div>
     </div>
-
+    <div class="list-block">
+      
+      <div class="list-items" id="list-tp"></div>
+      <div class="list-record" id="lrec-tp"></div>
+    </div>
   </div>
 
+  <!-- FOOTER: venstre = team bonus (kr.), højre = Best One A/S logo (inline SVG) -->
+  <div class="footer">
+    <div class="bonus-area">
+      <span class="bonus-label">Team bonus</span>
+      <span class="bonus-emoji">💰</span>
+      <span class="bonus-amount" id="bonus-display">0<span class="bonus-suffix"> kr.</span></span>
+    </div>
+    <svg class="bo-logo" viewBox="0 0 727 141" xmlns="http://www.w3.org/2000/svg" onclick="openAdmin()" style="cursor:pointer;">
+      <path fill="#ffffff" d="M212.4,93.2h-64.6c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C212.9,85.7,212.7,88.3,212.4,93.2z M153.4,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.1-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C160.6,61.5,156.6,62.9,153.4,65.6z"/>
+      <path fill="#ffffff" d="M237.4,128.7c-7.2-1.7-13-3.9-17.4-6.6l9.3-21.3c4,2.5,8.9,4.5,14.4,6c5.6,1.5,11.1,2.2,16.6,2.2c5,0,8.6-0.5,10.7-1.6c2.1-1,3.2-2.5,3.2-4.5s-1.3-3.4-3.9-4.2c-2.6-0.8-6.6-1.6-12.2-2.4c-7.1-0.9-13.1-2-18.1-3.4c-5-1.4-9.3-4-12.9-7.9c-3.6-3.8-5.4-9.2-5.4-16.1c0-5.7,1.7-10.7,5.1-15.2c3.4-4.4,8.3-7.9,14.8-10.5c6.5-2.6,14.3-3.9,23.4-3.9c6.5,0,12.8,0.7,19.2,2c6.3,1.3,11.6,3.2,15.9,5.6l-9.3,21.2c-7.9-4.4-16.4-6.6-25.6-6.6c-4.9,0-8.5,0.6-10.8,1.7c-2.3,1.1-3.4,2.7-3.4,4.5c0,2.1,1.3,3.5,3.8,4.3c2.5,0.8,6.7,1.7,12.5,2.5c7.3,1.1,13.4,2.4,18.2,3.8c4.8,1.4,9,4,12.5,7.8c3.6,3.8,5.3,9,5.3,15.8c0,5.6-1.7,10.6-5.1,15c-3.4,4.4-8.4,7.9-15,10.4c-6.6,2.5-14.6,3.8-23.9,3.8C251.9,131.2,244.6,130.4,237.4,128.7z"/>
+      <path fill="#ffffff" d="M310.4,44.2V21h31.2v23.1h20.3v23.3h-20.3V97c0,3.2,0.8,5.7,2.5,7.5c1.7,1.8,4,2.7,6.8,2.7c3.6,0,6.8-0.9,9.5-2.8l7.7,21.8c-2.6,1.6-5.8,2.9-9.6,3.8c-3.8,0.9-7.8,1.3-12.1,1.3c-11.6,0-20.5-2.8-26.7-8.5c-6.2-5.7-9.3-14.2-9.3-25.4V67.4V44.2z"/>
+      <path fill="#ffffff" d="M418.3,123.5c-9.7-5.1-17.3-12.2-22.8-21.3c-5.5-9.1-8.3-19.3-8.3-30.7c0-11.4,2.8-21.6,8.3-30.7c5.5-9.1,13.1-16.2,22.8-21.3c9.7-5.1,20.6-7.7,32.7-7.7s23,2.6,32.7,7.7c9.7,5.1,17.3,12.2,22.8,21.3c5.5,9.1,8.3,19.3,8.3,30.7c0,11.4-2.8,21.6-8.3,30.7c-5.5,9.1-13.1,16.2-22.8,21.3c-9.7,5.1-20.6,7.7-32.7,7.7S428,128.7,418.3,123.5z M466.8,100.2c4.7-2.7,8.4-6.6,11.2-11.6c2.7-5,4.1-10.7,4.1-17.1c0-6.4-1.4-12.2-4.1-17.1c-2.7-5-6.5-8.8-11.2-11.6c-4.7-2.7-10-4.1-15.7-4.1c-5.8,0-11,1.4-15.7,4.1c-4.7,2.7-8.4,6.6-11.2,11.6c-2.7,5-4.1,10.7-4.1,17.1c0,6.5,1.4,12.2,4.1,17.1c2.7,5,6.5,8.8,11.2,11.6c4.7,2.7,9.9,4.1,15.7,4.1C456.8,104.3,462.1,103,466.8,100.2z"/>
+      <path fill="#ffffff" d="M606.5,50.7c6.7,6.6,10.1,16.5,10.1,29.7v50.8h-31.2V85.5c0-12.1-4.9-18.2-14.6-18.2c-5.4,0-9.7,1.8-12.9,5.2c-3.2,3.5-4.8,8.7-4.8,15.7v43h-31.2V42.3h29.7V52c3.5-3.6,7.7-6.4,12.5-8.3c4.8-1.9,10.1-2.9,15.7-2.9C590.9,40.9,599.8,44.2,606.5,50.7z"/>
+      <path fill="#ffffff" d="M719.6,93.2H655c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C720.1,85.7,719.9,88.3,719.6,93.2z M660.7,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.2-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C667.9,61.5,663.9,62.9,660.7,65.6z"/>
+      <path fill="#ffffff" d="M102.9,61c-4.3-7-10.3-12.4-18-16.3c-7.7-3.9-16.4-5.9-26.1-5.9c-6.8,0-13,1-18.8,2.9V7.2H8.3l0.1,74.9h0c0,0.9-0.1,1.8-0.1,2.8c0,8.9,2.2,16.9,6.5,23.9c4.3,7,10.4,12.5,18.1,16.5c7.7,4,16.3,5.9,25.9,5.9c9.7,0,18.4-2,26.1-5.9c7.7-4,13.7-9.5,18-16.5c4.3-7,6.4-15,6.4-23.9S107.2,68,102.9,61z M72.4,100.6c-3.5,3.8-8,5.7-13.5,5.7c-5.5,0-10-1.9-13.5-5.7c-3.5-3.8-5.3-9-5.3-15.8c0-6.6,1.8-11.8,5.3-15.5c3.5-3.7,8-5.6,13.5-5.6c5.5,0,10,1.9,13.5,5.6c3.5,3.7,5.3,8.9,5.3,15.5C77.6,91.6,75.9,96.8,72.4,100.6z"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     INFO-SPLASH OVERLAY
+     Vises automatisk hvert 30. minut (INFO_INTERVAL).
+     Indhold bygges af buildInfoSlides() fra live data + manuelle facts.
+     Hall of Fame slides → guldbaggund (.info-hof klasse).
+     Kan også vises manuelt via knap i Admin → Info.
+     ═══════════════════════════════════════ -->
+<div id="info-overlay">
+  <div class="info-inner" id="info-inner">
+    <div class="info-tag" id="info-tag"></div>
+    <div class="info-emoji" id="info-emoji"></div>
+    <div class="info-headline" id="info-headline"></div>
+    <div class="info-sub" id="info-sub"></div>
+    <div class="info-progress-bar"><div class="info-progress-fill" id="info-progress-fill"></div></div>
+  </div>
 </div>
 
 <div id="refresh-sweep"></div>
@@ -749,7 +816,6 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
        Bonus:     💰 + beløb + "Flere penge i klassekassen"
      ═══════════════════════════════════════ -->
 <div id="cel-overlay">
-  <button id="cel-close" title="Luk">✕</button>
   <div class="cel-glow" id="cel-glow"></div>
   <div class="cel-inner" id="cel-inner">
     <!-- TP-branding (kun synlig ved TP-splash) -->
@@ -759,17 +825,17 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
     <!-- Standard medarbejder-splash -->
     <div class="cel-emp-emoji" id="cel-emp-emoji"></div>
     <div class="cel-name" id="cel-name"></div>
+    <div class="cel-team" id="cel-team"></div>
     <div class="cel-metric-label" id="cel-metric-label"></div>
     <div class="cel-count-wrap" id="cel-count-wrap">
       <span class="cel-old" id="cel-old"></span>
       <span class="cel-arrow">→</span>
       <span class="cel-new" id="cel-new"></span>
     </div>
-    <div class="cel-team" id="cel-team"></div>
 
     <!-- Bonus-splash (alternativt layout) -->
     <div class="cel-bonus-emoji" id="cel-bonus-emoji" style="display:none">💰</div>
-    <div class="cel-bonus-label" id="cel-bonus-label" style="display:none">WebBanken</div>
+    <div class="cel-bonus-label" id="cel-bonus-label" style="display:none">Team Bonus</div>
     <div class="cel-bonus-sub" id="cel-bonus-sub" style="display:none">Flere penge i klassekassen</div>
     <div class="cel-bonus-amount" id="cel-bonus-amount" style="display:none"></div>
   </div>
@@ -803,22 +869,25 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
       <button class="admin-tab active" onclick="switchTab('employees')">👥 Medarbejdere</button>
       <button class="admin-tab" onclick="switchTab('goals')">🎯 Mål &amp; rekorder</button>
       <button class="admin-tab" onclick="switchTab('bonus')">💰 Bonus</button>
+      <button class="admin-tab" onclick="switchTab('info')">💡 Info</button>
       <button class="admin-tab" onclick="switchTab('config')">⚙ Sync &amp; Indstillinger</button>
     </div>
 
     <!-- TAB: EMPLOYEES -->
     <div class="tab-pane active" id="tab-employees">
       <div class="admin-section">
+        <div class="admin-section-label">Medarbejdere — tal opdaterer totaler &amp; top 3 automatisk</div>
         <table class="emp-table">
           <thead>
             <tr>
-              <th style="width:18px"></th>
               <th style="width:50px;text-align:center">Emoji</th>
               <th style="width:150px">Navn</th>
               <th style="width:130px">Afdeling</th>
               <th style="width:110px">Team</th>
-              <th style="width:80px;text-align:center">Nyfak</th>
-              <th style="width:80px;text-align:center">Anmeld.</th>
+              <th style="width:70px;text-align:center">Sager</th>
+              <th style="width:70px;text-align:center">Tekster</th>
+              <th style="width:70px;text-align:center">Sessioner</th>
+              <th style="width:70px;text-align:center">Anm. ⭐</th>
               <th style="width:36px"></th>
             </tr>
           </thead>
@@ -840,7 +909,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
       </div>
       <div class="admin-section">
-        <div class="admin-section-label">🏆 Fælles rekorder (vises i toppen)</div>
+        <div class="admin-section-label">Fælles rekorder (vises i toppen)</div>
         <div class="ag4">
           <div class="field"><label>Sager rekord</label><input type="number" id="g-sites-rec" min="0"></div>
           <div class="field"><label>Tekster rekord</label><input type="number" id="g-texts-rec" min="0"></div>
@@ -852,28 +921,33 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         <div class="admin-section-label">Liste-rekorder (vises under top 3)</div>
         <div class="ag4">
           <div class="field"><label>Sager</label><input type="number" id="g-sites-lrec" min="0" placeholder="22"></div>
-          <div class="field"><label>Rekordholder</label><input type="text" id="g-sites-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Sager — rekordHolder</label><input type="text" id="g-sites-lrec-name" placeholder="Navn"></div>
           <div class="field"><label>Tekster</label><input type="number" id="g-texts-lrec" min="0" placeholder="87"></div>
-          <div class="field"><label>Rekordholder</label><input type="text" id="g-texts-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Tekster — rekordHolder</label><input type="text" id="g-texts-lrec-name" placeholder="Navn"></div>
           <div class="field"><label>Sessioner</label><input type="text" id="g-sessions-lrec" placeholder="(tom = ingen)"></div>
-          <div class="field"><label>Rekordholder</label><input type="text" id="g-sessions-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Sessioner — rekordHolder</label><input type="text" id="g-sessions-lrec-name" placeholder="Navn"></div>
           <div class="field"><label>Anmeldelser</label><input type="text" id="g-tp-lrec" placeholder="(tom = ingen)"></div>
-          <div class="field"><label>Rekordholder</label><input type="text" id="g-tp-lrec-name" placeholder="Navn"></div>
+          <div class="field"><label>Anmeldelser — rekordHolder</label><input type="text" id="g-tp-lrec-name" placeholder="Navn"></div>
         </div>
       </div>
-    </div>    <!-- TAB: BONUS -->
+    </div>
+
+    <!-- TAB: INFO -->
+    <div class="tab-pane" id="tab-info">
+      <div class="admin-section">
+        <div class="admin-section-label">Manuelle facts — vises i rotation hvert 30. minut</div>
+        <p class="admin-note">Skriv én fact per linje. Blandes automatisk med live data fra dashboardet.</p>
+        <textarea id="info-facts" rows="8" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;line-height:1.6;outline:none;resize:vertical;" placeholder="Vi er verdens bedste hold 🏆&#10;Husk at drikke vand 💧&#10;God stemning = gode resultater ✨"></textarea>
+        <button class="add-emp-btn" style="margin-top:10px;" onclick="showInfoSlide()">▶ Vis tilfældig slide nu</button>
+      </div>
+    </div>
+
+    <!-- TAB: BONUS -->
     <div class="tab-pane" id="tab-bonus">
       <div class="admin-section">
-        <div class="admin-section-label">💰 WebBanken</div>
-        <div class="ag2" style="margin-bottom:12px">
-          <div class="field"><label>Money Goal (kr.)</label><input type="number" id="a-wb-goal" min="0" placeholder="0"></div>
-          <div class="field"><label>Forbrug (kr.)</label><input type="number" id="a-wb-spent" min="0" placeholder="0"></div>
-        </div>
-        <div class="admin-section-label" style="margin-top:8px">Sæsonbidrag</div>
-        <div class="ag3">
-          <div class="field"><label>🐊 Gators (kr.)</label><input type="number" id="a-wb-gators" min="0" placeholder="0"></div>
-          <div class="field"><label>🦈 Sharks (kr.)</label><input type="number" id="a-wb-sharks" min="0" placeholder="0"></div>
-          <div class="field"><label>📣 Marketing (kr.)</label><input type="number" id="a-wb-mktg" min="0" placeholder="0"></div>
+        <div class="admin-section-label">Team bonus</div>
+        <div class="ag2">
+          <div class="field"><label>Bonus (kr.)</label><input type="number" id="a-bonus" min="0" max="99999" placeholder="0"></div>
         </div>
       </div>
     </div>
@@ -908,10 +982,10 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
 
 <script>
 /* ════════════════════════════════════════════════════════════
-   BEST ONE A/S — WEB PERFORMANCE DASHBOARD v2.0
+   BEST ONE A/S — WEB PERFORMANCE DASHBOARD
    ════════════════════════════════════════════════════════════
    Fil:     index.html (enkelt-fil app, ingen dependencies)
-   Hosting: GitHub Pages (github.com/munksgaard91/best-one-dashboard)
+   Hosting: Netlify (statisk)
    Data:    localStorage 'bo7' (primær) + JSONBin.io sync (sekundær)
 
    ARKITEKTUR-OVERBLIK:
@@ -922,10 +996,10 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
    └──────────────┬──────────────────────┘
                   │
    ┌──────────────▼──────────────────────┐
-   │  render()  ← doSync() hvert 15 sek │
+   │  render()  ← doSync() hvert 5. sek │
    │  - totals()    summerer alle emps   │
    │  - countUp()   animerede tællere    │
-   │  - renderList() top 4/2 pr. afd.   │
+   │  - renderList() top 3/2 pr. afd.   │
    └──────────────┬──────────────────────┘
                   │
    ┌──────────────▼──────────────────────┐
@@ -937,24 +1011,18 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
    └─────────────────────────────────────┘
                   │
    ┌──────────────▼──────────────────────┐
-   │  Info-splash (tidsbaseret schedule) │
-   │
-   │
+   │  Info-splash (setInterval 30 min)   │
+   │  → buildInfoSlides (live + manual)  │
+   │  → showInfoSlide                    │
    └─────────────────────────────────────┘
 
    DATASTRUKTUR (D):
    password, *Goal, *Rec, *LRec, *LRecName,
-   bonus, wbGators, wbSharks, wbMktg, wbSpent, wbGoal, employees[]
+   bonus, infoFacts[], employees[]
 
-   TEAMS:      gators (🐊 grøn) / sharks (🦈 guld) / marketing (📣 blå)
+   TEAMS: gators (🐊 grøn) / sharks (🦈 guld)
    AFDELINGER: site / text / session
    EMOJI-POOL: 11 unikke Apple emojis (én pr. medarbejder)
-
-   NØGLE-INTERVALLER:
-   - doSync:            hvert 15 sek
-   - tick (ur/dato):    hvert 60 sek
-   - checkMonthlyReset: hvert 5. time
-   - auto-reload:       kl. 22:00 og 04:00
    ════════════════════════════════════════════════════════════ */
 
 /* ════════════════════════════════════════
@@ -968,7 +1036,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
    - *Rec:            fælles rekorder (historisk bedste måned)
    - *LRec + *LRecName: individuelle rekordindehavere (navn + tal)
    - bonus:           team bonus i kr.
-   -
+   - infoFacts:       manuelle facts til info-splash rotation
    - employees:       array af medarbejdere (se struktur nedenfor)
 
    Medarbejder-struktur:
@@ -976,17 +1044,15 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
      emoji, sites, texts, sessions, tp }
    ════════════════════════════════════════ */
 const DEF = {
-  password:'1234',
+  password:'bestone2026',
   sitesGoal:20, textsGoal:50, sessionsGoal:10, tpGoal:20,
   sitesRec:69, textsRec:214, sessionsRec:16, tpRec:12,
   sitesLRec:22, textsLRec:87, sessionsLRec:16, tpLRec:9,
   sitesLRecName:'Sten', textsLRecName:'Marie', sessionsLRecName:'Casper', tpLRecName:'Shania',
+  infoFacts: [
+    'Vi er verdens bedste hold 🏆',
+  ],
   lastResetMonth: null, /* 'YYYY-MM' — opdateres automatisk ved månedsskift */
-  celebrationId: null,  /* timestamp-streng — skifter ved hvert "Gem & Fejr" */
-  pendingCelebration: [], /* celebration-kø til remote klienter */
-  wbGators: 0, wbSharks: 0, wbMktg: 0, /* sæsonbidrag pr. team */
-  wbSpent: 0,   /* forbrug */
-  wbGoal: 0,    /* money goal (nulstilles aldrig) */
   employees:[
     {name:'Tina',    team:'sharks', dept:'site',    emoji:'💻', sites:0, texts:0, sessions:0, tp:0},
     {name:'Sten',    team:'sharks', dept:'site',    emoji:'🗿', sites:0, texts:0, sessions:0, tp:0},
@@ -1056,77 +1122,31 @@ function setSyncStatus(s){
   el.innerHTML=`<span class="sync-dot ${s}"></span>${lbl[s]||''}`;
 }
 // Simpel signatur til at detektere ændringer fra remote
-let _celRunning = false; // sættes true mens celebration-kø kører
-
-/* DOM-element cache — undgår gentagne getElementById-kald i render */
-const _el = {
-  sites:    document.getElementById('n-sites'),
-  texts:    document.getElementById('n-texts'),
-  sessions: document.getElementById('n-sessions'),
-  tp:       document.getElementById('n-tp'),
-  capSites: document.getElementById('cap-sites'),    pctSites: document.getElementById('pct-sites'),    fillSites: document.getElementById('fill-sites'),
-  capTexts: document.getElementById('cap-texts'),    pctTexts: document.getElementById('pct-texts'),    fillTexts: document.getElementById('fill-texts'),
-  capSess:  document.getElementById('cap-sessions'), pctSess:  document.getElementById('pct-sessions'), fillSess:  document.getElementById('fill-sessions'),
-  capTp:    document.getElementById('cap-tp'),       pctTp:    document.getElementById('pct-tp'),       fillTp:    document.getElementById('fill-tp'),
-  recSites: document.getElementById('rec-sites'),    recTexts: document.getElementById('rec-texts'),
-  recSess:  document.getElementById('rec-sessions'), recTp:    document.getElementById('rec-tp'),
-  cardSites:document.getElementById('card-sites'),   cardTexts:document.getElementById('card-texts'),
-  cardSess: document.getElementById('card-sessions'),cardTp:   document.getElementById('card-tp'),
-  lrecSites:document.getElementById('lrec-sites'),   lrecTexts:document.getElementById('lrec-texts'),
-  lrecTp:   document.getElementById('lrec-tp'),
-  listSites:document.getElementById('list-sites'),   listTexts:document.getElementById('list-texts'),
-  listTp:   document.getElementById('list-tp'),
-  wbTotal:  document.getElementById('wb-total'),     wbFill:   document.getElementById('wb-fill'),
-  wbCap:    document.getElementById('wb-prog-cap'),  wbPct:    document.getElementById('wb-prog-pct'),
-  wbGators: document.getElementById('wb-gators'),    wbSharks: document.getElementById('wb-sharks'),
-  wbMktg:   document.getElementById('wb-mktg'),      wbEarned: document.getElementById('wb-earned'),
-  wbSpent:  document.getElementById('wb-spent'),
-};
-
-function dataSig(d){ const t=totals(d); return `${t.sites}|${t.texts}|${t.sessions}|${t.tp}|${d.wbGators||0}|${d.wbSharks||0}|${d.wbMktg||0}|${d.wbSpent||0}|${d.wbGoal||0}`; }
+function dataSig(d){ return `${totals(d).sites}|${totals(d).texts}|${totals(d).sessions}|${totals(d).tp}|${d.bonus||0}`; }
 /* adminOpen: sættes true/false når admin åbnes/lukkes.
    Pauser doSync så den ikke overskriver D.employees
-   med gamle JSONBin-værdier mens brugeren redigerer. */
+   med gamle JSONBin-værdier mens brugeren redigerer.
+   lastSaveTime: timestamp for seneste gem — doSync ignorerer
+   remote data i 15 sek efter gem, så JSONBin når at propagere. */
 let adminOpen = false;
+let lastSaveTime = 0;
 
-// Cache: seneste kendte data-signatur — skip render hvis uændret
-let _lastKnownSig = null;
-
-
+/* Poller JSONBin hvert 5. sekund.
+   Springer over hvis admin er åben eller vi gemte inden for 15 sek. */
 async function doSync(){
   if(!binOk() || adminOpen) return;
+  if(Date.now() - lastSaveTime < 15000) return;
   const remote=await fetchBin();
   if(!remote){ setSyncStatus('err'); return; }
-
-  // Tjek om der er en ny celebration vi ikke har set
-  const lastCelId = localStorage.getItem('bo7_lastCelId');
-  const hasNewCel = remote.celebrationId && remote.celebrationId !== lastCelId
-                    && remote.pendingCelebration && remote.pendingCelebration.length > 0;
-
-  if(hasNewCel){
-    localStorage.setItem('bo7_lastCelId', remote.celebrationId);
-    const old = snapshotTotals(D);
-    D = mergeDeep({...DEF}, remote);
-    saveLocal(D);
-    _lastKnownSig = dataSig(D);
-    render(old);
-    setSyncStatus('ok');
-    runCelebrationQueue(remote.pendingCelebration, ()=> triggerRefreshSweep());
-    return;
-  }
-
-  // Normal data-sync — skip render hvis data er uændret
-  const remoteSig = dataSig(remote);
-  if(remoteSig !== _lastKnownSig){
+  if(dataSig(remote)!==dataSig(D)){
     const old=snapshotTotals(D);
     D=mergeDeep({...DEF},remote);
     saveLocal(D);
-    _lastKnownSig = remoteSig;
     render(old);
   }
   setSyncStatus('ok');
 }
-setInterval(doSync,15000);
+setInterval(doSync,5000);
 
 /* ════════════════════════════════════════
    RENDER
@@ -1141,7 +1161,7 @@ function totals(d){
   const emps=d.employees||[];
   return {
     sites:    emps.reduce((s,e)=>s+(e.sites||0),0),
-    texts:    emps.filter(e=>e.team!=='marketing').reduce((s,e)=>s+(e.texts||0),0),
+    texts:    emps.reduce((s,e)=>s+(e.texts||0),0),
     sessions: emps.reduce((s,e)=>s+(e.sessions||0),0),
     tp:       emps.reduce((s,e)=>s+(e.tp||0),0),
   };
@@ -1150,69 +1170,29 @@ function totals(d){
 function snapshotTotals(d){ return {...totals(d)}; }
 
 // Returnerer top 3 medarbejdere sorteret efter et givet felt
-// Sorterer med tie-breaking på original array-index (tidligst tilføjet vinder ved uafgjort)
-function sortWithTiebreak(employees, field){
-  return employees
-    .map((e, idx) => ({ e, idx }))
-    .sort((a, b) => {
-      const diff = (b.e[field]||0) - (a.e[field]||0);
-      return diff !== 0 ? diff : a.idx - b.idx; // lavest index vinder ved uafgjort
-    })
-    .map(x => x.e);
+function top3(employees, field){
+  return [...employees].sort((a,b)=>(b[field]||0)-(a[field]||0)).slice(0,3);
 }
-function top5(employees, field){ return sortWithTiebreak(employees, field).slice(0,5); }
-function top3(employees, field){ return sortWithTiebreak(employees, field).slice(0,3); }
-function top2(employees, field){ return sortWithTiebreak(employees, field).slice(0,2); }
+// Returnerer top 2 medarbejdere (bruges til fotografer)
+function top2(employees, field){
+  return [...employees].sort((a,b)=>(b[field]||0)-(a[field]||0)).slice(0,2);
+}
 
 /* ════════════════════════════════════════
    UR + DATO
-   Opdateres hvert minut (60 sek).
-   Kolon blinker via CSS animation (gratis på GPU).
+   Opdateres hvert sekund.
    Dansk ugedag + måned formateres manuelt.
    ════════════════════════════════════════ */
-const _WDAYS=['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
-const _MONS_LO=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
-const _MONS_UP=['Januar','Februar','Marts','April','Maj','Juni','Juli','August','September','Oktober','November','December'];
-const _elClock=document.getElementById('clock');
-const _elDate=document.getElementById('date');
-const _elMonth=document.getElementById('month-lbl');
-function getTimeEmoji(){
-  const now = new Date();
-  const day = now.getDay(); // 0=søn, 1=man, ..., 5=fre, 6=lør
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const t = h * 60 + m;
-
-  // Weekend = fri
-  if(day === 0 || day === 6) return '🌙';
-
-  const isFriday = day === 5;
-
-  // Fælles slots alle dage
-  if(t >= 8*60+30  && t < 8*60+40)  return '📋'; // briefing
-  if(t >= 10*60    && t < 10*60+15) return '☕'; // formiddagspause
-  if(t >= 11*60+45 && t < 12*60+30) return '🍕'; // frokost
-  if(t >= 14*60    && t < 14*60+15) return '☕'; // eftermiddagspause
-
-  // Fredag-specifikke slots
-  if(isFriday && t >= 15*60 && t < 15*60+30) return '📋'; // fredagsbriefing
-  if(isFriday && (t >= 15*60+30 || t < 8*60)) return '🌙'; // fri efter 15:30
-
-  // Normal fri efter 16:00
-  if(!isFriday && (t >= 16*60 || t < 8*60)) return '🌙';
-
-  // Arbejdstid
-  return isFriday ? '🔥' : '🚀';
-}
-
 function tick(){
   const now=new Date(),p=n=>String(n).padStart(2,'0');
-  _elClock.innerHTML=`${p(now.getHours())}<span class="colon">:</span>${p(now.getMinutes())}`;
-  document.getElementById('time-emoji').textContent = getTimeEmoji();
-  _elDate.textContent=`${_WDAYS[now.getDay()]} ${now.getDate()}. ${_MONS_LO[now.getMonth()]} ${now.getFullYear()}`;
-  _elMonth.textContent=_MONS_UP[now.getMonth()];
+  document.getElementById('clock').textContent=`${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+  const wd=['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
+  const mo=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
+  const moU=['Januar','Februar','Marts','April','Maj','Juni','Juli','August','September','Oktober','November','December'];
+  document.getElementById('date').textContent=`${wd[now.getDay()]} ${now.getDate()}. ${mo[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('month-lbl').textContent=`${moU[now.getMonth()]}`;
 }
-setInterval(tick,60000); tick();
+setInterval(tick,1000); tick();
 
 /* ════════════════════════════════════════
    AUTOMATISK MÅNEDSNULSTILLING
@@ -1239,122 +1219,57 @@ function checkMonthlyReset(){
   render(null);
   console.log(`[Dashboard] Månedsnulstilling udført: ${key}`);
 }
-setInterval(checkMonthlyReset, 5 * 60 * 60 * 1000); // tjek hver 5. time
+setInterval(checkMonthlyReset, 60000); // tjek hvert minut
 checkMonthlyReset(); // tjek også ved sideload
-
-// Automatisk genindlæsning kl. 22:00 og 04:00 — nulstiller browser-hukommelse
-setInterval(()=>{ const h=new Date().getHours(); if(h===22||h===4) location.reload(); }, 60000);
 
 // Animeret tæller: tæller fra én værdi til en anden over ~1.2s
 function countUp(el,from,to){
   const t0=performance.now(),dur=1200;
   (function step(now){ const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4); el.textContent=Math.round(from+(to-from)*e); if(p<1)requestAnimationFrame(step); })(t0);
 }
-
+// Samme som countUp men formaterer som dansk kr. (toLocaleString)
+function countUpBonus(el,from,to){
+  const t0=performance.now(),dur=1200;
+  (function step(now){ const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4); const v=Math.round(from+(to-from)*e); el.innerHTML=`${v.toLocaleString('da-DK')}<span class="bonus-suffix"> kr.</span>`; if(p<1)requestAnimationFrame(step); })(t0);
+}
 
 /* Renderer top 3/2 liste i én kolonne.
    Filtrerer medarbejdere med 0 fra — viser placeholder hvis ingen. */
-function renderList(container, items, field, rowClass){
-  const el = (typeof container === 'string') ? document.getElementById(container) : container; el.innerHTML='';
+function renderList(containerId, items, field, rowClass){
+  const el=document.getElementById(containerId); el.innerHTML='';
+  // Only show entries with value > 0
   const active = items.filter(p=>(p[field]||0)>0);
   if(active.length===0){
     const ph=document.createElement('div');
     ph.className='list-placeholder';
-    ph.textContent='Hvem får fakket først? 🎯';
+    ph.textContent='Ingen resultater endnu';
     el.appendChild(ph);
     return;
   }
   active.forEach((p,i)=>{
     const t=p.team||'none';
-    const isMktg = t === 'marketing';
     const cls = rowClass || (t==='gators'?'gators':t==='sharks'?'sharks':'none');
-    const isChaser = i >= 3;
-    const pill = !isChaser && (t==='gators'||t==='sharks')
-      ? `<span class="team-pill ${t}">${t==='gators'?'Gators':'Sharks'}</span>`
-      : (!isChaser && isMktg) ? `<span class="team-pill marketing">Marketing</span>`
-      : `<span></span>`;
+    const pill=(t==='gators'||t==='sharks')?`<span class="team-pill ${t}">${t==='gators'?'Gators':'Sharks'}</span>`:'';
     const row=document.createElement('div');
-    row.className=`list-row ${cls}${isChaser?' list-row-chaser':''}`;
-    row.innerHTML=`<span class="medal">${isChaser ? '' : (MEDALS[i]||'')}</span><span class="p-name">${p.name||'—'}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
+    row.className=`list-row ${cls}`;
+    row.innerHTML=`<span class="medal">${MEDALS[i]||''}</span><span class="p-name">${p.name||'—'}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
     el.appendChild(row);
   });
-}
-
-/* Letvægts-render: opdaterer KUN totaler + progressbars.
-   Bruges mens admin er åben (live tastning).
-   Koster ~10% af fuld render — ingen liste-DOM-ændringer. */
-function renderTotalsOnly(){
-  const T=totals(D);
-  _el.sites.textContent    = T.sites;
-  _el.texts.textContent    = T.texts;
-  _el.sessions.textContent = T.sessions;
-  _el.tp.textContent       = T.tp;
-  function prog(capId,pctId,fillId,val,goal,cardId){
-    const reached = goal > 0 && val >= goal;
-    const pct = goal > 0 ? Math.min(Math.round(val/goal*100),100) : 0;
-    const rawPct = goal > 0 ? Math.round(val/goal*100) : 0;
-    document.getElementById(capId).textContent=`${val} af ${goal}`;
-    document.getElementById(pctId).textContent= reached ? `${rawPct}%` : `${pct}%`;
-    document.getElementById(fillId).style.width=pct+'%';
-    if(cardId){
-      const card = document.getElementById(cardId);
-      card.classList.toggle('goal-reached', reached);
-      card.classList.toggle('on-fire', goal > 0 && rawPct >= 80 && rawPct < 90 && !reached);
-      card.classList.toggle('on-fire-hot', goal > 0 && rawPct >= 90 && !reached);
-    }
-  }
-  prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal,    'card-sites');
-  prog('cap-texts',   'pct-texts',   'fill-texts',   T.texts,    D.textsGoal,    'card-texts');
-  prog('cap-sessions','pct-sessions','fill-sessions', T.sessions, D.sessionsGoal, 'card-sessions');
-  prog('cap-tp',      'pct-tp',      'fill-tp',       T.tp,       D.tpGoal,       'card-tp');
-}
-
-/* Opdaterer WebBanken-kortet med aktuelle værdier */
-function renderWebBank(){
-  const earned = (D.wbGators||0) + (D.wbSharks||0) + (D.wbMktg||0);
-  const total   = earned - (D.wbSpent||0);
-  const goal    = D.wbGoal||0;
-  const pct     = goal > 0 ? Math.min(Math.round(total/goal*100),100) : 0;
-  const fmt = n => n.toLocaleString('da-DK') + ' kr.';
-
-  _el.wbTotal.textContent  = total.toLocaleString('da-DK') + ' kr.';
-  _el.wbCap.textContent    = goal > 0 ? `${total.toLocaleString('da-DK')} af ${goal.toLocaleString('da-DK')} kr.` : '—';
-  _el.wbPct.textContent    = goal > 0 ? `${pct}%` : '';
-  _el.wbFill.style.width   = pct + '%';
-  // Sorter bidrag (højest øverst) og flyt rækkerne fysisk i DOM
-  const teams = [
-    { pill: 'gators',    val: D.wbGators||0 },
-    { pill: 'sharks',    val: D.wbSharks||0 },
-    { pill: 'marketing', val: D.wbMktg||0 },
-  ].sort((a,b) => a.val - b.val); // lavest først → insertBefore vender dem
-
-  const container = document.querySelector('.list-block[style*="grid-row:2"]');
-  const sectionLbl = container.querySelector('.wb-section-lbl');
-  teams.forEach(t => {
-    container.querySelectorAll('.wb-team-row').forEach(row => {
-      if(row.querySelector('.team-pill').classList.contains(t.pill)){
-        row.querySelector('.wb-amt').textContent = fmt(t.val);
-        container.insertBefore(row, sectionLbl.nextSibling);
-      }
-    });
-  });
-  _el.wbEarned.textContent = fmt(earned);
-  _el.wbSpent.textContent  = '−' + fmt(D.wbSpent||0);
 }
 
 function render(oldTotals){
   const T=totals(D);
   const prev=oldTotals||{sites:0,texts:0,sessions:0,tp:0,bonus:0};
-  countUp(_el.sites,   prev.sites||0,    T.sites);
-  countUp(_el.texts,   prev.texts||0,    T.texts);
-  countUp(_el.sessions,prev.sessions||0, T.sessions);
-  countUp(_el.tp,      prev.tp||0,       T.tp);
-  renderWebBank();
+  countUp(document.getElementById('n-sites'),   prev.sites||0,    T.sites);
+  countUp(document.getElementById('n-texts'),   prev.texts||0,    T.texts);
+  countUp(document.getElementById('n-sessions'),prev.sessions||0, T.sessions);
+  countUp(document.getElementById('n-tp'),      prev.tp||0,       T.tp);
+  countUpBonus(document.getElementById('bonus-display'),prev.bonus||0,D.bonus||0);
 
-  _el.recSites.textContent    = D.sitesRec??22;
-  _el.recTexts.textContent    = D.textsRec??88;
-  _el.recSess.textContent     = D.sessionsRec??50;
-  _el.recTp.textContent       = D.tpRec??0;
+  document.getElementById('rec-sites').textContent    = D.sitesRec??22;
+  document.getElementById('rec-texts').textContent    = D.textsRec??88;
+  document.getElementById('rec-sessions').textContent = D.sessionsRec??50;
+  document.getElementById('rec-tp').textContent       = D.tpRec??0;
 
   /* Rekord-breaking indikator: gylden gløde hvis aktuelt tal >= fællesrekord */
   [
@@ -1367,42 +1282,35 @@ function render(oldTotals){
     if(el) el.classList.toggle('rec-breaking', rec > 0 && val >= rec);
   });
 
-  function prog(capId,pctId,fillId,val,goal,cardId){
-    const reached = goal > 0 && val >= goal;
-    const pct = goal > 0 ? Math.min(Math.round(val/goal*100),100) : 0;
-    const rawPct = goal > 0 ? Math.round(val/goal*100) : 0;
+  function prog(capId,pctId,fillId,val,goal){
+    const pct=goal>0?Math.min(Math.round(val/goal*100),100):0;
     document.getElementById(capId).textContent=`${val} af ${goal}`;
-    document.getElementById(pctId).textContent= reached ? `${rawPct}%` : `${pct}%`;
+    document.getElementById(pctId).textContent=`${pct}%`;
     setTimeout(()=>document.getElementById(fillId).style.width=pct+'%',150);
-    if(cardId){
-      const card = document.getElementById(cardId);
-      card.classList.toggle('goal-reached', reached);
-      card.classList.toggle('on-fire', goal > 0 && rawPct >= 80 && rawPct < 90 && !reached);
-      card.classList.toggle('on-fire-hot', goal > 0 && rawPct >= 90 && !reached);
-    }
   }
-  prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal,    'card-sites');
-  prog('cap-texts',   'pct-texts',   'fill-texts',   T.texts,    D.textsGoal,    'card-texts');
-  prog('cap-sessions','pct-sessions','fill-sessions', T.sessions, D.sessionsGoal, 'card-sessions');
-  prog('cap-tp',      'pct-tp',      'fill-tp',       T.tp,       D.tpGoal,       'card-tp');
+  prog('cap-sites',   'pct-sites',   'fill-sites',   T.sites,    D.sitesGoal);
+  prog('cap-texts',   'pct-texts',   'fill-texts',   T.texts,    D.textsGoal);
+  prog('cap-sessions','pct-sessions','fill-sessions', T.sessions, D.sessionsGoal);
+  prog('cap-tp',      'pct-tp',      'fill-tp',       T.tp,       D.tpGoal);
 
   // Auto top 3/2
   const emps=D.employees||[];
   const siteEmps  = emps.filter(e=>e.dept==='site');
-  const textEmps  = emps.filter(e=>e.dept==='text' || e.team==='marketing');
+  const textEmps  = emps.filter(e=>e.dept==='text');
   const sessEmps  = emps.filter(e=>e.dept==='session');
 
   // For sites/texts/tp: top3 from all employees of that dept, sorted by field
   // For sessions: top2 from session dept
-  renderList(_el.listSites,    top5(siteEmps.length? siteEmps : emps, 'sites'),    'sites');
-  renderList(_el.listTexts,    top5(textEmps.length? textEmps : emps, 'texts'),    'texts');
-  renderList(_el.listTp,       top3(emps, 'tp'), 'tp', 'tp-row');
+  renderList('list-sites',    top3(siteEmps.length? siteEmps : emps, 'sites'),    'sites');
+  renderList('list-texts',    top3(textEmps.length? textEmps : emps, 'texts'),    'texts');
+  renderList('list-sessions', top2(sessEmps.length? sessEmps : emps, 'sessions'), 'sessions');
+  renderList('list-tp',       top3(emps, 'tp'), 'tp', 'tp-row');
 
   // List records
-  const lrEl = { 'lrec-sites':_el.lrecSites, 'lrec-texts':_el.lrecTexts, 'lrec-tp':_el.lrecTp };
-  const lr=(id,v,name)=>{ const el=lrEl[id]||document.getElementById(id); if(!el) return; el.innerHTML = (v&&v!==''&&v!='0')?`<span class="lr-label">🏆 Rekord</span><span class="lr-divider">|</span><em>${v}</em>${name?`<span class="lr-name">${name}</span>`:''}`:''; };
+  const lr=(id,v,name)=>{ document.getElementById(id).innerHTML = (v&&v!==''&&v!='0')?`<span class="lr-label">Rekord</span><span class="lr-divider">|</span><em>${v}</em>${name?`<span class="lr-name">${name}</span>`:''}`:''; };
   lr('lrec-sites',    D.sitesLRec,    D.sitesLRecName);
   lr('lrec-texts',    D.textsLRec,    D.textsLRecName);
+  lr('lrec-sessions', D.sessionsLRec, D.sessionsLRecName);
   lr('lrec-tp',       D.tpLRec,       D.tpLRecName);
 }
 render(null);
@@ -1481,11 +1389,8 @@ function fillForm(){
   document.getElementById('g-sessions-lrec-name').value=D.sessionsLRecName||'';
   document.getElementById('g-tp-lrec').value=D.tpLRec||'';
   document.getElementById('g-tp-lrec-name').value=D.tpLRecName||'';
-  document.getElementById('a-wb-goal').value=D.wbGoal||0;
-  document.getElementById('a-wb-spent').value=D.wbSpent||0;
-  document.getElementById('a-wb-gators').value=D.wbGators||0;
-  document.getElementById('a-wb-sharks').value=D.wbSharks||0;
-  document.getElementById('a-wb-mktg').value=D.wbMktg||0;
+  document.getElementById('a-bonus').value=D.bonus||0;
+  document.getElementById('info-facts').value=(D.infoFacts||[]).join('\n');
   document.getElementById('a-newpw').value='';
   document.getElementById('a-confirmpw').value='';
   renderEmpTable();
@@ -1512,22 +1417,20 @@ function usedEmojis(excludeIdx){
   return (D.employees||[]).filter((_,i)=>i!==excludeIdx).map(e=>e.emoji).filter(Boolean);
 }
 
-/* Drag-and-drop state */
-let _dragSrcIdx = null;
-
 function renderEmpTable(){
   const tbody = document.getElementById('emp-tbody');
   tbody.innerHTML = '';
 
   const GROUPS = [
-    { dept:'site',    label:'Hjemmeside',    icon:'🌐' },
-    { dept:'text',    label:'Tekstforfatter', icon:'✍️' },
-    { dept:'session', label:'Fotograf',       icon:'📷' },
-    { dept:'',        label:'Ikke tildelt',   icon:'❓' },
+    { dept:'site',    label:'Hjemmeside',     icon:'🌐' },
+    { dept:'text',    label:'Tekstforfatter',  icon:'✍️' },
+    { dept:'session', label:'Fotograf',        icon:'📷' },
+    { dept:'',        label:'Ikke tildelt',    icon:'❓' },
   ];
 
   const emps = D.employees || [];
 
+  // Map original index so updateEmp/removeEmp stadig virker på D.employees[idx]
   GROUPS.forEach(group => {
     const members = emps
       .map((emp, idx) => ({ emp, idx }))
@@ -1538,14 +1441,18 @@ function renderEmpTable(){
     // Gruppe-header
     const headerRow = document.createElement('tr');
     headerRow.className = 'emp-group-header';
-    headerRow.innerHTML = `<td colspan="8"><div class="header-inner"><span class="dept-badge"><span class="dept-icon">${group.icon}</span>${group.label} <span style="opacity:0.4;margin-left:4px">(${members.length})</span></span></div></td>`;
+    headerRow.innerHTML = `<td colspan="9"><span class="dept-badge"><span class="dept-icon">${group.icon}</span>${group.label} <span style="opacity:0.4;margin-left:4px">(${members.length})</span></span></td>`;
     tbody.appendChild(headerRow);
 
     // Medarbejder-rækker
     members.forEach(({ emp, idx }) => {
       const dept = emp.dept || '';
-      const nyfakField = dept === 'site' ? 'sites' : dept === 'text' ? 'texts' : dept === 'session' ? 'sessions' : 'sites';
-      const nyfakVal = emp[nyfakField] || 0;
+      const showSites    = dept === 'site';
+      const showTexts    = dept === 'text';
+      const showSessions = dept === 'session';
+      const cell = (show, field, val) => show
+        ? `<td><input class="emp-input num" type="number" min="0" value="${val||0}" oninput="updateEmp(${idx},'${field}',+this.value)"></td>`
+        : `<td style="opacity:0.18;text-align:center;font-size:11px;color:var(--text-dim)">—</td>`;
 
       const taken = usedEmojis(idx);
       const emojiOpts = EMOJI_POOL.map(e => {
@@ -1555,12 +1462,7 @@ function renderEmpTable(){
       }).join('');
 
       const tr = document.createElement('tr');
-      tr.draggable = true;
-      tr.dataset.idx = idx;
-      tr.dataset.dept = group.dept;
-
       tr.innerHTML = `
-        <td class="drag-handle" title="Træk for at omsortere">⠿</td>
         <td>
           <select class="emp-select" style="width:54px;text-align:center;font-size:18px;padding:4px 2px;" oninput="updateEmp(${idx},'emoji',this.value)">
             <option value="">—</option>
@@ -1577,49 +1479,16 @@ function renderEmpTable(){
         </td>
         <td>
           <select class="emp-select" oninput="updateEmp(${idx},'team',this.value)">
-            <option value="gators"    ${emp.team==='gators'?'selected':''}>🐊 Gators</option>
-            <option value="sharks"    ${emp.team==='sharks'?'selected':''}>🦈 Sharks</option>
-            <option value="marketing" ${emp.team==='marketing'?'selected':''}>📣 Marketing</option>
+            <option value="gators" ${emp.team==='gators'?'selected':''}>🐊 Gators</option>
+            <option value="sharks" ${emp.team==='sharks'?'selected':''}>🦈 Sharks</option>
           </select>
         </td>
-        <td><input class="emp-input num" type="number" min="0" value="${nyfakVal}" oninput="updateEmp(${idx},'${nyfakField}',+this.value)"></td>
+        ${cell(showSites,    'sites',    emp.sites)}
+        ${cell(showTexts,    'texts',    emp.texts)}
+        ${cell(showSessions, 'sessions', emp.sessions)}
         <td><input class="emp-input num" type="number" min="0" value="${emp.tp||0}" oninput="updateEmp(${idx},'tp',+this.value)"></td>
         <td><button class="emp-del" onclick="removeEmp(${idx})" title="Slet">✕</button></td>
       `;
-
-      // Drag events
-      tr.addEventListener('dragstart', e => {
-        _dragSrcIdx = idx;
-        tr.classList.add('drag-dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-      tr.addEventListener('dragend', () => {
-        tr.classList.remove('drag-dragging');
-        tbody.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
-      });
-      tr.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        tbody.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
-        if(_dragSrcIdx !== idx) tr.classList.add('drag-over');
-      });
-      tr.addEventListener('drop', e => {
-        e.preventDefault();
-        if(_dragSrcIdx === null || _dragSrcIdx === idx) return;
-        // Kun inden for samme gruppe
-        const srcDept = (D.employees[_dragSrcIdx]||{}).dept || '';
-        const tgtDept = (D.employees[idx]||{}).dept || '';
-        if(srcDept !== tgtDept) return;
-        // Swap i D.employees
-        const empsArr = D.employees;
-        const tmp = empsArr[_dragSrcIdx];
-        empsArr[_dragSrcIdx] = empsArr[idx];
-        empsArr[idx] = tmp;
-        _dragSrcIdx = null;
-        renderEmpTable();
-        render(snapshotTotals(D));
-      });
-
       tbody.appendChild(tr);
     });
   });
@@ -1628,7 +1497,8 @@ function renderEmpTable(){
 function updateEmp(idx, field, val){
   if(!D.employees[idx]) return;
   D.employees[idx][field]=val;
-  renderTotalsOnly(); // letvægts — kun totaler mens admin er åben
+  // live re-render totals while editing
+  render(snapshotTotals(D));
 }
 function addEmployee(){
   D.employees.push({name:'',team:'gators',dept:'site',sites:0,texts:0,sessions:0,tp:0});
@@ -1650,10 +1520,9 @@ async function saveAdmin(celebrate=false){
   const old=snapshotTotals(D);
 
   // Byg celebrate-kø FØR data overskrives
-  const oldBonus = (D.wbGators||0) + (D.wbSharks||0) + (D.wbMktg||0) - (D.wbSpent||0);
-  const newBonus = gi('a-wb-gators') + gi('a-wb-sharks') + gi('a-wb-mktg') - gi('a-wb-spent');
+  const oldBonus = D.bonus || 0;
+  const newBonus = gi('a-bonus');
   const queue = celebrate ? buildCelebrationQueue(window._preEditEmps||[], D.employees||[], oldBonus, newBonus) : [];
-  const newCelId = (celebrate && queue.length > 0) ? Date.now().toString() : (D.celebrationId || null);
 
   D={
     ...D,
@@ -1662,20 +1531,12 @@ async function saveAdmin(celebrate=false){
     sitesRec:gi('g-sites-rec'), textsRec:gi('g-texts-rec'), sessionsRec:gi('g-sessions-rec'), tpRec:gi('g-tp-rec'),
     sitesLRec:gi('g-sites-lrec'), textsLRec:gi('g-texts-lrec'), sessionsLRec:gs('g-sessions-lrec'), tpLRec:gs('g-tp-lrec'),
     sitesLRecName:gs('g-sites-lrec-name'), textsLRecName:gs('g-texts-lrec-name'), sessionsLRecName:gs('g-sessions-lrec-name'), tpLRecName:gs('g-tp-lrec-name'),
-    bonus: newBonus,
-    wbGators: gi('a-wb-gators'), wbSharks: gi('a-wb-sharks'), wbMktg: gi('a-wb-mktg'),
-    wbSpent: gi('a-wb-spent'), wbGoal: gi('a-wb-goal'),
+    bonus:gi('a-bonus'),
     lastResetMonth: D.lastResetMonth || null,
-    celebrationId: newCelId,
-    pendingCelebration: (celebrate && queue.length > 0) ? queue : [],
+    infoFacts: document.getElementById('info-facts').value.split('\n').map(s=>s.trim()).filter(Boolean),
   };
-
-  // Host markerer celebration som set så den ikke afspiller dobbelt via doSync
-  if(celebrate && queue.length > 0){
-    localStorage.setItem('bo7_lastCelId', newCelId);
-  }
   saveLocal(D);
-  _lastKnownSig = dataSig(D);
+  lastSaveTime = Date.now(); // cooldown: doSync ignorerer remote i 15 sek
   render(old);
   if(binOk()){ setSyncStatus('wait'); const ok=await pushBin(D); setSyncStatus(ok?'ok':'err'); }
   closeAdmin();
@@ -1712,7 +1573,7 @@ const CEL_TEAM_META = {
   gators: { label:'🐊 Gators', cls:'gators' },
   sharks: { label:'🦈 Sharks', cls:'sharks' },
 };
-const CEL_SPLASH_DURATION = 20000; // ms synlig
+const CEL_SPLASH_DURATION = 12000; // ms synlig
 const CEL_GAP             = 1200;  // ms pause mellem splashes
 
 /* ════════════════════════════════════════
@@ -1745,7 +1606,6 @@ function triggerRefreshSweep(){
 function buildCelebrationQueue(oldEmps, newEmps, oldBonus, newBonus){
   const queue = [];
   newEmps.forEach((emp, idx) => {
-    if(emp.team === 'marketing') return; // marketing fejres ikke
     const old = oldEmps[idx] || {};
     ['sites','texts','sessions','tp'].forEach(field => {
       const ov = old[field]||0, nv = emp[field]||0;
@@ -1762,10 +1622,9 @@ function buildCelebrationQueue(oldEmps, newEmps, oldBonus, newBonus){
 
 function runCelebrationQueue(queue, onComplete){
   let i = 0;
-  _celRunning = true;
   function next(){
-    if(i >= queue.length){ _celRunning = false; if(onComplete) onComplete(); return; }
-    showSplash(queue[i], ()=>{ i++; if(i < queue.length) setTimeout(next, CEL_GAP); else { _celRunning = false; if(onComplete) onComplete(); } });
+    if(i >= queue.length){ if(onComplete) onComplete(); return; }
+    showSplash(queue[i], ()=>{ i++; if(i < queue.length) setTimeout(next, CEL_GAP); else { if(onComplete) onComplete(); } });
   }
   next();
 }
@@ -1822,7 +1681,7 @@ function showSplash(item, onDone){
     document.getElementById('cel-team').className           = 'cel-team ' + teamM.cls;
     document.getElementById('cel-emp-emoji').textContent    = item.emoji;
     document.getElementById('cel-name').textContent         = item.name;
-    document.getElementById('cel-metric-label').textContent = isTP ? '' : `Antal ${meta.label}`;
+    document.getElementById('cel-metric-label').textContent = (isTP ? '' : meta.icon + '  ') + (isTP ? '' : meta.label);
     document.getElementById('cel-old').textContent          = item.oldVal;
     const celNew = document.getElementById('cel-new');
     celNew.className    = 'cel-new ' + meta.color;
@@ -1863,15 +1722,7 @@ function showSplash(item, onDone){
 
   // --- Fade out ---
   const fadeOutAt = CEL_SPLASH_DURATION - 700;
-  const closeBtn = document.getElementById('cel-close');
-
-  function cleanup(){
-    clearTimeout(tFadeOut);
-    clearTimeout(tDone);
-    closeBtn.removeEventListener('click', onClose);
-  }
-
-  const tFadeOut = setTimeout(()=>{
+  setTimeout(()=>{
     inner.classList.remove('cel-in');
     inner.classList.add('cel-out');
     glow.classList.remove('cel-in');
@@ -1879,27 +1730,11 @@ function showSplash(item, onDone){
     if(isTP) tpEls.forEach(id => document.getElementById(id).classList.remove('cel-in'));
   }, fadeOutAt);
 
-  const tDone = setTimeout(()=>{
-    cleanup();
+  setTimeout(()=>{
     overlay.classList.remove('cel-active','cel-tp');
     inner.classList.remove('cel-out');
     onDone();
   }, CEL_SPLASH_DURATION);
-
-  // ✕ knap — afbryd splash og gå videre
-  function onClose(){
-    cleanup();
-    inner.classList.remove('cel-in');
-    inner.classList.add('cel-out');
-    glow.classList.remove('cel-in');
-    overlay.classList.remove('cel-in');
-    setTimeout(()=>{
-      overlay.classList.remove('cel-active','cel-tp');
-      inner.classList.remove('cel-out');
-      onDone();
-    }, 450);
-  }
-  closeBtn.addEventListener('click', onClose);
 }
 
 /* spawnConfetti(emoji, delta)
@@ -1929,13 +1764,183 @@ function spawnConfetti(emoji, delta){
   }
 }
 
+/* ════════════════════════════════════════
+   INFO-SPLASH SYSTEM
+   INFO_INTERVAL:  30 min mellem automatiske slides
+   INFO_SLIDE_DUR: 8 sek pr. slide (inkl. progressbar)
 
-// ESC lukker celebration-splash
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('cel-close').click(); });
+   buildInfoSlides(): bygger og shuffler et array af slides.
+     Automatiske slides (fra live D):
+       - Top 3 hjemmesider / tekster / anmeldelser
+       - Månedsmål progress (X% i mål, Y mangler)
+       - Hall of Fame: fælles rekorder
+       - Hall of Fame: individuelle rekordindehavere
+       - Team Bonus (kun hvis > 0)
+     Manuelle slides: D.infoFacts (én linje = én slide)
+     Sessioner/Casper er bevidst udeladt overalt.
 
-// ESC lukker både info-slide og celebration-splash
+   showInfoSlide(): viser én tilfældig slide.
+     Hall of Fame → tilføjer .info-hof (guldbaggund).
+     Progressbar animeres ned fra 100%→0% over INFO_SLIDE_DUR.
+     Kan kaldes manuelt fra Admin → Info knap.
+   ════════════════════════════════════════ */
+const INFO_INTERVAL  = 30 * 60 * 1000; // 30 min
+const INFO_SLIDE_DUR = 8000;            // 8 sek per slide
 
+function buildInfoSlides(){
+  const slides = [];
+  const emps   = D.employees || [];
+  const T      = totals(D);
 
+  // --- Top 3 sager ---
+  const topSites = [...emps].filter(e=>e.dept==='site'&&(e.sites||0)>0).sort((a,b)=>(b.sites||0)-(a.sites||0)).slice(0,3);
+  if(topSites.length){
+    slides.push({
+      tag:'Månedens top — Hjemmesider', emoji:'🌐',
+      headline: topSites[0].name,
+      sub: topSites.map((e,i)=>['🥇','🥈','🥉'][i]+' '+e.name+' — '+e.sites+' sager').join('  ·  ')
+    });
+  }
+
+  // --- Top 3 tekster ---
+  const topTexts = [...emps].filter(e=>e.dept==='text'&&(e.texts||0)>0).sort((a,b)=>(b.texts||0)-(a.texts||0)).slice(0,3);
+  if(topTexts.length){
+    slides.push({
+      tag:'Månedens top — Tekster', emoji:'✍️',
+      headline: topTexts[0].name,
+      sub: topTexts.map((e,i)=>['🥇','🥈','🥉'][i]+' '+e.name+' — '+e.texts+' tekster').join('  ·  ')
+    });
+  }
+
+  // --- Top 3 anmeldelser ---
+  const topTp = [...emps].filter(e=>(e.tp||0)>0).sort((a,b)=>(b.tp||0)-(a.tp||0)).slice(0,3);
+  if(topTp.length){
+    slides.push({
+      tag:'Månedens top — Anmeldelser', emoji:'⭐',
+      headline: topTp[0].name,
+      sub: topTp.map((e,i)=>['🥇','🥈','🥉'][i]+' '+e.name+' — '+e.tp+' anmeldelser').join('  ·  ')
+    });
+  }
+
+  // --- Progress mod mål ---
+  const goalDefs = [
+    { label:'sager',       val:T.sites, goal:D.sitesGoal, emoji:'🌐' },
+    { label:'tekster',     val:T.texts, goal:D.textsGoal, emoji:'✍️' },
+    { label:'anmeldelser', val:T.tp,    goal:D.tpGoal,    emoji:'⭐' },
+  ];
+  goalDefs.forEach(g=>{
+    if(g.goal > 0){
+      const pct = Math.round(g.val / g.goal * 100);
+      const left = g.goal - g.val;
+      const sub = left > 0
+        ? `${g.val} af ${g.goal} — ${left} mangler`
+        : `Mål nået! 🎉`;
+      slides.push({
+        tag:'Månedsmål', emoji: g.emoji,
+        headline: `Vi er ${pct}% i mål`,
+        sub: `Fælles ${g.label}: ` + sub
+      });
+    }
+  });
+
+  // --- Fælles rekorder ---
+  if(D.sitesRec)
+    slides.push({ tag:'Hall of Fame — Fælles rekord', emoji:'🏆', headline: D.sitesRec+' sager', sub:'Den bedste måned vi nogensinde har haft på hjemmesider' });
+  if(D.textsRec)
+    slides.push({ tag:'Hall of Fame — Fælles rekord', emoji:'🏆', headline: D.textsRec+' tekster', sub:'Den bedste måned vi nogensinde har haft på tekster' });
+  if(D.tpRec)
+    slides.push({ tag:'Hall of Fame — Fælles rekord', emoji:'🏆', headline: D.tpRec+' anmeldelser', sub:'Den bedste måned vi nogensinde har haft på anmeldelser' });
+
+  // --- Individuelle rekordindehavere ---
+  if(D.sitesLRec && D.sitesLRecName)
+    slides.push({ tag:'Hall of Fame', emoji:'🌐', headline: D.sitesLRecName, sub:'Personlig rekord: '+D.sitesLRec+' sager på én måned' });
+  if(D.textsLRec && D.textsLRecName)
+    slides.push({ tag:'Hall of Fame', emoji:'✍️', headline: D.textsLRecName, sub:'Personlig rekord: '+D.textsLRec+' tekster på én måned' });
+  if(D.tpLRec && D.tpLRecName)
+    slides.push({ tag:'Hall of Fame', emoji:'⭐', headline: D.tpLRecName, sub:'Personlig rekord: '+D.tpLRec+' anmeldelser på én måned' });
+
+  // --- Team bonus ---
+  if(D.bonus > 0)
+    slides.push({
+      tag:'Team Bonus', emoji:'💰',
+      headline: D.bonus.toLocaleString('da-DK')+' kr.',
+      sub:'Puljen vokser — bliv ved det gode arbejde!'
+    });
+
+  // --- Manuelle facts ---
+  (D.infoFacts||[]).forEach(fact=>{
+    slides.push({ tag:'Fun fact', emoji:'💡', headline: fact, sub:'' });
+  });
+
+  // Shuffle
+  for(let i=slides.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [slides[i],slides[j]]=[slides[j],slides[i]];
+  }
+  return slides;
+}
+
+function showInfoSlide(){
+  // Byg frisk liste ved hvert kald så data er aktuelt
+  const slides = buildInfoSlides();
+  if(!slides.length) return;
+  const slide = slides[Math.floor(Math.random() * slides.length)];
+
+  const overlay = document.getElementById('info-overlay');
+  const inner   = document.getElementById('info-inner');
+  const fill    = document.getElementById('info-progress-fill');
+
+  document.getElementById('info-tag').textContent      = slide.tag;
+  document.getElementById('info-emoji').textContent    = slide.emoji;
+  document.getElementById('info-headline').textContent = slide.headline;
+  document.getElementById('info-sub').textContent      = slide.sub;
+
+  // Reset progress animation
+  fill.style.animation = 'none';
+  fill.style.setProperty('--info-dur', INFO_SLIDE_DUR + 'ms');
+  void fill.offsetWidth;
+
+  overlay.classList.toggle('info-hof', slide.tag.startsWith('Hall of Fame'));
+  overlay.classList.add('info-in');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    inner.classList.add('info-in');
+    fill.style.animation = '';
+  }));
+
+  const fadeOut = INFO_SLIDE_DUR - 800;
+  setTimeout(()=>{
+    inner.classList.remove('info-in');
+    inner.classList.add('info-out');
+    overlay.classList.remove('info-in');
+    overlay.classList.remove('info-hof');
+  }, fadeOut);
+
+  setTimeout(()=>{
+    inner.classList.remove('info-out');
+  }, INFO_SLIDE_DUR);
+}
+
+// Start scheduler — første kald efter 30 min, derefter hvert 30. min
+setInterval(showInfoSlide, INFO_INTERVAL);
+
+/* ════════════════════════════════════════
+   AUTOMATISK DAGLIG GENSTART
+   Dashboardet refresher sig selv kl. 04:00 hver nat.
+   Forhindrer akkumuleret memory-/timer-last efter
+   dage/uger med uafbrudt drift.
+   ════════════════════════════════════════ */
+function scheduleDailyReload(){
+  const now = new Date();
+  const next = new Date();
+  next.setHours(4, 0, 0, 0); // kl. 04:00
+  if(next <= now) next.setDate(next.getDate() + 1); // næste dag hvis 04:00 er passeret
+  const msUntil = next - now;
+  setTimeout(()=>{ location.reload(); }, msUntil);
+}
+scheduleDailyReload();
+
+// Klik udenfor admin-boksen lukker den
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('overlay')) closeAdmin(); });
 // Ctrl+Shift+A åbner admin fra tastaturet
 document.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.shiftKey&&e.key==='A') openAdmin(); });
 // Initial sync ved sideload (kun hvis JSONBin er konfigureret)
