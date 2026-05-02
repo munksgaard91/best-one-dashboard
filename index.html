@@ -151,8 +151,11 @@ header{display:flex;align-items:center;justify-content:space-between;}
 .stat-block.gators .fill{background:linear-gradient(90deg,var(--gators),var(--gators-light));}
 .stat-block.sharks .fill{background:linear-gradient(90deg,var(--sessions),var(--sessions-light));}
 .stat-block.tp     .fill{background:linear-gradient(90deg,#5a2d8a,var(--tp));}
-.fill::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 2.4s ease-in-out infinite;}
-@keyframes shimmer{0%{left:-60%;}100%{left:160%;}}
+/* Shimmer: animerer transform i stedet for 'left' så det kører GPU-accelereret
+   og ikke trigger layout/paint hver frame. Identisk visuelt slut-resultat:
+   element starter -60% off-left og slider til +160% off-right af fill-baren. */
+.fill::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 2.4s ease-in-out infinite;will-change:transform;}
+@keyframes shimmer{0%{transform:translateX(-150%);}100%{transform:translateX(400%);}}
 /* Shimmer stopper ved 100% — baren er jo "færdig" (v4.0) */
 .fill.full::after { display: none; }
 /* ════════════════════════════════════════
@@ -246,16 +249,21 @@ header{display:flex;align-items:center;justify-content:space-between;}
   animation:celTileIn 0.65s cubic-bezier(0.16,1,0.3,1) forwards;
   min-width:260px;
 }
-.cel-tile.gators{ border-color:var(--gators-border); }
-.cel-tile.sharks{ border-color:var(--sharks-border); }
-.cel-tile.bonus { border-color:rgba(255,200,50,0.35); }
+/* Tile-farve = medarbejderens AFDELING (dept), ikke team.
+   Site=blå, text=grøn, session=rød — matcher de respektive stat-blocks i dashboardet.
+   (Team-pill/label inde i tile beholder sin team-farve så holdtilhør stadig fremgår.) */
+.cel-tile.site   { border-color:rgba(58,111,216,0.35); }
+.cel-tile.text   { border-color:var(--gators-border); }
+.cel-tile.session{ border-color:rgba(184,64,64,0.35); }
+.cel-tile.bonus  { border-color:rgba(255,200,50,0.35); }
 .cel-tile::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   border-radius:22px 22px 0 0;
 }
-.cel-tile.gators::before{ background:linear-gradient(90deg,var(--gators),var(--gators-light)); }
-.cel-tile.sharks::before{ background:linear-gradient(90deg,var(--sessions),var(--sessions-light)); }
-.cel-tile.bonus::before { background:linear-gradient(90deg,#a07830,#f5c842); }
+.cel-tile.site::before   { background:linear-gradient(90deg,#2a55c0,#6a9ee8); }
+.cel-tile.text::before   { background:linear-gradient(90deg,var(--gators),var(--gators-light)); }
+.cel-tile.session::before{ background:linear-gradient(90deg,var(--sessions),var(--sessions-light)); }
+.cel-tile.bonus::before  { background:linear-gradient(90deg,#a07830,#f5c842); }
 @keyframes celTileIn{
   to{ opacity:1;transform:scale(1) translateY(0); }
 }
@@ -267,9 +275,10 @@ header{display:flex;align-items:center;justify-content:space-between;}
   z-index:-1;
   animation:celGlowIn 0.8s ease forwards 0.25s;
 }
-.cel-tile.gators .cel-tile-glow{ background:radial-gradient(circle,rgba(138,175,141,0.5),transparent 60%); }
-.cel-tile.sharks .cel-tile-glow{ background:radial-gradient(circle,rgba(224,96,96,0.4),transparent 60%); }
-.cel-tile.bonus  .cel-tile-glow{ background:radial-gradient(circle,rgba(255,200,50,0.5),transparent 60%); }
+.cel-tile.site    .cel-tile-glow{ background:radial-gradient(circle,rgba(106,158,232,0.5),transparent 60%); }
+.cel-tile.text    .cel-tile-glow{ background:radial-gradient(circle,rgba(138,175,141,0.5),transparent 60%); }
+.cel-tile.session .cel-tile-glow{ background:radial-gradient(circle,rgba(224,96,96,0.4),transparent 60%); }
+.cel-tile.bonus   .cel-tile-glow{ background:radial-gradient(circle,rgba(255,200,50,0.5),transparent 60%); }
 @keyframes celGlowIn{ to{ opacity:0.22; } }
 .cel-tile-team{
   font-size:clamp(12px,1vw,16px);
@@ -338,6 +347,8 @@ header{display:flex;align-items:center;justify-content:space-between;}
 .cel-change.sessions .cel-change-new{ color:var(--sessions-light); text-shadow:0 0 24px rgba(224,96,96,0.4); }
 .cel-change.tp       .cel-change-new{ color:var(--tp); text-shadow:0 0 24px rgba(168,85,247,0.45); }
 .cel-change.bonus    .cel-change-new{ color:#f5c842; text-shadow:0 0 24px rgba(245,200,66,0.45); }
+/* Bonus-rækken har ingen label (kun tal) — center i stedet for at klemme til venstre */
+.cel-change.bonus{ justify-content:center; }
 .cel-change-kr{
   font-family:'Outfit',sans-serif;
   font-size:clamp(13px,1.1vw,18px);
@@ -922,6 +933,17 @@ function binOk(){ return CFG.key&&CFG.bin; }
    ════════════════════════════════════════ */
 let _pushInFlight = false;
 let _pushPending  = false;
+/* v4.1: pushPending-flag i localStorage. Sættes når lokal save laves, ryddes når
+   push bekræftet fra JSONBin. doSync respekterer flaget og overskriver ikke lokal
+   data hvis vi har upushede ændringer (fx ved netværks-blip eller browser-reload
+   midt i et push). Persisteres i localStorage så det også overlever en reload. */
+function setPushPending(v){
+  if(v){ localStorage.setItem('bo7_pushPending', '1'); }
+  else { localStorage.removeItem('bo7_pushPending'); }
+}
+function isPushPending(){
+  return localStorage.getItem('bo7_pushPending') === '1';
+}
 async function fetchBin(){
   if(!binOk()) return null;
   try{ const r=await fetch(`https://api.jsonbin.io/v3/b/${CFG.bin}/latest`,{headers:{'X-Master-Key':CFG.key,'X-Bin-Meta':'false'}}); return r.ok?await r.json():null; }
@@ -935,17 +957,23 @@ async function pushBin(){
     return true;
   }
   _pushInFlight = true;
+  let success = false;
   try{
     const r=await fetch(`https://api.jsonbin.io/v3/b/${CFG.bin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':CFG.key},body:JSON.stringify(D)});
+    success = r.ok;
     return r.ok;
   } catch(e){ return false; }
   finally{
     _pushInFlight = false;
     if(_pushPending){
-      // Der kom en ny save undervejs — push nyeste D nu
+      // Der kom en ny save undervejs — push nyeste D nu (flag forbliver sat)
       _pushPending = false;
       setTimeout(()=> pushBin(), 100);
+    } else if(success){
+      // Sidste push i kæden lykkedes — remote er nu up-to-date, ryd flag
+      setPushPending(false);
     }
+    // Hvis push fejlede uden ventende efterfølger: flag forbliver, doSync vil prøve igen
   }
 }
 function setSyncStatus(s){
@@ -968,7 +996,21 @@ function scheduleSync(){
 async function doSync(){
   // Skip hvis admin åben, celebration kører, eller ingen bin konfigureret
   if(!binOk() || adminOpen || _celRunning){ scheduleSync(); return; }
+  // v4.1: Hvis vi har upushede lokale ændringer, må vi IKKE hente fra remote — det
+  // ville overskrive lokale data med stale remote. Push i stedet og prøv igen senere.
+  if(isPushPending()){
+    setSyncStatus('wait');
+    const ok = await pushBin();
+    setSyncStatus(ok ? 'ok' : 'err');
+    if(!ok){ _syncFails = Math.min(_syncFails + 1, 3); }
+    else   { _syncFails = 0; }
+    scheduleSync();
+    return;
+  }
   const remote = await fetchBin();
+  // v4.1: Re-tjek state efter await — admin kunne være åbnet, eller en save kunne
+  // være lavet mens vi ventede på fetch. I så fald bailer vi ud uden at røre D.
+  if(adminOpen || _celRunning || isPushPending()){ scheduleSync(); return; }
   if(!remote){
     _syncFails = Math.min(_syncFails + 1, 3); // cap så backoff max bliver 120s
     setSyncStatus('err');
@@ -1128,6 +1170,7 @@ function checkMonthlyReset(){
   (D.employees||[]).forEach(e=>{ e.sites=0; e.texts=0; e.sessions=0; e.tp=0; });
   D.sitesGoal=0; D.textsGoal=0; D.sessionsGoal=0; D.tpGoal=0;
   D.lastResetMonth = key;
+  if(binOk()) setPushPending(true);
   saveLocal(D);
   if(binOk()) pushBin();
   render(null);
@@ -1495,6 +1538,9 @@ async function saveAdmin(celebrate=false){
   };
   // Marker celebration som set LOKALT før push — så doSync ikke re-triggere
   if(hasCel) localStorage.setItem('bo7_lastCelId', newCelId);
+  // v4.1: Marker at lokal data har upushede ændringer FØR saveLocal. Beskytter mod
+  // at doSync overskriver lokale data hvis push fejler eller browser lukkes.
+  if(binOk()) setPushPending(true);
   saveLocal(D);
   _lastKnownSig = dataSig(D);
   render(old);
@@ -1546,6 +1592,12 @@ const CEL_TEAM_META = {
   gators: { label: '🐊 Gators', cls: 'gators' },
   sharks: { label: '🦈 Sharks', cls: 'sharks' },
 };
+/* Dept-mapping for tile-farve. Matcher stat-block-farverne. */
+const CEL_DEPT_META = {
+  site:    { cls: 'site' },
+  text:    { cls: 'text' },
+  session: { cls: 'session' },
+};
 function buildCelebrationBatch(oldEmps, newEmps, oldBonus, newBonus){
   const employees = [];
   newEmps.forEach((emp, idx) => {
@@ -1581,8 +1633,10 @@ function calcCols(n){
 }
 function buildEmpTile(emp, idx){
   const team = CEL_TEAM_META[emp.team] || CEL_TEAM_META.gators;
+  const dept = CEL_DEPT_META[emp.dept] || CEL_DEPT_META.site;
   const tile = document.createElement('div');
-  tile.className = `cel-tile ${team.cls}`;
+  // Dept bestemmer tile-farve (border + top stripe + glow), team beholder team-pill-farven
+  tile.className = `cel-tile ${dept.cls}`;
   tile.style.animationDelay = `${idx * 80}ms`;
   const changesHtml = Object.entries(emp.changes).map(([field, c]) => {
     const m = CEL_FIELD_META[field];
@@ -1608,14 +1662,15 @@ function buildBonusTile(bonus, idx){
   const tile = document.createElement('div');
   tile.className = 'cel-tile bonus';
   tile.style.animationDelay = `${idx * 80}ms`;
+  // Bonus-tile har ÉN overskrift ("Money in the bank!") + tallet under.
+  // Ingen team-label, navn-undertekst eller change-label — det blev til 3 labels for
+  // 1 koncept og fyldte over to linjer.
   tile.innerHTML = `
     <div class="cel-tile-glow"></div>
-    <div class="cel-tile-team">💰 WebBanken</div>
     <div class="cel-tile-emoji">💰</div>
-    <div class="cel-tile-name">Flere penge</div>
+    <div class="cel-tile-name">Money in the bank!</div>
     <div class="cel-tile-changes">
       <div class="cel-change bonus">
-        <span class="cel-change-label">i klassekassen</span>
         <span class="cel-change-nums">
           <span class="cel-change-old">${bonus.old.toLocaleString('da-DK')}</span>
           <span class="cel-change-arrow">→</span>
@@ -1627,9 +1682,30 @@ function buildBonusTile(bonus, idx){
   `;
   return tile;
 }
+/* v4.1: Modul-niveau cel-state. Bug-fix for "celebration #1's auto-close timer
+   dræber celebration #2 mid-flight" når to saves sker tæt på hinanden. */
+let _celTFade  = null;  // timer der fjerner cel-in (start af fade-out)
+let _celTEnd   = null;  // timer der kalder finish() (helt nedtaget)
+let _celTCount = null;  // timer der starter count-up + konfetti (700ms efter åbn)
+let _celOnClose = null; // event listener for cel-close knap
+function _celClearTimers(){
+  if(_celTFade  !== null){ clearTimeout(_celTFade);  _celTFade  = null; }
+  if(_celTEnd   !== null){ clearTimeout(_celTEnd);   _celTEnd   = null; }
+  if(_celTCount !== null){ clearTimeout(_celTCount); _celTCount = null; }
+}
+function _celCleanup(){
+  _celClearTimers();
+  const closeBtn = document.getElementById('cel-close');
+  if(_celOnClose && closeBtn){ closeBtn.removeEventListener('click', _celOnClose); }
+  _celOnClose = null;
+}
 function showBatchCelebration(batch, onDone){
   const totalTiles = (batch.employees?.length || 0) + (batch.bonus ? 1 : 0);
   if(totalTiles === 0){ onDone && onDone(); return; }
+  // KRITISK: Ryd op efter eventuel forrige celebration FØR vi sætter nye timers.
+  // Hvis vi springer det her over, kan tEnd fra forrige celebration fyre under denne
+  // og ødelægge DOM'en mid-flight (bug der lukkede #2 mens den stadig kørte).
+  _celCleanup();
   _celRunning = true;
   const overlay = document.getElementById('cel-overlay');
   const grid    = document.getElementById('cel-grid');
@@ -1649,7 +1725,8 @@ function showBatchCelebration(batch, onDone){
   overlay.classList.add('cel-active');
   requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('cel-in')));
   // Count up + konfetti efter tiles er sat på plads
-  setTimeout(() => {
+  _celTCount = setTimeout(() => {
+    _celTCount = null;
     grid.querySelectorAll('[data-from]').forEach(el => {
       const from = +el.dataset.from, to = +el.dataset.to;
       const isBonus = el.classList.contains('bonus-amount');
@@ -1664,25 +1741,22 @@ function showBatchCelebration(batch, onDone){
   }, 700);
   // Auto-close
   const closeBtn = document.getElementById('cel-close');
-  let tFade, tEnd;
   function finish(){
-    clearTimeout(tFade);
-    clearTimeout(tEnd);
-    closeBtn.removeEventListener('click', onClose);
+    _celCleanup(); // idempotent — sikrer at vores egne timers/listener er nullet
     overlay.classList.remove('cel-active');
     grid.innerHTML = '';
     _celRunning = false;
     onDone && onDone();
   }
-  function onClose(){
-    clearTimeout(tFade);
-    clearTimeout(tEnd);
+  _celOnClose = function(){
+    // Bruger klikkede X. Cancel auto-timers og fade ud manuelt over 500ms.
+    _celClearTimers();
     overlay.classList.remove('cel-in');
-    setTimeout(finish, 500);
-  }
-  tFade = setTimeout(() => overlay.classList.remove('cel-in'), CEL_DURATION - 500);
-  tEnd  = setTimeout(finish, CEL_DURATION);
-  closeBtn.addEventListener('click', onClose);
+    _celTEnd = setTimeout(() => { _celTEnd = null; finish(); }, 500);
+  };
+  _celTFade = setTimeout(() => { _celTFade = null; overlay.classList.remove('cel-in'); }, CEL_DURATION - 500);
+  _celTEnd  = setTimeout(() => { _celTEnd  = null; finish(); }, CEL_DURATION);
+  closeBtn.addEventListener('click', _celOnClose);
 }
 function spawnBatchConfetti(emojis, delta){
   const count = Math.min(20 + Math.floor(delta * 1.0), 50);
