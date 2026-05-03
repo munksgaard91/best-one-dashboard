@@ -389,12 +389,8 @@ header{display:flex;align-items:center;justify-content:space-between;}
 /* Subdued list rows */
 .list-row{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:8px;padding:5px 4px;border-radius:0;border:none;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;animation:fadeUp 0.35s ease backwards;min-width:0;}
 .list-row:last-child{border-bottom:none;}
-.list-row:nth-child(1){animation-delay:0.04s;}
-.list-row:nth-child(2){animation-delay:0.1s;}
-.list-row:nth-child(3){animation-delay:0.16s;}
-.list-row:nth-child(4){animation-delay:0.22s;}
-.list-row:nth-child(5){animation-delay:0.28s;}
-.list-row:nth-child(6){animation-delay:0.34s;}
+/* v4.1: animation-delay sættes inline i renderList() i stedet for hardcoded
+   nth-child(N) regler. Skalerer til vilkårligt antal rækker. */
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .list-row.gators{background:none;}
 .list-row.sharks{background:none;}
@@ -1163,7 +1159,11 @@ function tick(){
   _elDate.textContent=`${_WDAYS[now.getDay()]} ${now.getDate()}. ${_MONS_LO[now.getMonth()]} ${now.getFullYear()}`;
   _elMonth.textContent=_MONS_UP[now.getMonth()];
 }
-setInterval(tick,60000); tick();
+/* v4.1: tick kører hvert sekund, ikke hvert minut.
+   Tidligere kunne uret være op til 59 sekunder bagud (afhængigt af hvornår
+   scriptet loadede ifht. minut-grænsen). 1Hz koster ingenting; browseren
+   throttler alligevel når tab er hidden, og tick'et er trivielt arbejde. */
+setInterval(tick, 1000); tick();
 /* ════════════════════════════════════════
    PAGE VISIBILITY + QUIET-HOURS (v4.0)
    Pauser animationer for at spare bitrate på Chromecast-streamen.
@@ -1237,6 +1237,7 @@ function renderList(container, items, field, rowClass){
       : `<span></span>`;
     const row=document.createElement('div');
     row.className=`list-row ${cls}${isChaser?' list-row-chaser':''}`;
+    row.style.animationDelay = `${0.04 + i * 0.06}s`;
     row.innerHTML=`<span class="medal">${isChaser ? '' : (MEDALS[i]||'')}</span><span class="p-name">${esc(p.name||'—')}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
     el.appendChild(row);
   });
@@ -1389,7 +1390,7 @@ function checkPw(){
   else{ document.getElementById('pw-err').textContent='Forkert kodeord'; document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus(); }
 }
 function showPanel(){
-  window._preEditEmps = JSON.parse(JSON.stringify(D.employees||[]));
+  window._preEditEmps = structuredClone(D.employees || []);
   document.getElementById('pw-box').style.display='none';
   document.getElementById('admin-box').style.display='block';
   fillForm();
