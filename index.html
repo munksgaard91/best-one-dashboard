@@ -394,6 +394,7 @@ header{display:flex;align-items:center;justify-content:space-between;}
 .list-row:nth-child(3){animation-delay:0.16s;}
 .list-row:nth-child(4){animation-delay:0.22s;}
 .list-row:nth-child(5){animation-delay:0.28s;}
+.list-row:nth-child(6){animation-delay:0.34s;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .list-row.gators{background:none;}
 .list-row.sharks{background:none;}
@@ -576,7 +577,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         <path fill="#ffffff" d="M719.6,93.2H655c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C720.1,85.7,719.9,88.3,719.6,93.2z M660.7,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.2-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C667.9,61.5,663.9,62.9,660.7,65.6z"/>
         <path fill="#ffffff" d="M102.9,61c-4.3-7-10.3-12.4-18-16.3c-7.7-3.9-16.4-5.9-26.1-5.9c-6.8,0-13,1-18.8,2.9V7.2H8.3l0.1,74.9h0c0,0.9-0.1,1.8-0.1,2.8c0,8.9,2.2,16.9,6.5,23.9c4.3,7,10.4,12.5,18.1,16.5c7.7,4,16.3,5.9,25.9,5.9c9.7,0,18.4-2,26.1-5.9c7.7-4,13.7-9.5,18-16.5c4.3-7,6.4-15,6.4-23.9S107.2,68,102.9,61z M72.4,100.6c-3.5,3.8-8,5.7-13.5,5.7c-5.5,0-10-1.9-13.5-5.7c-3.5-3.8-5.3-9-5.3-15.8c0-6.6,1.8-11.8,5.3-15.5c3.5-3.7,8-5.6,13.5-5.6c5.5,0,10,1.9,13.5,5.6c3.5,3.7,5.3,8.9,5.3,15.5C77.6,91.6,75.9,96.8,72.4,100.6z"/>
       </svg>
-      <div style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.18);font-weight:500;text-transform:uppercase;text-align:center;margin-top:3px;">Dashboard — version 4.0</div>
+      <div style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.18);font-weight:500;text-transform:uppercase;text-align:center;margin-top:3px;">Dashboard — version 4.1</div>
     </div>
     <div class="header-right">
       <div class="clock-row">
@@ -911,6 +912,16 @@ const DEF = {
 };
 const MEDALS=['🥇','🥈','🥉'];
 const DEPT_LABEL={site:'Hjemmeside', text:'Tekstforfatter', session:'Fotograf'};
+/* v4.1: Escape brugerinput før det indsættes via innerHTML. Beskytter mod XSS hvis
+   et medarbejdernavn (eller noget der kommer fra JSONBin) indeholder HTML/JS. */
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 /* ════════════════════════════════════════
    STATE
    ════════════════════════════════════════ */
@@ -982,7 +993,20 @@ function setSyncStatus(s){
   const lbl={ok:'Synced',err:'Sync fejl',wait:'Syncer...'};
   el.innerHTML=`<span class="sync-dot ${s}"></span>${lbl[s]||''}`;
 }
-function dataSig(d){ const t=totals(d); return `${t.sites}|${t.texts}|${t.sessions}|${t.tp}|${d.wbGators||0}|${d.wbSharks||0}|${d.wbMktg||0}|${d.wbSpent||0}|${d.wbGoal||0}`; }
+/* v4.1: dataSig inkluderer nu også mål, rekorder og lrec-navne. Tidligere
+   ville ændringer i fx 'Sager mål' fra 20 → 25 ikke trigge render via doSync
+   hvis totals var uændret — dashboardet viste gamle mål indtil noget andet skete. */
+function dataSig(d){
+  const t = totals(d);
+  return [
+    t.sites, t.texts, t.sessions, t.tp,
+    d.wbGators||0, d.wbSharks||0, d.wbMktg||0, d.wbSpent||0, d.wbGoal||0,
+    d.sitesGoal||0, d.textsGoal||0, d.sessionsGoal||0, d.tpGoal||0,
+    d.sitesRec||0, d.textsRec||0, d.sessionsRec||0, d.tpRec||0,
+    d.sitesLRec||'', d.textsLRec||'', d.sessionsLRec||'', d.tpLRec||'',
+    d.sitesLRecName||'', d.textsLRecName||'', d.sessionsLRecName||'', d.tpLRecName||''
+  ].join('|');
+}
 /* Sync-scheduler med eksponentiel backoff (v4.0) */
 let _syncFails = 0;
 let _syncTimer = null;
@@ -1120,6 +1144,7 @@ function sortWithTiebreak(employees, field){
     })
     .map(x => x.e);
 }
+function top6(employees, field){ return sortWithTiebreak(employees, field).slice(0,6); }
 function top5(employees, field){ return sortWithTiebreak(employees, field).slice(0,5); }
 function top3(employees, field){ return sortWithTiebreak(employees, field).slice(0,3); }
 function top2(employees, field){ return sortWithTiebreak(employees, field).slice(0,2); }
@@ -1178,7 +1203,16 @@ function checkMonthlyReset(){
 }
 setInterval(checkMonthlyReset, 5 * 60 * 60 * 1000);
 checkMonthlyReset();
-setInterval(()=>{ const h=new Date().getHours(); if(h===22||h===4) location.reload(); }, 60000);
+/* v4.1: Auto-reload kl. 22 og 04. Tracker sidste reload i localStorage så vi ikke
+   reloader hvert minut i 60 minutter når timen først rammes (gammel bug). */
+setInterval(()=>{
+  const h = new Date().getHours();
+  if(h !== 22 && h !== 4) return;
+  const last = +localStorage.getItem('bo7_lastReload') || 0;
+  if(Date.now() - last < 3600000) return; // < 1 time siden sidste reload — skip
+  localStorage.setItem('bo7_lastReload', Date.now());
+  location.reload();
+}, 60000);
 /* ════════════════════════════════════════
    LISTE-RENDERING
    ════════════════════════════════════════ */
@@ -1203,7 +1237,7 @@ function renderList(container, items, field, rowClass){
       : `<span></span>`;
     const row=document.createElement('div');
     row.className=`list-row ${cls}${isChaser?' list-row-chaser':''}`;
-    row.innerHTML=`<span class="medal">${isChaser ? '' : (MEDALS[i]||'')}</span><span class="p-name">${p.name||'—'}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
+    row.innerHTML=`<span class="medal">${isChaser ? '' : (MEDALS[i]||'')}</span><span class="p-name">${esc(p.name||'—')}</span>${pill}<span class="p-count">${p[field]||0}</span>`;
     el.appendChild(row);
   });
 }
@@ -1313,12 +1347,12 @@ function render(oldTotals){
   const siteEmps    = emps.filter(e=>e.dept==='site');
   const textEmps    = emps.filter(e=>e.dept==='text' || e.team==='marketing');
   const sessionEmps = emps.filter(e=>e.dept==='session');
-  renderList(_el.listSites,    top5(siteEmps.length?    siteEmps    : emps, 'sites'),    'sites');
+  renderList(_el.listSites,    top6(siteEmps.length?    siteEmps    : emps, 'sites'),    'sites');
   renderList(_el.listTexts,    top5(textEmps.length?    textEmps    : emps, 'texts'),    'texts');
   renderList(_el.listSessions, top3(sessionEmps.length? sessionEmps : emps, 'sessions'), 'sessions');
   renderList(_el.listTp,       top3(emps, 'tp'), 'tp', 'tp-row');
   const lrEl = { 'lrec-sites':_el.lrecSites, 'lrec-texts':_el.lrecTexts, 'lrec-sessions':_el.lrecSessions, 'lrec-tp':_el.lrecTp };
-  const lr=(id,v,name)=>{ const el=lrEl[id]||document.getElementById(id); if(!el) return; el.innerHTML = (v&&v!==''&&v!='0')?`<span class="lr-label">🏆 Rekord</span><span class="lr-divider">|</span><em>${v}</em>${name?`<span class="lr-name">${name}</span>`:''}`:''; };
+  const lr=(id,v,name)=>{ const el=lrEl[id]||document.getElementById(id); if(!el) return; el.innerHTML = (v&&v!==''&&v!='0')?`<span class="lr-label">🏆 Rekord</span><span class="lr-divider">|</span><em>${esc(v)}</em>${name?`<span class="lr-name">${esc(name)}</span>`:''}`:''; };
   lr('lrec-sites',    D.sitesLRec,    D.sitesLRecName);
   lr('lrec-texts',    D.textsLRec,    D.textsLRecName);
   lr('lrec-sessions', D.sessionsLRec, D.sessionsLRecName);
@@ -1437,7 +1471,7 @@ function renderEmpTable(){
             ${emojiOpts}
           </select>
         </td>
-        <td><input class="emp-input" value="${emp.name||''}" oninput="updateEmp(${idx},'name',this.value)" placeholder="Navn"></td>
+        <td><input class="emp-input" value="${esc(emp.name||'')}" oninput="updateEmp(${idx},'name',this.value)" placeholder="Navn"></td>
         <td>
           <select class="emp-select" onchange="updateEmp(${idx},'dept',this.value);renderEmpTable();">
             <option value="site"    ${dept==='site'?'selected':''}>Hjemmeside</option>
@@ -1600,9 +1634,14 @@ const CEL_DEPT_META = {
 };
 function buildCelebrationBatch(oldEmps, newEmps, oldBonus, newBonus){
   const employees = [];
+  // v4.1: Match på navn i stedet for index. Robust mod drag-drop reorder og
+  // remove/add af medarbejdere under en admin-session. (Tidligere kunne fx en
+  // reorder få +1 til at blive tilskrevet den forkerte medarbejder.)
+  const oldByName = new Map();
+  (oldEmps || []).forEach(e => { if(e && e.name) oldByName.set(e.name, e); });
   newEmps.forEach((emp, idx) => {
     if(emp.team === 'marketing') return;
-    const old = oldEmps[idx] || {};
+    const old = (emp.name && oldByName.get(emp.name)) || {};
     const changes = {};
     ['sites', 'texts', 'sessions', 'tp'].forEach(field => {
       const ov = old[field] || 0, nv = emp[field] || 0;
@@ -1611,8 +1650,9 @@ function buildCelebrationBatch(oldEmps, newEmps, oldBonus, newBonus){
     if(Object.keys(changes).length > 0){
       employees.push({
         name: emp.name || '—',
-        emoji: emp.emoji || '🏆',
+        emoji: emp.emoji || '🚀',
         team: emp.team || 'gators',
+        dept: emp.dept || 'site',
         changes
       });
     }
@@ -1652,8 +1692,8 @@ function buildEmpTile(emp, idx){
   tile.innerHTML = `
     <div class="cel-tile-glow"></div>
     <div class="cel-tile-team ${team.cls}">${team.label}</div>
-    <div class="cel-tile-emoji">${emp.emoji}</div>
-    <div class="cel-tile-name">${emp.name}</div>
+    <div class="cel-tile-emoji">${esc(emp.emoji)}</div>
+    <div class="cel-tile-name">${esc(emp.name)}</div>
     <div class="cel-tile-changes">${changesHtml}</div>
   `;
   return tile;
