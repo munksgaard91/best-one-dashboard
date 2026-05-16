@@ -68,7 +68,7 @@ body.quiet-hours .fire-bg { opacity: 0.5 !important; }
   gap:14px; /* lille gap mellem emoji og data-grupperne */
   font-size:clamp(11px,0.9vw,15px);
   font-weight:500;letter-spacing:0.4px;
-  color:var(--text-dim);
+  color:var(--text);
   user-select:none;
 }
 .workday-bar .wd-groups{
@@ -616,7 +616,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         <path fill="#ffffff" d="M719.6,93.2H655c1.3,4.6,3.9,8.1,7.6,10.6c3.8,2.5,8.5,3.7,14.2,3.7c4.3,0,8-0.6,11.1-1.8c3.1-1.2,6.3-3.2,9.4-5.9l16.4,17.1c-8.6,9.6-21.3,14.4-37.9,14.4c-10.4,0-19.5-2-27.4-5.9c-7.9-3.9-14-9.4-18.3-16.4c-4.3-7-6.5-14.9-6.5-23.8c0-8.7,2.1-16.6,6.3-23.5c4.2-6.9,10-12.4,17.5-16.3c7.4-3.9,15.8-5.9,25.1-5.9c8.9,0,16.9,1.8,24.1,5.5c7.2,3.7,12.9,9,17.1,15.9c4.2,6.9,6.3,15.2,6.3,24.7C720.1,85.7,719.9,88.3,719.6,93.2z M660.7,65.6c-3.2,2.7-5.3,6.5-6.2,11.2h36.4c-0.9-4.7-2.9-8.4-6.2-11.2c-3.2-2.7-7.2-4.1-12.1-4.1C667.9,61.5,663.9,62.9,660.7,65.6z"/>
         <path fill="#ffffff" d="M102.9,61c-4.3-7-10.3-12.4-18-16.3c-7.7-3.9-16.4-5.9-26.1-5.9c-6.8,0-13,1-18.8,2.9V7.2H8.3l0.1,74.9h0c0,0.9-0.1,1.8-0.1,2.8c0,8.9,2.2,16.9,6.5,23.9c4.3,7,10.4,12.5,18.1,16.5c7.7,4,16.3,5.9,25.9,5.9c9.7,0,18.4-2,26.1-5.9c7.7-4,13.7-9.5,18-16.5c4.3-7,6.4-15,6.4-23.9S107.2,68,102.9,61z M72.4,100.6c-3.5,3.8-8,5.7-13.5,5.7c-5.5,0-10-1.9-13.5-5.7c-3.5-3.8-5.3-9-5.3-15.8c0-6.6,1.8-11.8,5.3-15.5c3.5-3.7,8-5.6,13.5-5.6c5.5,0,10,1.9,13.5,5.6c3.5,3.7,5.3,8.9,5.3,15.5C77.6,91.6,75.9,96.8,72.4,100.6z"/>
       </svg>
-      <div style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.18);font-weight:500;text-transform:uppercase;text-align:center;margin-top:3px;">Dashboard — version 4.2</div>
+      <div style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.18);font-weight:500;text-transform:uppercase;text-align:center;margin-top:3px;">Dashboard — version 4.3</div>
     </div>
     <div class="header-right">
       <div class="clock-row">
@@ -776,10 +776,9 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
           <thead>
             <tr>
               <th style="width:18px"></th>
-              <th style="width:50px;text-align:center">Emoji</th>
-              <th style="width:150px">Navn</th>
-              <th style="width:130px">Afdeling</th>
-              <th style="width:110px">Team</th>
+              <th style="width:170px">Navn</th>
+              <th style="width:140px">Afdeling</th>
+              <th style="width:120px">Team</th>
               <th style="width:80px;text-align:center">Nyfak</th>
               <th style="width:80px;text-align:center">Anmeld.</th>
               <th style="width:36px"></th>
@@ -1045,7 +1044,10 @@ function dataSig(d){
     d.sitesGoal||0, d.textsGoal||0, d.sessionsGoal||0, d.tpGoal||0,
     d.sitesRec||0, d.textsRec||0, d.sessionsRec||0, d.tpRec||0,
     d.sitesLRec||'', d.textsLRec||'', d.sessionsLRec||'', d.tpLRec||'',
-    d.sitesLRecName||'', d.textsLRecName||'', d.sessionsLRecName||'', d.tpLRecName||''
+    d.sitesLRecName||'', d.textsLRecName||'', d.sessionsLRecName||'', d.tpLRecName||'',
+    // v4.3: hele employees-strukturen så ikke-numeriske ændringer (rename, reorder,
+    // tilføj/slet, dept/team-skift) også triggrer render på casted skærm uden celebration
+    JSON.stringify(d.employees||[])
   ].join('|');
 }
 /* Sync-scheduler med eksponentiel backoff (v4.0) */
@@ -1235,6 +1237,7 @@ function _wd_holidays(year){
   s.add(`${year}-12-24`); // Juleaftensdag
   s.add(`${year}-12-25`); // 1. juledag
   s.add(`${year}-12-26`); // 2. juledag
+  s.add(`${year}-06-05`); // Grundlovsdag
   s.add(`${year}-12-31`); // Nytårsaftensdag
   // Bevægelige helligdage (relativt til påskedag)
   const e = _wd_easterSunday(year);
@@ -1557,10 +1560,8 @@ function fillForm(){
 /* ════════════════════════════════════════
    MEDARBEJDER-TABEL
    ════════════════════════════════════════ */
-const EMOJI_POOL = ['🚀']; // v4.2: portrætter har erstattet emojis — 🚀 beholdes som default/fallback
-function usedEmojis(excludeIdx){
-  return (D.employees||[]).filter((_,i)=>i!==excludeIdx).map(e=>e.emoji).filter(Boolean);
-}
+// v4.3: EMOJI_POOL og usedEmojis fjernet — emoji-kolonnen er væk fra admin,
+// alle medarbejdere viser enten portræt eller 🚀 i celebration.
 let _dragSrcIdx = null;
 function renderEmpTable(){
   const tbody = document.getElementById('emp-tbody');
@@ -1579,30 +1580,18 @@ function renderEmpTable(){
     if(members.length === 0) return;
     const headerRow = document.createElement('tr');
     headerRow.className = 'emp-group-header';
-    headerRow.innerHTML = `<td colspan="8"><div class="header-inner"><span class="dept-badge"><span class="dept-icon">${group.icon}</span>${group.label} <span style="opacity:0.4;margin-left:4px">(${members.length})</span></span></div></td>`;
+    headerRow.innerHTML = `<td colspan="7"><div class="header-inner"><span class="dept-badge"><span class="dept-icon">${group.icon}</span>${group.label} <span style="opacity:0.4;margin-left:4px">(${members.length})</span></span></div></td>`;
     tbody.appendChild(headerRow);
     members.forEach(({ emp, idx }) => {
       const dept = emp.dept || '';
       const nyfakField = dept === 'site' ? 'sites' : dept === 'text' ? 'texts' : dept === 'session' ? 'sessions' : 'sites';
       const nyfakVal = emp[nyfakField] || 0;
-      const taken = usedEmojis(idx);
-      const emojiOpts = EMOJI_POOL.map(e => {
-        const disabled = taken.includes(e) ? 'disabled' : '';
-        const sel = emp.emoji === e ? 'selected' : '';
-        return `<option value="${e}" ${sel} ${disabled}>${e}</option>`;
-      }).join('');
       const tr = document.createElement('tr');
       tr.draggable = true;
       tr.dataset.idx = idx;
       tr.dataset.dept = group.dept;
       tr.innerHTML = `
         <td class="drag-handle" title="Træk for at omsortere">⠿</td>
-        <td>
-          <select class="emp-select" style="width:54px;text-align:center;font-size:18px;padding:4px 2px;" oninput="updateEmp(${idx},'emoji',this.value)">
-            <option value="">—</option>
-            ${emojiOpts}
-          </select>
-        </td>
         <td><input class="emp-input" value="${esc(emp.name||'')}" oninput="updateEmp(${idx},'name',this.value)" placeholder="Navn"></td>
         <td>
           <select class="emp-select" onchange="updateEmp(${idx},'dept',this.value);renderEmpTable();">
@@ -1827,7 +1816,8 @@ function calcCols(n){
 function buildEmpTile(emp, idx){
   const team = CEL_TEAM_META[emp.team] || CEL_TEAM_META.gators;
   const dept = CEL_DEPT_META[emp.dept] || CEL_DEPT_META.site;
-  const photo = PHOTOS[emp.name]; // v4.2: portræt overrider emoji hvis tilgængelig
+  // v4.3: trim navn ved photo-lookup så whitespace-fejl ikke skjuler portrættet
+  const photo = emp.name ? PHOTOS[emp.name.trim()] : null;
   const tile = document.createElement('div');
   // Dept bestemmer tile-farve (border + top stripe + glow), team beholder team-pill-farven
   tile.className = `cel-tile ${dept.cls}`;
@@ -1843,9 +1833,10 @@ function buildEmpTile(emp, idx){
       </span>
     </div>`;
   }).join('');
+  // v4.3: altid 🚀 som fallback — aldrig custom emoji selv hvis emp.emoji har gammel værdi
   const avatarHtml = photo
     ? `<img class="cel-tile-photo" src="${photo}" alt="">`
-    : `<div class="cel-tile-emoji">${esc(emp.emoji)}</div>`;
+    : `<div class="cel-tile-emoji">🚀</div>`;
   tile.innerHTML = `
     <div class="cel-tile-glow"></div>
     <div class="cel-tile-team ${team.cls}">${team.label}</div>
