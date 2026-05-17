@@ -66,7 +66,7 @@ body.quiet-hours .fire-bg { opacity: 0.5 !important; }
   padding:10px clamp(20px,3vw,48px);
   display:flex;justify-content:center;align-items:center;
   gap:14px; /* lille gap mellem emoji og data-grupperne */
-  font-size:clamp(11px,0.9vw,15px);
+  font-size:clamp(13px,1.1vw,18px);
   font-weight:500;letter-spacing:0.4px;
   color:var(--text);
   user-select:none;
@@ -859,10 +859,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
-      <button class="save-btn save-celebrate" onclick="saveAdmin(true)">🎉 Gem &amp; Fejr</button>
-      <button class="save-btn save-quiet" onclick="saveAdmin(false)" style="background:rgba(255,255,255,0.07);color:var(--text-dim);">💾 Gem &amp; Sync</button>
-    </div>
+    <button class="save-btn save-celebrate" onclick="saveAdmin()" style="margin-top:4px;">💾 Gem</button>
   </div>
 </div>
 <script>
@@ -1199,6 +1196,14 @@ const _MONS_UP=['Januar','Februar','Marts','April','Maj','Juni','Juli','August',
 const _elClock=document.getElementById('clock');
 const _elDate=document.getElementById('date');
 const _elMonth=document.getElementById('month-lbl');
+/* v4.3: ISO-uge (DK bruger ISO 8601 — uge starter mandag, 1. uge indeholder 4. januar) */
+function isoWeek(date){
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  const w1 = new Date(d.getFullYear(), 0, 4);
+  return 1 + Math.round(((d.getTime() - w1.getTime()) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
+}
 /* ════════════════════════════════════════
    ARBEJDSDAGE TILBAGE (v4.2)
    Skæv sæson: 1. juli → 30. juni. Tæller mandag-fredag minus danske helligdage.
@@ -1289,7 +1294,7 @@ function updateWorkdayBar(){
 function tick(){
   const now=new Date(),p=n=>String(n).padStart(2,'0');
   _elClock.innerHTML=`${p(now.getHours())}<span class="colon">:</span>${p(now.getMinutes())}`;
-  _elDate.textContent=`${_WDAYS[now.getDay()]} ${now.getDate()}. ${_MONS_LO[now.getMonth()]} ${now.getFullYear()}`;
+  _elDate.textContent=`${_WDAYS[now.getDay()]} ${now.getDate()}. ${_MONS_LO[now.getMonth()]} ${now.getFullYear()} · Uge ${isoWeek(now)}`;
   _elMonth.textContent=_MONS_UP[now.getMonth()];
   updateWorkdayBar();
 }
@@ -1667,15 +1672,15 @@ function gs(id){ return document.getElementById(id).value||''; }
    Tidligere version awaited pushBin, hvilket kunne give 2-5s lag
    på sløjt wifi før fejringen overhovedet begyndte.
    ════════════════════════════════════════ */
-async function saveAdmin(celebrate=false){
+async function saveAdmin(){
   const np=document.getElementById('a-newpw').value.trim(), cp=document.getElementById('a-confirmpw').value.trim();
   if(np&&np!==cp){ alert('Kodeordene stemmer ikke overens.'); return; }
   CFG={key:gs('cfg-key'),bin:gs('cfg-bin')}; saveCfg(CFG);
   const old=snapshotTotals(D);
   const oldBonus = (D.wbGators||0) + (D.wbSharks||0) + (D.wbMktg||0) - (D.wbSpent||0);
   const newBonus = gi('a-wb-gators') + gi('a-wb-sharks') + gi('a-wb-mktg') - gi('a-wb-spent');
-  // Byg batch FØR data overskrives
-  const batch = celebrate ? buildCelebrationBatch(window._preEditEmps||[], D.employees||[], oldBonus, newBonus) : null;
+  // v4.3: byg ALTID batch — hasCel afgør om der reelt skal celebration (kun ved positive ændringer)
+  const batch = buildCelebrationBatch(window._preEditEmps||[], D.employees||[], oldBonus, newBonus);
   const hasCel = batch && (batch.employees.length > 0 || batch.bonus);
   const newCelId = hasCel ? Date.now().toString() : (D.celebrationId || null);
   D={
@@ -1920,7 +1925,9 @@ function showBatchCelebration(batch, onDone){
       const isBonus = el.classList.contains('bonus-amount');
       queueCountUp(el, from, to, 1400, isBonus ? 'kr' : null);
     });
-    const allEmojis = (batch.employees||[]).map(e => e.emoji);
+    // v4.3: konfetti for medarbejdere er ALTID raketter — emp.emoji ignoreres så gamle
+    // custom-værdier i JSONBin ikke længere kan smutte ud som duer/sten/flag mm.
+    const allEmojis = (batch.employees||[]).map(() => '🚀');
     if(batch.bonus) allEmojis.push('💰');
     let totalDelta = (batch.employees||[]).reduce((s, e) =>
       s + Object.values(e.changes).reduce((ss, c) => ss + (c.new - c.old), 0), 0);
