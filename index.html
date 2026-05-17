@@ -555,7 +555,6 @@ header{display:flex;align-items:center;justify-content:space-between;}
 .field select option{background:#111928;}
 .save-btn{width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s;margin-top:4px;}
 .save-btn:hover{opacity:0.82;}
-.save-btn.save-quiet:hover{background:rgba(255,255,255,0.11)!important;opacity:1;}
 /* ════════════════════════════════════════
    MEDARBEJDER-TABEL (admin fane 1)
    ════════════════════════════════════════ */
@@ -859,7 +858,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
       </div>
     </div>
-    <button class="save-btn save-celebrate" onclick="saveAdmin()" style="margin-top:4px;">💾 Gem</button>
+    <button class="save-btn" onclick="saveAdmin()" style="margin-top:4px;">💾 Gem</button>
   </div>
 </div>
 <script>
@@ -936,6 +935,7 @@ const DEF = {
     {name:'Tina',    team:'sharks', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
     {name:'Sten',    team:'sharks', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
     {name:'Silva',   team:'sharks', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
+    {name:'Nohaila', team:'sharks', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
     {name:'Mogens',  team:'gators', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
     {name:'Shania',  team:'gators', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
     {name:'Hernvig', team:'gators', dept:'site',    emoji:'🚀', sites:0, texts:0, sessions:0, tp:0},
@@ -1840,7 +1840,7 @@ function buildEmpTile(emp, idx){
   }).join('');
   // v4.3: altid 🚀 som fallback — aldrig custom emoji selv hvis emp.emoji har gammel værdi
   const avatarHtml = photo
-    ? `<img class="cel-tile-photo" src="${photo}" alt="">`
+    ? `<img class="cel-tile-photo" src="${photo}" alt="" decoding="async">`
     : `<div class="cel-tile-emoji">🚀</div>`;
   tile.innerHTML = `
     <div class="cel-tile-glow"></div>
