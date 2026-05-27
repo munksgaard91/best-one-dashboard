@@ -1047,14 +1047,27 @@ function dataSig(d){
     JSON.stringify(d.employees||[])
   ].join('|');
 }
-/* Sync-scheduler med eksponentiel backoff (v4.0) */
+/* Sync-scheduler med eksponentiel backoff (v4.4)
+   Normal polling: 5 minutter (sparer requests på Free-plan).
+   Celebration-burst: 5 sekunder i 90 sek efter ny celebrationId opdaget,
+   så casters ser animationen næsten med det samme uden at bruge for mange requests. */
 let _syncFails = 0;
 let _syncTimer = null;
-const SYNC_MIN = 15000;
-const SYNC_MAX = 120000;
+const SYNC_NORMAL  = 5 * 60 * 1000;  // 5 minutter normalt
+const SYNC_BURST   = 5 * 1000;        // 5 sekunder under celebration-burst
+const SYNC_MAX     = 10 * 60 * 1000;  // 10 minutter max ved fejl
+const BURST_DURATION = 90 * 1000;     // 90 sekunder burst-vindue
+let _burstUntil = 0; // timestamp for hvornår burst-mode slutter
+function inBurst(){ return Date.now() < _burstUntil; }
+function startBurst(){ _burstUntil = Date.now() + BURST_DURATION; }
 function scheduleSync(){
   clearTimeout(_syncTimer);
-  const delay = Math.min(SYNC_MIN * Math.pow(2, _syncFails), SYNC_MAX);
+  let delay;
+  if(inBurst()){
+    delay = SYNC_BURST;
+  } else {
+    delay = Math.min(SYNC_NORMAL * Math.pow(2, _syncFails), SYNC_MAX);
+  }
   _syncTimer = setTimeout(doSync, delay);
 }
 async function doSync(){
@@ -1090,6 +1103,7 @@ async function doSync(){
                     && remote.pendingCelebration.employees !== undefined; // v4 batch format
   if(hasNewCel){
     localStorage.setItem('bo7_lastCelId', remote.celebrationId);
+    startBurst(); // hurtig polling i 90 sek så andre casters også ser animationen
     const old = snapshotTotals(D);
     D = mergeDeep({...DEF}, remote);
     saveLocal(D);
