@@ -962,6 +962,22 @@ function esc(s){
 /* ════════════════════════════════════════
    STATE
    ════════════════════════════════════════ */
+/* v4.4: Auto-clear localStorage hvis credentials ikke matcher dem i koden. */
+(function autoMigrateCfg(){
+  const CURRENT_BIN = '6a16b45bf47d5c455c3c4720';
+  try{
+    const stored = localStorage.getItem('bo7cfg');
+    if(stored){
+      const cfg = JSON.parse(stored);
+      if(cfg.bin !== CURRENT_BIN){
+        localStorage.removeItem('bo7');
+        localStorage.removeItem('bo7cfg');
+        localStorage.removeItem('bo7_pushPending');
+        localStorage.removeItem('bo7_lastCelId');
+      }
+    }
+  }catch(e){ localStorage.clear(); }
+})();
 let D   = loadLocal();
 let CFG = loadCfg();
 let adminOpen   = false;        // admin åben? pauser doSync
@@ -970,7 +986,7 @@ let _lastKnownSig = null;       // seneste dataSig — skip render hvis uændret
 function loadLocal(){ try{ const r=localStorage.getItem('bo7'); return r?mergeDeep({...DEF},JSON.parse(r)):{...DEF}; }catch(e){ return{...DEF}; } }
 function mergeDeep(base, src){ const out={...base}; for(const k in src){ if(k==='employees') out.employees=src.employees; else if(src[k]!==undefined) out[k]=src[k]; } return out; }
 function saveLocal(d){ localStorage.setItem('bo7',JSON.stringify(d)); }
-function loadCfg(){ try{ const r=localStorage.getItem('bo7cfg'); return r?JSON.parse(r):{key:'$2a$10$u.ub6bJNuG9XwN7qnjwsL.xR7DZ546K3MJcmELP4933.NipxRubsO',bin:'69b1b8b1aa77b81da9d81362'}; }catch(e){ return{key:'$2a$10$u.ub6bJNuG9XwN7qnjwsL.xR7DZ546K3MJcmELP4933.NipxRubsO',bin:'69b1b8b1aa77b81da9d81362'}; } }
+function loadCfg(){ try{ const r=localStorage.getItem('bo7cfg'); return r?JSON.parse(r):{key:'$2a$10$lxgg5b8Wwjk9L6OJOsx9R.dkwXT3GodrVDRsPNhLBZSvewplrQK8a',bin:'6a16b45bf47d5c455c3c4720'}; }catch(e){ return{key:'$2a$10$lxgg5b8Wwjk9L6OJOsx9R.dkwXT3GodrVDRsPNhLBZSvewplrQK8a',bin:'6a16b45bf47d5c455c3c4720'}; } }
 function saveCfg(c){ localStorage.setItem('bo7cfg',JSON.stringify(c)); }
 function binOk(){ return CFG.key&&CFG.bin; }
 /* ════════════════════════════════════════
