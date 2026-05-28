@@ -1069,7 +1069,7 @@ function dataSig(d){
    så casters ser animationen næsten med det samme uden at bruge for mange requests. */
 let _syncFails = 0;
 let _syncTimer = null;
-const SYNC_NORMAL  = 5 * 60 * 1000;  // 5 minutter normalt
+const SYNC_NORMAL  = 30 * 1000;       // 30 sekunder normalt
 const SYNC_BURST   = 5 * 1000;        // 5 sekunder under celebration-burst
 const SYNC_MAX     = 10 * 60 * 1000;  // 10 minutter max ved fejl
 const BURST_DURATION = 90 * 1000;     // 90 sekunder burst-vindue
