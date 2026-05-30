@@ -530,13 +530,13 @@ header{display:flex;align-items:center;justify-content:space-between;}
 .list-row.sharks{background:none;}
 .list-row.tp-row{background:none;}
 .list-row.none{background:none;}
-.medal{font-size:clamp(13px,1.1vw,18px);line-height:1;text-align:center;opacity:0.7;}
-.p-name{font-size:clamp(13px,1.1vw,18px);font-weight:600;color:rgba(232,237,245,0.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.medal{font-size:clamp(11px,0.9vw,15px);line-height:1;text-align:center;opacity:0.7;}
+.p-name{font-size:clamp(11px,0.9vw,15px);font-weight:600;color:rgba(232,237,245,0.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
 .team-pill{font-size:clamp(7px,0.55vw,10px);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:99px;flex-shrink:0;white-space:nowrap;}
 .team-pill.gators{background:var(--gators-team-dim);color:var(--gators-team-text);border:1px solid var(--gators-team-border);}
 .team-pill.sharks{background:var(--sharks-team-dim);color:var(--sharks-team-text);border:1px solid var(--sharks-team-border);}
 .team-pill.marketing{background:var(--mktg-dim);color:var(--mktg-light);border:1px solid var(--mktg-border);}
-.p-count{font-family:'DM Mono',monospace;font-size:clamp(18px,1.6vw,28px);font-weight:700;flex-shrink:0;color:#fff;opacity:1;min-width:2.2ch;text-align:right;}
+.p-count{font-family:'DM Mono',monospace;font-size:clamp(13px,1.1vw,20px);font-weight:700;flex-shrink:0;color:#fff;opacity:1;min-width:2.2ch;text-align:right;}
 .list-row.gators .p-count{color:#fff;}
 .list-row.sharks .p-count{color:#fff;}
 .list-row.tp-row .p-count{color:#fff;}
@@ -741,7 +741,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
         <div class="track"><div class="fill" id="wb-fill" style="background:linear-gradient(90deg,#2ea872,var(--ocean-green-soft))"></div></div>
       </div>
-      <div class="stat-record" style="visibility:hidden;pointer-events:none"><span class="rec-label">🏆 Vores rekord</span><span class="rec-divider">|</span><span class="rec-val">0</span></div>
+      <div class="stat-record" style="visibility:hidden;pointer-events:none"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val">0</span></div>
     </div>
     <!-- Kolonne 1: WebBanken detaljer (row 2) -->
     <div class="list-block" style="grid-column:1;grid-row:2;background:rgba(12,18,36,0.95);border-color:rgba(58,111,216,0.2);justify-content:flex-start;gap:clamp(8px,1vh,14px);">
@@ -766,7 +766,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
         <div class="track"><div class="fill" id="fill-sites"></div></div>
       </div>
-      <div class="stat-record"><span class="rec-label">🏆 Vores rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sites">69</span></div>
+      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sites">69</span></div>
     </div>
     <!-- Kolonne 2: Sager liste (row 2) -->
     <div class="list-block" style="grid-column:2;grid-row:2">
@@ -785,7 +785,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
         <div class="track"><div class="fill" id="fill-texts"></div></div>
       </div>
-      <div class="stat-record"><span class="rec-label">🏆 Vores rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-texts">214</span></div>
+      <div class="stat-record"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-texts">214</span></div>
     </div>
     <!-- Kolonne 3: Tekster liste (row 2) -->
     <div class="list-block" style="grid-column:3;grid-row:2">
@@ -806,7 +806,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
           </div>
           <div class="track"><div class="fill" id="fill-sessions"></div></div>
         </div>
-        <div class="stat-record" style="flex-shrink:0"><span class="rec-label">🏆 Vores rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sessions">16</span></div>
+        <div class="stat-record" style="flex-shrink:0"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-sessions">16</span></div>
         <hr class="combo-divider">
         <div class="list-items" id="list-sessions" style="flex:1;min-height:0;overflow:hidden;"></div>
         <div class="list-record" id="lrec-sessions"></div>
@@ -823,7 +823,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
           </div>
           <div class="track"><div class="fill" id="fill-tp"></div></div>
         </div>
-        <div class="stat-record" style="flex-shrink:0"><span class="rec-label">🏆 Vores rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-tp">0</span></div>
+        <div class="stat-record" style="flex-shrink:0"><span class="rec-label">🏆 Fælles rekord</span><span class="rec-divider">|</span><span class="rec-val" id="rec-tp">0</span></div>
         <hr class="combo-divider">
         <div class="list-items" id="list-tp" style="flex:1;min-height:0;overflow:hidden;"></div>
         <div class="list-record" id="lrec-tp"></div>
@@ -899,7 +899,7 @@ tr.drag-over td{border-top:2px solid var(--blue)!important;}
         </div>
       </div>
       <div class="admin-section">
-        <div class="admin-section-label">🏆 Vores rekorder (vises i toppen)</div>
+        <div class="admin-section-label">🏆 Fælles rekorder (vises i toppen)</div>
         <div class="ag4">
           <div class="field"><label>Sager rekord</label><input type="number" id="g-sites-rec" min="0"></div>
           <div class="field"><label>Tekster rekord</label><input type="number" id="g-texts-rec" min="0"></div>
@@ -1394,7 +1394,6 @@ function _wd_holidays(year){
   s.add(`${year}-12-24`); // Juleaftensdag
   s.add(`${year}-12-25`); // 1. juledag
   s.add(`${year}-12-26`); // 2. juledag
-  s.add(`${year}-06-05`); // Grundlovsdag
   s.add(`${year}-12-31`); // Nytårsaftensdag
   // Bevægelige helligdage (relativt til påskedag)
   const e = _wd_easterSunday(year);
@@ -1672,7 +1671,7 @@ function render(oldTotals){
         ? `<span class="lr-avatar"><img src="${ph}" alt="" decoding="async"></span>`
         : `<span class="lr-avatar ph">b</span>`;
     }
-    el.innerHTML = `<span class="lr-label">🏆 Vores rekord</span><span class="lr-divider">|</span><em>${esc(v)}</em>${name ? `${avHtml}<span class="lr-name">${esc(name)}</span>` : ''}`;
+    el.innerHTML = `<span class="lr-label">🏆 Rekord</span><span class="lr-divider">|</span><em>${esc(v)}</em>${name ? `${avHtml}<span class="lr-name">${esc(name)}</span>` : ''}`;
   };
   lr('lrec-sites',    D.sitesLRec,    D.sitesLRecName);
   lr('lrec-texts',    D.textsLRec,    D.textsLRecName);
